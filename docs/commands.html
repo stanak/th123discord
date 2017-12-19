@@ -1,0 +1,272 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>上海botで利用できるコマンド &mdash; th123discord  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="author" title="About these documents"
+              href="about.html"/>
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="th123discord  documentation" href="index.html"/>
+        <link rel="prev" title="チャンネルリスト" href="channels.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> th123discord
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="about.html">当ページについて</a></li>
+<li class="toctree-l1"><a class="reference internal" href="channels.html">チャンネルリスト</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">上海botで利用できるコマンド</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id1">非想天則 対戦募集コマンド</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#discord">Discord チャンネル関連コマンド</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">th123discord</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>上海botで利用できるコマンド</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/commands.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="bot">
+<h1>上海botで利用できるコマンド<a class="headerlink" href="#bot" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2>非想天則 対戦募集コマンド<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="host">
+<dt>!host &lt;ip_address&gt;:&lt;port_no&gt; &lt;message&gt;</dt>
+<dd><p class="first"><a class="reference internal" href="channels.html#hostlist"><span class="std std-ref">#hostlist</span></a> に、対戦募集メッセージを投稿します。
+コマンドが受け付けられると、上海BOTが成功メッセージを残します。</p>
+<p class="last">例「!host 114.514.xxx.xxx:10800 お手柔らかにお願いします！」</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">成功メッセージは、数秒後に自動的に消去されます。
+対戦募集メッセージは、投稿から1時間経過、または <a class="reference internal" href="#close">close</a> によって、消去されます。</p>
+</div>
+<dl class="docutils" id="client">
+<dt>!client &lt;message&gt;</dt>
+<dd><p class="first"><a class="reference internal" href="channels.html#hostlist"><span class="std std-ref">#hostlist</span></a> に、対戦募集メッセージを投稿します。
+基本的な仕様は <a class="reference internal" href="#host">host</a> と同様です。</p>
+<p class="last">例「!client クラ専募集です。DMかメンションでIPください！」</p>
+</dd>
+</dl>
+<dl class="docutils" id="close">
+<dt>!close</dt>
+<dd><p class="first"><a class="reference internal" href="#host">host</a> 、<a class="reference internal" href="#client">client</a> によって <a class="reference internal" href="channels.html#hostlist"><span class="std std-ref">#hostlist</span></a> に投稿した、自分の対戦募集メッセージを消去します。</p>
+<p class="last">例「!close」</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="discord">
+<h2>Discord チャンネル関連コマンド<a class="headerlink" href="#discord" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils" id="ch">
+<dt>!ch &lt;channel_name&gt;</dt>
+<dd><p class="first">隠れチャンネルへの入室/退室のためのコマンドです。</p>
+<p class="last">例「!ch dev」</p>
+</dd>
+</dl>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="channels.html" class="btn btn-neutral" title="チャンネルリスト" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, starnak.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
