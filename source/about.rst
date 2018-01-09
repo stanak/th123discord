@@ -15,7 +15,7 @@
 Discordとは？
 ========================================
 手軽にテキスト・ボイスチャットを利用できる、主にゲーマー向けの、軽量で現代的なコミュニケーションツールです。各種OS・モバイル向けクライアントも揃っています。
-`Discordトップページ <https://discordapp.com/>`_ にはSkype,TeamSpeakを捨てろと挑戦的な文言が書かれています。
+`Discordトップページ <https://discordapp.com/>`_ にはSkype,TeamSpeakを捨てろと挑戦的な言葉が書かれています。
 
 より詳しくは `「Discord」非公式日本語ドキュメント <http://discordjp.eeharu.net>`_ (外部リンク)をご覧ください。
 
@@ -26,6 +26,7 @@ Discordとは？
 * `Tenco! 東方深秘録／東方非想天則プレイヤー情報共有サービス <https://tenco.info/>`_
 * `Misc tools - Touhou Hisoutensokui <https://hisouten.koumakan.jp/wiki/Misc_tools>`_
 * `Twitter非想天則対戦募集bot <https://twitter.com/th123bot>`_
+* `東方非想天則リプレイアップローダー <https://ux.getuploader.com/discord_th123/>`_
 
 
 お問い合わせ
