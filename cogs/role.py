@@ -56,9 +56,9 @@ class Role(CogMixin):
         DMから利用不可。
         """
         user = ctx.message.author
-        for role in roles:
-            if role.name in characters:
-                await self.bot.add_roles(user, role)
+        if not all([role.name in characters for role in roles]):
+            raise commands.BadArgument
+        await self.bot.add_roles(user, *roles)
         await self.bot.say("役職を追加しました。", delete_after=10)
 
 
@@ -73,7 +73,7 @@ class Role(CogMixin):
         DMから利用不可。
         """
         user = ctx.message.author
-        for role in roles:
-            if role.name in characters:
-                await self.bot.remove_roles(user, role)
+        if not all([role.name in characters for role in roles]):
+            raise commands.BadArgument
+        await self.bot.remove_roles(user, *roles)
         await self.bot.say("役職を解除しました。", delete_after=10)
