@@ -18,8 +18,12 @@ class General(CogMixin):
             rolls, limit = map(int, dice.split('d'))
         except Exception:
             self.bot.say("「!roll {試行回数}d{ダイスの面数}」の書式で投稿してください。")
-        result = ', '.join(str(random.randint(1, limit)) for r in range(rolls))
-        await self.bot.say(result)
+        result = [random.randint(1, limit) for r in range(rolls)]
+        sum_res = sum(result)
+        average = sum_res / len(result)
+        expected = sum(range(limit+1)) / limit * rolls
+        page = ', '.join(str(r) for r in result)
+        await self.bot.say("sum:{0}, ave:{1:.2f}, exp:{2:.2f}\n{3}".format(sum_res, average, expected, page))
 
     @commands.command()
     async def choose(self, *choices: str):
