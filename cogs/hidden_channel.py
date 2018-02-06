@@ -79,13 +79,13 @@ class HiddenChannel(CogMixin):
             # 隠れch("everyoneのみ"不可視指定) -> overwriteで可視化
             if all([r.is_everyone for r in hidden_channel.changed_roles]):
                 await self.bot.edit_channel_permissions(hidden_channel, member, VISIBLE_OVERWRITE)
-                await self.bot.say("{0.name}に入室しました。".format(hidden_channel))
+                await self.bot.say("{0.name}に入室しました。".format(hidden_channel), delete_after=10)
                 return
             # 役職限定ch(everyone不可視、特定の役職可視) -> 不正入力扱い
             else:
                 raise commands.BadArgument
         #隠れチャンネルではない又は入室済み
-        await self.bot.say("このチャンネルには入室済みです。")
+        await self.bot.say("このチャンネルには入室済みです。", delete_after=10)
 
     @ch.command(
         name="leave",
@@ -104,7 +104,7 @@ class HiddenChannel(CogMixin):
         overwrite = hidden_channel.overwrites_for(member)
         if visible and not overwrite.is_empty():
             await self.bot.delete_channel_permissions(hidden_channel, member)
-            await self.bot.say("{0.name}を退室しました。".format(hidden_channel))
+            await self.bot.say("{0.name}を退室しました。".format(hidden_channel), delete_after=10)
         else:
             raise commands.BadArgument
 
@@ -135,15 +135,15 @@ class HiddenChannel(CogMixin):
         隠れチャンネルの一覧を表示します。
         使用例「!ch list」
         """
-        server = ctx.message.server
-        hidden_channels = [channel for channel in server.channels
+        hidden_channels = [channel for channel in self.bot.get_all_channels()
                            if _is_hidden(channel)]
         output = []
         if hidden_channels:
-            for c in hidden_channels:
-                name = c.name
-                topic = c.topic if c.topic is not None else ""
-                output.append(name + ":\n    " + topic)
+            for channel in sorted(hidden_channels, key=lambda x:x.position):
+                name = channel.name
+                topic = channel.topic if channel.topic is not None else ""
+                page = "{0}:{1}人\n  {2}".format(name, len(channel.overwrites)-1, topic)
+                output.append(page)
             await self.bot.say("```" + "\n".join(output) + "```")
         else:
             await self.bot.say("隠れチャンネルが見つかりません。")
