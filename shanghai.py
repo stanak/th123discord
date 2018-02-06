@@ -128,7 +128,7 @@ if __name__ == "__main__":
     logging.getLogger("__main__").setLevel(logging.DEBUG)
 
     token = os.environ["DISCORD_TOKEN"]
-    cog_names = ["General", "HiddenChannel", "Manager", "Hosting"]
+    cog_names = ["General", "HiddenChannel", "Manager", "Hosting", "Role"]
     bot = Shanghai(formatter=Formatter())
     bot = load_cogs(bot, cog_names)
     bot.run(token)
