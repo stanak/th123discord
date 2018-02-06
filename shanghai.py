@@ -113,7 +113,7 @@ class Formatter(commands.HelpFormatter):
         command_name = self.context.invoked_with
         description = ("helpコマンドでは主に当サーバー特有のコマンドについて説明します。\n"
                        "各チャンネルやサーバーの説明については#informationチャンネルのURLを参照してください。\n"
-                       "「{0}{1} command」のように入力するとより詳しい情報が表示されます。"
+                       "「{0}{1} 各コマンド名」のように入力するとより詳しい情報が表示されます。"
                        ).format(self.clean_prefix, command_name)
         return description
 
