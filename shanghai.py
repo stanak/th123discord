@@ -75,7 +75,7 @@ class Shanghai(commands.Bot):
         fmt = ("{0.mention}さん、ようこそ{1.name}サーバーへ。\n"
                "あなたは{2}人目の参加者です。\n"
                "サーバー概要は{3.mention}を御覧ください。\n"
-               "分からないことがあれば「!help」と入力してみてください。上海が伺います。")
+               "コマンドについて分からないことがあれば「!help」と入力してみてください。上海が伺います。")
         await self.send_message(server,
                                 fmt.format(member, server,
                                            members_count, information_ch))
