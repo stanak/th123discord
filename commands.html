@@ -93,6 +93,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">上海botで利用できるコマンド</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#id1">非想天則 対戦募集コマンド</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#discord">Discord チャンネル関連コマンド</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id2">その他コマンド</a></li>
 </ul>
 </li>
 </ul>
@@ -160,12 +161,15 @@
             
   <div class="section" id="bot">
 <h1>上海botで利用できるコマンド<a class="headerlink" href="#bot" title="Permalink to this headline">¶</a></h1>
+<p>「!help」と入力すると最新のコマンド情報一覧がDMに送られます。
+「!help host」や「!help ch join」など、コマンドを対象に取るとより詳しい情報が得られます。</p>
 <div class="section" id="id1">
 <h2>非想天則 対戦募集コマンド<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <dl class="docutils" id="host">
 <dt>!host &lt;ip_address&gt;:&lt;port_no&gt; &lt;message&gt;</dt>
 <dd><p class="first"><a class="reference internal" href="channels.html#hostlist"><span class="std std-ref">#hostlist</span></a> に、対戦募集メッセージを投稿します。
-コマンドが受け付けられると、上海BOTが成功メッセージを残します。</p>
+コマンドが受け付けられると、上海BOTが成功メッセージを残します。
+<strong>上海へのDMからのみ利用できます</strong></p>
 <p class="last">例「!host 114.514.xxx.xxx:10800 お手柔らかにお願いします！」</p>
 </dd>
 </dl>
@@ -178,13 +182,15 @@
 <dl class="docutils" id="client">
 <dt>!client &lt;message&gt;</dt>
 <dd><p class="first"><a class="reference internal" href="channels.html#hostlist"><span class="std std-ref">#hostlist</span></a> に、対戦募集メッセージを投稿します。
-基本的な仕様は <a class="reference internal" href="#host">host</a> と同様です。</p>
-<p class="last">例「!client クラ専募集です。DMかメンションでIPください！」</p>
+基本的な仕様は <a class="reference internal" href="#host">host</a> と同様です。
+<strong>上海へのDMからのみ利用できます</strong></p>
+<p class="last">例「!client お手柔らかにお願いします！」</p>
 </dd>
 </dl>
 <dl class="docutils" id="close">
 <dt>!close</dt>
-<dd><p class="first"><a class="reference internal" href="#host">host</a> 、<a class="reference internal" href="#client">client</a> によって <a class="reference internal" href="channels.html#hostlist"><span class="std std-ref">#hostlist</span></a> に投稿した、自分の対戦募集メッセージを明示的に消去します。</p>
+<dd><p class="first"><a class="reference internal" href="#host">host</a> 、<a class="reference internal" href="#client">client</a> によって <a class="reference internal" href="channels.html#hostlist"><span class="std std-ref">#hostlist</span></a> に投稿した、自分の対戦募集メッセージを明示的に消去します。
+<strong>上海へのDMからのみ利用できます</strong></p>
 <p class="last">例「!close」</p>
 </dd>
 </dl>
@@ -192,11 +198,34 @@
 <div class="section" id="discord">
 <h2>Discord チャンネル関連コマンド<a class="headerlink" href="#discord" title="Permalink to this headline">¶</a></h2>
 <dl class="docutils" id="ch">
-<dt>!ch &lt;channel_name&gt;</dt>
-<dd><p class="first">隠れチャンネルへの入室/退室のためのコマンドです。</p>
-<p class="last">例「!ch dev」</p>
+<dt>!ch</dt>
+<dd><p class="first">隠れチャンネルへの操作全般を行うコマンドです。
+以下のサブコマンドと併せて使用します。</p>
+<p class="last">devチャンネルに参加する例「!ch join dev」</p>
+</dd>
+<dt>!ch join &lt;channel_name&gt;</dt>
+<dd><p class="first">隠れチャンネルへ入室します。
+DMから利用できません。</p>
+<p class="last">devチャンネルに参加する例「!ch join dev」</p>
+</dd>
+<dt>!ch leave &lt;channel_name&gt;</dt>
+<dd><p class="first">隠れチャンネルを退室します。
+DMから利用できません。</p>
+<p class="last">devチャンネルに参加する例「!ch leave dev」</p>
+</dd>
+<dt>!ch count &lt;channel_name&gt;</dt>
+<dd><p class="first">隠れチャンネルの参加者数を表示します。</p>
+<p class="last">devチャンネルを確認する例「!ch count dev」</p>
+</dd>
+<dt>!ch list</dt>
+<dd><p class="first">隠れチャンネルと参加者数の一覧を表示します。</p>
+<p class="last">例「!ch list」</p>
 </dd>
 </dl>
+</div>
+<div class="section" id="id2">
+<h2>その他コマンド<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>「!help」や、「!help command名」をご利用ください。</p>
 </div>
 </div>
 
