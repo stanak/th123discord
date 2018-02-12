@@ -5,7 +5,7 @@ from discord.ext import commands
 import discord
 import unicodedata
 import asyncio
-import struct
+import binascii
 import socket
 
 import logging
@@ -13,22 +13,21 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-s = struct.Struct("!"+"B"*37)
-binary_data = [0x01, 0x02, 0x00, 0x2a, 0x30, 0x8c,
-        0x71, 0x3e, 0xeb, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x2a, 0x30, 0x8c,
-        0x71, 0x3e, 0xeb, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x77, 0xbc]
-PACKET_TO_HOST = s.pack(*binary_data)
+PACKET_TO_HOST = binascii.unhexlify("056e7365d9ffc46e488d7ca19231347295000000002800000000000000000000000000000000000000000000000000000000000000000000000000000000000000")
 
 WAIT = 3
 BUF_SIZE = 256
 
 
-def host_status(packet, is_sokuroll=False):
-    if packet == b'\x03':
-        return (True, False, False)
+def host_status(packet):
+    if packet.startswith(b'\x07\x01'):
+        return True, False, True
+    elif packet.startswith(b'\x07\x00'):
+        return True, False, False
+    elif packet.startswith(b'\x08\x01'):
+        return True, True, False
     else:
-        return (False, False, False)
-
+        return False, False, False
 
 class Hosting(CogMixin):
     def __init__(self, bot):
