@@ -19,6 +19,7 @@ WAIT = 3
 BUF_SIZE = 256
 
 
+# hosting, matching, watchable
 def host_status(packet):
     if packet.startswith(b'\x07\x01'):
         return True, False, True
@@ -70,12 +71,15 @@ class Hosting(CogMixin):
             n_bytes = sock.sendto(PACKET_TO_HOST, (ip, int(port)))
             await asyncio.sleep(WAIT)
             try:
-                data, _ = sock.recvfrom(BUF_SIZE)
+                packet, _ = sock.recvfrom(BUF_SIZE)
             except (BlockingIOError, InterruptedError):
-                data = ""
+                packet = b""
 
-            status = host_status(data)
-            if status == (True, False, False):
+            status = host_status(packet)
+            if status == (True, False, True):
+                count = 0
+                message = await self.bot.edit_message(message, "{0.mention}, :o: :eye: {1}".format(user, host_message))
+            elif status == (True, False, False):
                 count = 0
                 message = await self.bot.edit_message(message, "{0.mention}, :o: {1}".format(user, host_message))
             elif status == (True, True, False):
