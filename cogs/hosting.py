@@ -76,6 +76,8 @@ class Hosting(CogMixin):
         await self.bot.whisper("募集を開始しました。")
 
         count = 0
+        # 観戦可能状態を保存する
+        watchable = False
         while count <= WAIT*10:
             n_bytes = sock.sendto(PACKET_TO_HOST[is_sokuroll], (ip, int(port)))
             await asyncio.sleep(WAIT)
@@ -87,15 +89,21 @@ class Hosting(CogMixin):
             status = host_status(packet)
             if status == (True, False, True):
                 count = 0
+                watchable = True
                 message = await self.bot.edit_message(message, "{0.mention}, :o: :eye: {1}".format(user, host_message))
             elif status == (True, False, False):
                 count = 0
+                watchable = False
                 message = await self.bot.edit_message(message, "{0.mention}, :o: {1}".format(user, host_message))
             elif status == (True, True, False):
                 count = 0
-                message = await self.bot.edit_message(message, "{0.mention}, :crossed_swords: {1}".format(user, host_message))
+                if watchable:
+                    message = await self.bot.edit_message(message, "{0.mention}, :crossed_swords: :eye: {1}".format(user, host_message))
+                else:
+                    message = await self.bot.edit_message(message, "{0.mention}, :crossed_swords: {1}".format(user, host_message))
             elif status == (False, False, False):
                 count += 1
+                watchable = False
                 message = await self.bot.edit_message(message, "{0.mention}, :x: {1}".format(user, host_message))
 
         await self._delete_messages_from(hostlist_ch, user)
