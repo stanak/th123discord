@@ -13,8 +13,10 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-PACKET_TO_HOST = binascii.unhexlify("056e7365d9ffc46e488d7ca19231347295000000002800000000000000000000000000000000000000000000000000000000000000000000000000000000000000")
-
+PACKET_TO_HOST=[
+    binascii.unhexlify("056e7365d9ffc46e488d7ca19231347295000000002800000000000000000000000000000000000000000000000000000000000000000000000000000000000000"),
+    binascii.unhexlify("05647365d9ffc46e488d7ca19231347295000000002800000000000000000000000000000000000000000000000000000000000000000000000000000000000000")
+]
 WAIT = 3
 BUF_SIZE = 256
 
@@ -42,6 +44,13 @@ class Hosting(CogMixin):
         もう一度呼ぶと古い投稿は削除され、新しい内容が投稿されます。
         募集例「!host 123.456.xxx.xxx:10800 霊夢　レート1500　どなたでもどうぞ！」
         """
+        await self._host_impl(ctx, ip_port, comment)
+
+    @commands.command(pass_context=True)
+    async def rhost(self, ctx, ip_port: str, *comment):
+        await self._host_impl(ctx, ip_port, comment, True)
+
+    async def _host_impl(self, ctx, ip_port: str, *comment, is_sokuroll=False):
         normalized_host = unicodedata.normalize('NFKC', ip_port)
         ip, port = normalized_host.split(":")
         host_message = normalized_host + " | " + " ".join(comment)
@@ -68,7 +77,7 @@ class Hosting(CogMixin):
 
         count = 0
         while count <= WAIT*10:
-            n_bytes = sock.sendto(PACKET_TO_HOST, (ip, int(port)))
+            n_bytes = sock.sendto(PACKET_TO_HOST[is_sokuroll], (ip, int(port)))
             await asyncio.sleep(WAIT)
             try:
                 packet, _ = sock.recvfrom(BUF_SIZE)
