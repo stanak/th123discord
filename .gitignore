@@ -12,4 +12,5 @@ pyvenv.cfg
 pip-selfcheck.json
 .*
 __pycache__/
+share
 !.gitignore
