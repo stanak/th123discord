@@ -29,6 +29,7 @@ class EchoClientProtocol:
         self.transport = None
         self.count = 0
         self.start_date = datetime.datetime.now()
+        self.watchable = False
 
     def connection_made(self, transport):
         self.transport = transport
@@ -41,15 +42,20 @@ class EchoClientProtocol:
 
         if status == (True, False, True):
             self.count = 0
+            self.watchable = True
             status_time_host_message = ":o: :eye: " + (time) + self.host_message
             discord.compat.create_task(self.bot.edit_message(self.message, status_time_host_message), loop=self.loop)
         elif status == (True, False, False):
             self.count = 0
+            self.watchable = False
             status_time_host_message = ":o: " + (time) + self.host_message
             discord.compat.create_task(self.bot.edit_message(self.message, status_time_host_message), loop=self.loop)
         elif status == (True, True, False):
+            status = ":crossed_swords: "
+            if self.watchable:
+                status += ":eye: "
             self.count = 0
-            status_time_host_message = ":crossed_swords: " + (time) + self.host_message
+            status_time_host_message = status + (time) + self.host_message
             discord.compat.create_task(self.bot.edit_message(self.message, status_time_host_message), loop=self.loop)
         else:
             pass
@@ -95,14 +101,18 @@ class Hosting(CogMixin):
             await self.bot.delete_message(ctx.message)
             raise errors.OnlyPrivateMessage
 
-        await self._delete_messages_from(hostlist_ch, user)
+        # 自分の投稿が残っていたら何もせず終了
+        async for message in self.bot.logs_from(hostlist_ch):
+            if message.mentions and message.mentions[0] == user:
+                return
+
         await self.bot.whisper("ホストの検知を開始します。")
         message = await self.bot.send_message(hostlist_ch, host_message)
 
         await self._hosting((ip, int(port)), host_message, message, is_sokuroll=False)
 
-        await self._delete_messages_from(hostlist_ch, user)
         await self.bot.whisper("一定時間ホストが検知されなかったため、募集を終了しました。")
+        await self._delete_messages_from(hostlist_ch, user)
 
     @commands.command(pass_context=True)
     async def rhost(self, ctx, ip_port: str, *comment):
@@ -123,14 +133,19 @@ class Hosting(CogMixin):
             await self.bot.delete_message(ctx.message)
             raise errors.OnlyPrivateMessage
 
-        await self._delete_messages_from(hostlist_ch, user)
+        # 自分の投稿が残っていたら何もせず終了
+        async for message in self.bot.logs_from(hostlist_ch):
+            if message.mentions and message.mentions[0] == user:
+                return
+
         await self.bot.whisper("ホストの検知を開始します。")
         message = await self.bot.send_message(hostlist_ch, host_message)
 
         await self._hosting((ip, int(port)), ":regional_indicator_r: " + host_message, message, is_sokuroll=True)
 
-        await self._delete_messages_from(hostlist_ch, user)
         await self.bot.whisper("一定時間ホストが検知されなかったため、募集を終了しました。")
+        await self._delete_messages_from(hostlist_ch, user)
+
 
 
     async def _hosting(self, addr, host_message, message, is_sokuroll):
