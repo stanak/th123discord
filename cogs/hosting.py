@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 PACKET_TO_HOST = binascii.unhexlify("056e7365d9ffc46e488d7ca19231347295000000002800000000000000000000000000000000000000000000000000000000000000000000000000000000000000")
+PACKET_TO_SOKUROLL = binascii.unhexlify("05647365d9ffc46e488d7ca19231347295000000002800000000000000000000000000000000000000000000000000000000000000000000000000000000000000")
 
 WAIT = 2
 BUF_SIZE = 256
@@ -95,13 +96,13 @@ class Hosting(CogMixin):
             raise errors.OnlyPrivateMessage
 
         await self._delete_messages_from(hostlist_ch, user)
-        await self.bot.whisper("募集を開始しました。")
-        message = await self.bot.send_message(hostlist_ch, host_message, is_sokuroll=False)
+        await self.bot.whisper("ホストの検知を開始します。")
+        message = await self.bot.send_message(hostlist_ch, host_message)
 
-        await self._hosting((ip, int(port)), host_message, message)
+        await self._hosting((ip, int(port)), host_message, message, is_sokuroll=False)
 
         await self._delete_messages_from(hostlist_ch, user)
-        await self.bot.whisper("募集を終了しました。")
+        await self.bot.whisper("一定時間ホストが検知されなかったため、募集を終了しました。")
 
     @commands.command(pass_context=True)
     async def rhost(self, ctx, ip_port: str, *comment):
@@ -123,13 +124,13 @@ class Hosting(CogMixin):
             raise errors.OnlyPrivateMessage
 
         await self._delete_messages_from(hostlist_ch, user)
-        await self.bot.whisper("募集を開始しました。")
+        await self.bot.whisper("ホストの検知を開始します。")
         message = await self.bot.send_message(hostlist_ch, host_message)
 
         await self._hosting((ip, int(port)), ":regional_indicator_r: " + host_message, message, is_sokuroll=True)
 
         await self._delete_messages_from(hostlist_ch, user)
-        await self.bot.whisper("募集を終了しました。")
+        await self.bot.whisper("一定時間ホストが検知されなかったため、募集を終了しました。")
 
 
     async def _hosting(self, addr, host_message, message, is_sokuroll):
@@ -143,7 +144,7 @@ class Hosting(CogMixin):
         )
         transport, protocol = await connect
         while protocol.count <= 10:
-            n_bytes = transport.sendto(PACKET_TO_HOST)
+            n_bytes = transport.sendto(send_data)
             await asyncio.sleep(WAIT)
             if protocol.count > 1:
                 protocol.start_date = datetime.datetime.now()
