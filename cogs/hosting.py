@@ -3,11 +3,12 @@ from .common import errors
 
 from discord.ext import commands
 import discord
+
 import unicodedata
 import asyncio
 import binascii
 import socket
-
+import datetime
 import logging
 
 logger = logging.getLogger(__name__)
@@ -15,8 +16,50 @@ logger = logging.getLogger(__name__)
 
 PACKET_TO_HOST = binascii.unhexlify("056e7365d9ffc46e488d7ca19231347295000000002800000000000000000000000000000000000000000000000000000000000000000000000000000000000000")
 
-WAIT = 3
+WAIT = 2
 BUF_SIZE = 256
+
+class EchoClientProtocol:
+    def __init__(self, bot, host_message, message):
+        self.bot = bot
+        self.loop = bot.loop
+        self.host_message = host_message
+        self.message = message
+        self.transport = None
+        self.count = 0
+        self.start_date = datetime.datetime.now()
+
+    def connection_made(self, transport):
+        self.transport = transport
+
+    def datagram_received(self, data, addr):
+        status = host_status(data)
+        now = datetime.datetime.now()
+        seconds = (now - self.start_date).seconds
+        time = "{0}m{1}s ".format(int(seconds/60), seconds%60)
+
+        print(time)
+        print(status)
+        if status == (True, False, True):
+            self.count = 0
+            status_time_host_message = ":o: :eye: " + (time) + self.host_message
+            discord.compat.create_task(self.bot.edit_message(self.message, status_time_host_message), loop=self.loop)
+        elif status == (True, False, False):
+            self.count = 0
+            status_time_host_message = ":o: " + (time) + self.host_message
+            discord.compat.create_task(self.bot.edit_message(self.message, status_time_host_message), loop=self.loop)
+        elif status == (True, True, False):
+            self.count = 0
+            status_time_host_message = ":crossed_swords: " + (time) + self.host_message
+            discord.compat.create_task(self.bot.edit_message(self.message, status_time_host_message), loop=self.loop)
+        else:
+            self.count += 1
+
+    def error_received(self, exc):
+        self.count += 1
+
+    def connection_lost(self, exc):
+        pass
 
 
 # hosting, matching, watchable
@@ -44,8 +87,9 @@ class Hosting(CogMixin):
         """
         normalized_host = unicodedata.normalize('NFKC', ip_port)
         ip, port = normalized_host.split(":")
-        host_message = normalized_host + " | " + " ".join(comment)
         user = ctx.message.author
+        ip_port_comments = normalized_host + " | " + " ".join(comment)
+        host_message = "{0.mention}, {1}".format(user, ip_port_comments)
         hostlist_ch = discord.utils.get(self.bot.get_all_channels(),
                                            name="hostlist")
 
@@ -54,46 +98,27 @@ class Hosting(CogMixin):
             await self.bot.delete_message(ctx.message)
             raise errors.OnlyPrivateMessage
 
-        # ソケットのノンブロッキング設定
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, 0)
-        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        sock.setblocking(False)
-        fd = sock.fileno()
-        self.bot.loop.add_writer(fd, lambda x=1:1)  # callback捨てる
-        self.bot.loop.add_reader(fd, lambda x=1:1)
-
         await self._delete_messages_from(hostlist_ch, user)
-        message = await self.bot.send_message(hostlist_ch, "{0.mention}, {1}".format(user, host_message))
         await self.bot.whisper("募集を開始しました。")
+        message = await self.bot.send_message(hostlist_ch, host_message)
 
-        count = 0
-        while count <= WAIT*10:
-            n_bytes = sock.sendto(PACKET_TO_HOST, (ip, int(port)))
+        connect = self.bot.loop.create_datagram_endpoint(
+            lambda: EchoClientProtocol(self.bot, host_message, message),
+            remote_addr=(ip, port)
+        )
+        transport, protocol = await connect
+        while protocol.count <= 10:
+            n_bytes = transport.sendto(PACKET_TO_HOST)
             await asyncio.sleep(WAIT)
-            try:
-                packet, _ = sock.recvfrom(BUF_SIZE)
-            except (BlockingIOError, InterruptedError):
-                packet = b""
-
-            status = host_status(packet)
-            if status == (True, False, True):
-                count = 0
-                message = await self.bot.edit_message(message, "{0.mention}, :o: :eye: {1}".format(user, host_message))
-            elif status == (True, False, False):
-                count = 0
-                message = await self.bot.edit_message(message, "{0.mention}, :o: {1}".format(user, host_message))
-            elif status == (True, True, False):
-                count = 0
-                message = await self.bot.edit_message(message, "{0.mention}, :crossed_swords: {1}".format(user, host_message))
-            elif status == (False, False, False):
-                count += 1
-                message = await self.bot.edit_message(message, "{0.mention}, :x: {1}".format(user, host_message))
+            if protocol.count > 1:
+                protocol.start_date = datetime.datetime.now()
+                status_host_message = ":x: " + protocol.host_message
+                discord.compat.create_task(self.bot.edit_message(protocol.message, status_host_message), loop=protocol.loop)
+            protocol.count += 1
+        transport.close()
 
         await self._delete_messages_from(hostlist_ch, user)
         await self.bot.whisper("募集を終了しました。")
-        self.bot.loop.remove_reader(fd)
-        self.bot.loop.remove_writer(fd)
-        sock.close()
 
     async def _delete_messages_from(self, channel: discord.Channel, user: discord.User):
         async for message in self.bot.logs_from(channel):
