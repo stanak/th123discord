@@ -112,7 +112,15 @@ class Hosting(CogMixin):
         await self._hosting((ip, int(port)), host_message, message, is_sokuroll=False)
 
         await self.bot.whisper("一定時間ホストが検知されなかったため、募集を終了しました。")
-        await self._delete_messages_from(hostlist_ch, user)
+
+        for i in range(100):
+            try:
+                await self._delete_messages_from(hostlist_ch, user)
+            except Exception as e:
+                await asyncio.sleep(5)
+                logger.exception(type(e).__name__, exc_info=e)
+            else:
+                return
 
     @commands.command(pass_context=True)
     async def rhost(self, ctx, ip_port: str, *comment):
@@ -144,9 +152,15 @@ class Hosting(CogMixin):
         await self._hosting((ip, int(port)), ":regional_indicator_r: " + host_message, message, is_sokuroll=True)
 
         await self.bot.whisper("一定時間ホストが検知されなかったため、募集を終了しました。")
-        await self._delete_messages_from(hostlist_ch, user)
 
-
+        for i in range(100):
+            try:
+                await self._delete_messages_from(hostlist_ch, user)
+            except Exception as e:
+                await asyncio.sleep(5)
+                logger.exception(type(e).__name__, exc_info=e)
+            else:
+                return
 
     async def _hosting(self, addr, host_message, message, is_sokuroll):
         if is_sokuroll:
