@@ -91,11 +91,6 @@ class Hosting(CogMixin):
         """
         #holtlistに対戦募集を投稿します。
         約20秒間ホストが検知されなければ、自動で投稿を取り下げます。
-        :o: : ホスト有り
-        :x: : ホスト無し
-        :regional_indicator_r: : ソクロール有り
-        :eye: : 観戦可能
-        :crossed_swords: : 対戦中
         募集例「!host 123.456.xxx.xxx:10800 霊夢　レート1500　どなたでもどうぞ！」
         """
         normalized_host = unicodedata.normalize('NFKC', ip_port)
@@ -136,12 +131,7 @@ class Hosting(CogMixin):
         """
         #holtlistにsokuroll有の対戦募集を投稿します。
         約20秒間ホストが検知されなければ、自動で投稿を取り下げます。
-        :o: : ホスト有り
-        :x: : ホスト無し
-        :regional_indicator_r: : ソクロール有り
-        :eye: : 観戦可能
-        :crossed_swords: : 対戦中
-        募集例「!rhost 123.456.xxx.xxx:10800 霊夢　レート1500　どなたでもどうぞ！」
+        募集例「!host 123.456.xxx.xxx:10800 霊夢　レート1500　どなたでもどうぞ！」
         """
         normalized_host = unicodedata.normalize('NFKC', ip_port)
         ip, port = normalized_host.split(":")
