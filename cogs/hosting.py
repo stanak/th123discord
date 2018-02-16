@@ -90,6 +90,7 @@ class Hosting(CogMixin):
     async def host(self, ctx, ip_port: str, *comment):
         """
         #holtlistに対戦募集を投稿します。
+        約20秒間ホストが検知されなければ、自動で投稿を取り下げます。
         募集例「!host 123.456.xxx.xxx:10800 霊夢　レート1500　どなたでもどうぞ！」
         """
         normalized_host = unicodedata.normalize('NFKC', ip_port)
@@ -129,6 +130,7 @@ class Hosting(CogMixin):
     async def rhost(self, ctx, ip_port: str, *comment):
         """
         #holtlistにsokuroll有の対戦募集を投稿します。
+        約20秒間ホストが検知されなければ、自動で投稿を取り下げます。
         募集例「!host 123.456.xxx.xxx:10800 霊夢　レート1500　どなたでもどうぞ！」
         """
         normalized_host = unicodedata.normalize('NFKC', ip_port)
