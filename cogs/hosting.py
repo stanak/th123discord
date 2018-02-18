@@ -42,6 +42,8 @@ class EchoClientProtocol:
         self.echo_packet = echo_packet
         self.transport = None
         self.start_datetime = datetime.now()
+        self.hosting = False
+        self.matching = False
         self.watchable = False
 
         self.ack_datetime = datetime.now()
@@ -50,24 +52,21 @@ class EchoClientProtocol:
         self.transport = transport
 
     def datagram_received(self, data, addr):
-        hosting, matching, watchable = EchoClientProtocol.host_status(data)
-        if not hosting and not matching and not watchable:
+        self.update_host_status(data)
+        if not self.hosting and not self.matching and not self.watchable:
             logger.error(data)
 
-        if not hosting:
+        if not self.hosting:
             return
 
         self.ack_datetime = datetime.now()
-
-        if not matching:
-            self.watchable = watchable
 
         elapsed_seconds = (datetime.now() - self.start_datetime).seconds
         elapsed_time = f"{int(elapsed_seconds/60)}m{elapsed_seconds % 60}s"
 
         status_time_host_message = " ".join([
-            ":crossed_swords:" if matching else ":o:",
-            ":eye:" if watchable else ":see_no_evil:",
+            ":crossed_swords:" if self.matching else ":o:",
+            ":eye:" if self.watchable else ":see_no_evil:",
             elapsed_time,
             self.host_message])
 
@@ -87,16 +86,23 @@ class EchoClientProtocol:
     def elapsed_time_from_ack(self):
         return datetime.now() - self.ack_datetime
 
-    @staticmethod
-    def host_status(packet):
+    def update_host_status(self, packet):
         if packet.startswith(b'\x07\x01'):
-            return True, False, True
+            self.hosting = True
+            self.matching = False
+            self.watchable = True
         elif packet.startswith(b'\x07\x00'):
-            return True, False, False
+            self.hosting = True
+            self.matching = False
+            self.watchable = False
         elif packet.startswith(b'\x08\x01'):
-            return True, True, False
+            self.hosting = True
+            self.matching = True
+            self.watchable = self.watchable
         else:
-            return False, False, False
+            self.hosting = False
+            self.matching = False
+            self.watchable = False
 
 
 class Hosting(CogMixin):
