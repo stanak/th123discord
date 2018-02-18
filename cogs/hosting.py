@@ -14,8 +14,16 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-PACKET_TO_HOST = binascii.unhexlify("056e7365d9ffc46e488d7ca19231347295000000002800000000000000000000000000000000000000000000000000000000000000000000000000000000000000")
-PACKET_TO_SOKUROLL = binascii.unhexlify("05647365d9ffc46e488d7ca19231347295000000002800000000000000000000000000000000000000000000000000000000000000000000000000000000000000")
+PACKET_TO_HOST = binascii.unhexlify(
+    "056e7365" "d9ffc46e" "488d7ca1" "92313472"
+    "95000000" "00280000" "00000000" "00000000"
+    "00000000" "00000000" "00000000" "00000000"
+    "00000000" "00000000" "00000000" "00000000" "00")
+PACKET_TO_SOKUROLL = binascii.unhexlify(
+    "05647365" "d9ffc46e" "488d7ca1" "92313472"
+    "95000000" "00280000" "00000000" "00000000"
+    "00000000" "00000000" "00000000" "00000000"
+    "00000000" "00000000" "00000000" "00000000" "00")
 
 WAIT = 2
 BUF_SIZE = 256
@@ -23,6 +31,7 @@ BUF_SIZE = 256
 
 def get_echo_packet(is_sokuroll=None):
     return PACKET_TO_SOKUROLL if is_sokuroll else PACKET_TO_HOST
+
 
 class EchoClientProtocol:
     def __init__(self, bot, host_message, message, echo_packet):
@@ -55,14 +64,13 @@ class EchoClientProtocol:
             self.watchable = watchable
 
         elapsed_seconds = (datetime.now() - self.start_datetime).seconds
-        elapsed_time = f"{int(elapsed_seconds/60)}m{elapsed_seconds % 60}s "
+        elapsed_time = f"{int(elapsed_seconds/60)}m{elapsed_seconds % 60}s"
 
         status_time_host_message = " ".join([
             ":crossed_swords:" if matching else ":o:",
             ":eye:" if watchable else ":see_no_evil:",
             elapsed_time,
-            self.host_message
-        ])
+            self.host_message])
 
         self.count = 0
         discord.compat.create_task(
@@ -89,12 +97,13 @@ class EchoClientProtocol:
         else:
             return False, False, False
 
+
 class Hosting(CogMixin):
     def __init__(self, bot):
         self.bot = bot
 
     def get_hostlist_ch(self):
-        return discord.utils.get(self.bot.get_all_channels(),name="hostlist")
+        return discord.utils.get(self.bot.get_all_channels(), name="hostlist")
 
     @commands.command(pass_context=True)
     async def host(self, ctx, ip_port: str, *comment):
@@ -123,17 +132,17 @@ class Hosting(CogMixin):
                 return
 
         await self.bot.whisper("ホストの検知を開始します。")
-        message = await self.bot.send_message(self.get_hostlist_ch(), host_message)
+        message = await self.bot.send_message(
+            self.get_hostlist_ch(),
+            host_message)
 
         connect = self.bot.loop.create_datagram_endpoint(
             lambda: EchoClientProtocol(
                 self.bot,
                 host_message,
                 message,
-                get_echo_packet(is_sokuroll=False),
-            ),
-            remote_addr=(ip, int(port))
-        )
+                get_echo_packet(is_sokuroll=False)),
+            remote_addr=(ip, int(port)))
 
         transport, protocol = await connect
         while protocol.count <= 10:
@@ -141,12 +150,18 @@ class Hosting(CogMixin):
             await asyncio.sleep(WAIT)
             if protocol.count > 1:
                 protocol.start_date = datetime.now()
-                status_host_message = ":x: " + protocol.host_message
-                discord.compat.create_task(self.bot.edit_message(protocol.message, status_host_message), loop=protocol.loop)
+                status_host_message = f":x: {protocol.host_message}"
+                discord.compat.create_task(
+                    self.bot.edit_message(
+                        protocol.message,
+                        status_host_message),
+                    loop=protocol.loop)
             protocol.count += 1
         transport.close()
 
-        await self.bot.whisper("一定時間ホストが検知されなかったため、募集を終了しました。")
+        await self.bot.whisper(
+            "一定時間ホストが検知されなかったため、"
+            "募集を終了しました。")
         for i in range(100):
             try:
                 await self._delete_messages_from(self.get_hostlist_ch(), user)
@@ -156,8 +171,11 @@ class Hosting(CogMixin):
             else:
                 return
 
-
-    async def _delete_messages_from(self, channel: discord.Channel, user: discord.User):
+    async def _delete_messages_from(
+        self,
+        channel: discord.Channel,
+        user: discord.User
+    ):
         async for message in self.bot.logs_from(channel):
             if message.mentions and message.mentions[0] == user:
                 await self.bot.delete_message(message)
