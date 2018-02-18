@@ -42,10 +42,9 @@ class EchoClientProtocol:
         self.echo_packet = echo_packet
         self.transport = None
         self.start_datetime = datetime.now()
-        self.failed_datetime = datetime.now()
         self.watchable = False
 
-        self.count = 0
+        self.ack_datetime = datetime.now()
 
     def connection_made(self, transport):
         self.transport = transport
@@ -58,7 +57,7 @@ class EchoClientProtocol:
         if not hosting:
             return
 
-        self.failed_datetime = None
+        self.ack_datetime = datetime.now()
 
         if not matching:
             self.watchable = watchable
@@ -72,19 +71,21 @@ class EchoClientProtocol:
             elapsed_time,
             self.host_message])
 
-        self.count = 0
         discord.compat.create_task(
             self.bot.edit_message(self.message, status_time_host_message),
             loop=self.loop)
 
     def error_received(self, exc):
-        self.failed_datetime = datetime.now()
+        pass
 
     def connection_lost(self, exc):
         pass
 
     def try_echo(self):
         _ = self.transport.sendto(self.echo_packet)
+
+    def elapsed_time_from_ack(self):
+        return datetime.now() - self.ack_datetime
 
     @staticmethod
     def host_status(packet):
@@ -145,10 +146,13 @@ class Hosting(CogMixin):
             remote_addr=(ip, int(port)))
 
         transport, protocol = await connect
-        while protocol.count <= 10:
-            n_bytes = transport.sendto(get_echo_packet(is_sokuroll=False))
+        while True:
+            protocol.try_echo()
             await asyncio.sleep(WAIT)
-            if protocol.count > 1:
+            elapsed_time = protocol.elapsed_time_from_ack()
+            if elapsed_time >= timedelta(seconds=WAIT*10):
+                break
+            if elapsed_time >= timedelta(seconds=WAIT):
                 protocol.start_date = datetime.now()
                 status_host_message = f":x: {protocol.host_message}"
                 discord.compat.create_task(
@@ -156,7 +160,6 @@ class Hosting(CogMixin):
                         protocol.message,
                         status_host_message),
                     loop=protocol.loop)
-            protocol.count += 1
         transport.close()
 
         await self.bot.whisper(
