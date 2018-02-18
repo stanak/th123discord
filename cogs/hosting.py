@@ -107,9 +107,50 @@ class EchoClientProtocol:
             self.host_message])
 
 
+class HostListObserver:
+    _host_list = []
+
+    @classmethod
+    async def update_hostlist(cls):
+        while True:
+            for host in HostListObserver._host_list:
+                host.try_echo()
+
+            await asyncio.sleep(WAIT)
+
+            for host in HostListObserver._host_list:
+                elapsed_time = host.elapsed_time_from_ack()
+                if elapsed_time >= timedelta(seconds=WAIT*10):
+                    close_message = (
+                        "一定時間ホストが検知されなかったため、"
+                        "募集を終了します。")
+                    await HostListObserver.close(host, close_message)
+                else:
+                    await host.bot.edit_message(
+                            host.message,
+                            host.get_host_message(timedelta(seconds=WAIT)))
+
+    @classmethod
+    async def close(cls, host, close_message):
+        await host.bot.send_message(host.user, close_message)
+        await host.bot.delete_message(host.message)
+        HostListObserver._remove(host)
+        host.transport.close()
+
+    @classmethod
+    def append(cls, host):
+        HostListObserver._host_list.append(host)
+
+    @classmethod
+    def _remove(cls, host):
+        HostListObserver._host_list.remove(host)
+
+
 class Hosting(CogMixin):
     def __init__(self, bot):
         self.bot = bot
+        self.observer = discord.compat.create_task(
+            HostListObserver.update_hostlist())
 
     def get_hostlist_ch(self):
         return discord.utils.get(self.bot.get_all_channels(), name="hostlist")
@@ -152,39 +193,5 @@ class Hosting(CogMixin):
                 message,
                 get_echo_packet(is_sokuroll=False)),
             remote_addr=(ip, int(port)))
-
-        transport, protocol = await connect
-        while True:
-            protocol.try_echo()
-            await asyncio.sleep(WAIT)
-            elapsed_time = protocol.elapsed_time_from_ack()
-            if elapsed_time >= timedelta(seconds=WAIT*10):
-                break
-
-            discord.compat.create_task(
-                self.bot.edit_message(
-                    protocol.message,
-                    protocol.get_host_message(timedelta(seconds=WAIT))),
-                loop=protocol.loop)
-        transport.close()
-
-        await self.bot.whisper(
-            "一定時間ホストが検知されなかったため、"
-            "募集を終了しました。")
-        for i in range(100):
-            try:
-                await self._delete_messages_from(self.get_hostlist_ch(), user)
-            except Exception as e:
-                await asyncio.sleep(5)
-                logger.exception(type(e).__name__, exc_info=e)
-            else:
-                return
-
-    async def _delete_messages_from(
-        self,
-        channel: discord.Channel,
-        user: discord.User
-    ):
-        async for message in self.bot.logs_from(channel):
-            if message.mentions and message.mentions[0] == user:
-                await self.bot.delete_message(message)
+        _, protocol = await connect
+        HostListObserver.append(protocol)
