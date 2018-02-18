@@ -61,19 +61,6 @@ class EchoClientProtocol:
 
         self.ack_datetime = datetime.now()
 
-        elapsed_seconds = (datetime.now() - self.start_datetime).seconds
-        elapsed_time = f"{int(elapsed_seconds/60)}m{elapsed_seconds % 60}s"
-
-        status_time_host_message = " ".join([
-            ":crossed_swords:" if self.matching else ":o:",
-            ":eye:" if self.watchable else ":see_no_evil:",
-            elapsed_time,
-            self.host_message])
-
-        discord.compat.create_task(
-            self.bot.edit_message(self.message, status_time_host_message),
-            loop=self.loop)
-
     def error_received(self, exc):
         pass
 
@@ -103,6 +90,21 @@ class EchoClientProtocol:
             self.hosting = False
             self.matching = False
             self.watchable = False
+
+    def get_host_message(self, ack_lost_threshold_time):
+        if not self.hosting:
+            return f":x: {self.host_message}"
+
+        if self.elapsed_time_from_ack() >= ack_lost_threshold_time:
+            return f":x: {self.host_message}"
+
+        elapsed_seconds = (datetime.now() - self.start_datetime).seconds
+        elapsed_time = f"{int(elapsed_seconds / 60)}m{elapsed_seconds % 60}s"
+        return " ".join([
+            ":crossed_swords:" if self.matching else ":o:",
+            ":eye:" if self.watchable else ":see_no_evil:",
+            elapsed_time,
+            self.host_message])
 
 
 class Hosting(CogMixin):
@@ -158,14 +160,12 @@ class Hosting(CogMixin):
             elapsed_time = protocol.elapsed_time_from_ack()
             if elapsed_time >= timedelta(seconds=WAIT*10):
                 break
-            if elapsed_time >= timedelta(seconds=WAIT):
-                protocol.start_date = datetime.now()
-                status_host_message = f":x: {protocol.host_message}"
-                discord.compat.create_task(
-                    self.bot.edit_message(
-                        protocol.message,
-                        status_host_message),
-                    loop=protocol.loop)
+
+            discord.compat.create_task(
+                self.bot.edit_message(
+                    protocol.message,
+                    protocol.get_host_message(timedelta(seconds=WAIT))),
+                loop=protocol.loop)
         transport.close()
 
         await self.bot.whisper(
