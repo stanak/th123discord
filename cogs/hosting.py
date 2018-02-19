@@ -196,3 +196,45 @@ class Hosting(CogMixin):
             remote_addr=(ip, int(port)))
         _, protocol = await connect
         HostListObserver.append(protocol)
+
+    @commands.command(pass_context=True)
+    async def rhost(self, ctx, ip_port: str, *comment):
+        """
+        #holtlistにsokuroll有りの対戦募集を投稿します。
+        約20秒間ホストが検知されなければ、自動で投稿を取り下げます。
+        募集例「!host 123.456.xxx.xxx:10800 霊夢　レート1500　どなたでもどうぞ！」
+        """
+        user = ctx.message.author
+        ip, port = unicodedata.normalize('NFKC', ip_port).split(":")
+        try:
+            int(port)
+        except ValueError:
+            raise commands.BadArgument
+        ip_port_comments = f"{ip}:{port} |  {' '.join(comment)}"
+        host_message = f"{user.mention}, {ip_port_comments}"
+
+        not_private = not ctx.message.channel.is_private
+        if not_private:
+            await self.bot.delete_message(ctx.message)
+            raise errors.OnlyPrivateMessage
+
+        # 自分の投稿が残っていたら何もせず終了
+        async for message in self.bot.logs_from(self.get_hostlist_ch()):
+            if message.mentions and message.mentions[0] == user:
+                return
+
+        await self.bot.whisper("ホストの検知を開始します。")
+        message = await self.bot.send_message(
+            self.get_hostlist_ch(),
+            host_message)
+
+        connect = self.bot.loop.create_datagram_endpoint(
+            lambda: EchoClientProtocol(
+                self.bot,
+                user,
+                ":regional_indicator_r:" + host_message,
+                message,
+                get_echo_packet(is_sokuroll=True)),
+            remote_addr=(ip, int(port)))
+        _, protocol = await connect
+        HostListObserver.append(protocol)
