@@ -25,9 +25,6 @@ PACKET_TO_SOKUROLL = binascii.unhexlify(
     "00000000" "00000000" "00000000" "00000000"
     "00000000" "00000000" "00000000" "00000000" "00")
 
-WAIT = 2
-BUF_SIZE = 256
-
 
 def get_echo_packet(is_sokuroll=None):
     return PACKET_TO_SOKUROLL if is_sokuroll else PACKET_TO_HOST
@@ -109,42 +106,44 @@ class EchoClientProtocol:
 
 
 class HostListObserver:
+    WAIT = timedelta(seconds=2)
+    LIFETIME = timedelta(seconds=WAIT.seconds * 10)
     _host_list = []
 
     @classmethod
     async def update_hostlist(cls):
         while True:
-            for host in HostListObserver._host_list:
+            for host in cls._host_list:
                 host.try_echo()
 
-            await asyncio.sleep(WAIT)
+            await asyncio.sleep(cls.WAIT.seconds)
 
-            for host in HostListObserver._host_list:
+            for host in cls._host_list:
                 elapsed_time = host.elapsed_time_from_ack()
-                if elapsed_time >= timedelta(seconds=WAIT*10):
+                if elapsed_time >= cls.LIFETIME:
                     close_message = (
                         "一定時間ホストが検知されなかったため、"
                         "募集を終了します。")
-                    await HostListObserver.close(host, close_message)
+                    await cls.close(host, close_message)
                 else:
                     await host.bot.edit_message(
                             host.message,
-                            host.get_host_message(timedelta(seconds=WAIT)))
+                            host.get_host_message(cls.WAIT))
 
     @classmethod
     async def close(cls, host, close_message):
         await host.bot.send_message(host.user, close_message)
         await host.bot.delete_message(host.message)
-        HostListObserver._remove(host)
+        cls._remove(host)
         host.transport.close()
 
     @classmethod
     def append(cls, host):
-        HostListObserver._host_list.append(host)
+        cls._host_list.append(host)
 
     @classmethod
     def _remove(cls, host):
-        HostListObserver._host_list.remove(host)
+        cls._host_list.remove(host)
 
 
 class Hosting(CogMixin):
