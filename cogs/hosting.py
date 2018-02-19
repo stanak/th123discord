@@ -25,60 +25,42 @@ PACKET_TO_SOKUROLL = binascii.unhexlify(
     "00000000" "00000000" "00000000" "00000000"
     "00000000" "00000000" "00000000" "00000000" "00")
 
-WAIT = 2
-BUF_SIZE = 256
-
 
 def get_echo_packet(is_sokuroll=None):
     return PACKET_TO_SOKUROLL if is_sokuroll else PACKET_TO_HOST
 
 
 class EchoClientProtocol:
-    def __init__(self, bot, host_message, message, echo_packet):
+    def __init__(self, bot, user, host_message, message, echo_packet):
         self.bot = bot
         self.loop = bot.loop
+        self.user = user
         self.host_message = host_message
         self.message = message
         self.echo_packet = echo_packet
         self.transport = None
         self.start_datetime = datetime.now()
-        self.failed_datetime = datetime.now()
+        self.hosting = False
+        self.matching = False
         self.watchable = False
 
-        self.count = 0
+        self.ack_datetime = datetime.now()
 
     def connection_made(self, transport):
         self.transport = transport
 
     def datagram_received(self, data, addr):
-        hosting, matching, watchable = EchoClientProtocol.host_status(data)
-        if not hosting and not matching and not watchable:
+        self.update_host_status(data)
+        if not self.hosting and not self.matching and not self.watchable:
             logger.error(data)
 
-        if not hosting:
+        if not self.hosting:
             return
 
-        self.failed_datetime = None
-
-        if not matching:
-            self.watchable = watchable
-
-        elapsed_seconds = (datetime.now() - self.start_datetime).seconds
-        elapsed_time = f"{int(elapsed_seconds/60)}m{elapsed_seconds % 60}s"
-
-        status_time_host_message = " ".join([
-            ":crossed_swords:" if matching else ":o:",
-            ":eye:" if watchable else ":see_no_evil:",
-            elapsed_time,
-            self.host_message])
-
-        self.count = 0
-        discord.compat.create_task(
-            self.bot.edit_message(self.message, status_time_host_message),
-            loop=self.loop)
+        self.ack_datetime = datetime.now()
 
     def error_received(self, exc):
-        self.failed_datetime = datetime.now()
+        pass
 
     def connection_lost(self, exc):
         pass
@@ -86,21 +68,89 @@ class EchoClientProtocol:
     def try_echo(self):
         _ = self.transport.sendto(self.echo_packet)
 
-    @staticmethod
-    def host_status(packet):
+    def elapsed_time_from_ack(self):
+        return datetime.now() - self.ack_datetime
+
+    def update_host_status(self, packet):
         if packet.startswith(b'\x07\x01'):
-            return True, False, True
+            self.hosting = True
+            self.matching = False
+            self.watchable = True
         elif packet.startswith(b'\x07\x00'):
-            return True, False, False
+            self.hosting = True
+            self.matching = False
+            self.watchable = False
         elif packet.startswith(b'\x08\x01'):
-            return True, True, False
+            self.hosting = True
+            self.matching = True
+            self.watchable = self.watchable
         else:
-            return False, False, False
+            self.hosting = False
+            self.matching = False
+            self.watchable = False
+
+    def get_host_message(self, ack_lost_threshold_time):
+        if not self.hosting:
+            return f":x: {self.host_message}"
+
+        if self.elapsed_time_from_ack() >= ack_lost_threshold_time:
+            return f":x: {self.host_message}"
+
+        elapsed_seconds = (datetime.now() - self.start_datetime).seconds
+        elapsed_time = f"{int(elapsed_seconds / 60)}m{elapsed_seconds % 60}s"
+        return " ".join([
+            ":crossed_swords:" if self.matching else ":o:",
+            ":eye:" if self.watchable else ":see_no_evil:",
+            elapsed_time,
+            self.host_message])
+
+
+class HostListObserver:
+    WAIT = timedelta(seconds=2)
+    LIFETIME = timedelta(seconds=WAIT.seconds * 10)
+    _host_list = []
+
+    @classmethod
+    async def update_hostlist(cls):
+        while True:
+            for host in cls._host_list:
+                host.try_echo()
+
+            await asyncio.sleep(cls.WAIT.seconds)
+
+            for host in cls._host_list:
+                elapsed_time = host.elapsed_time_from_ack()
+                if elapsed_time >= cls.LIFETIME:
+                    close_message = (
+                        "一定時間ホストが検知されなかったため、"
+                        "募集を終了します。")
+                    await cls.close(host, close_message)
+                else:
+                    await host.bot.edit_message(
+                            host.message,
+                            host.get_host_message(cls.WAIT * 3))
+
+    @classmethod
+    async def close(cls, host, close_message):
+        await host.bot.send_message(host.user, close_message)
+        await host.bot.delete_message(host.message)
+        cls._remove(host)
+        host.transport.close()
+
+    @classmethod
+    def append(cls, host):
+        cls._host_list.append(host)
+
+    @classmethod
+    def _remove(cls, host):
+        cls._host_list.remove(host)
 
 
 class Hosting(CogMixin):
     def __init__(self, bot):
         self.bot = bot
+        self.observer = discord.compat.create_task(
+            HostListObserver.update_hostlist())
 
     def get_hostlist_ch(self):
         return discord.utils.get(self.bot.get_all_channels(), name="hostlist")
@@ -139,43 +189,10 @@ class Hosting(CogMixin):
         connect = self.bot.loop.create_datagram_endpoint(
             lambda: EchoClientProtocol(
                 self.bot,
+                user,
                 host_message,
                 message,
                 get_echo_packet(is_sokuroll=False)),
             remote_addr=(ip, int(port)))
-
-        transport, protocol = await connect
-        while protocol.count <= 10:
-            n_bytes = transport.sendto(get_echo_packet(is_sokuroll=False))
-            await asyncio.sleep(WAIT)
-            if protocol.count > 1:
-                protocol.start_date = datetime.now()
-                status_host_message = f":x: {protocol.host_message}"
-                discord.compat.create_task(
-                    self.bot.edit_message(
-                        protocol.message,
-                        status_host_message),
-                    loop=protocol.loop)
-            protocol.count += 1
-        transport.close()
-
-        await self.bot.whisper(
-            "一定時間ホストが検知されなかったため、"
-            "募集を終了しました。")
-        for i in range(100):
-            try:
-                await self._delete_messages_from(self.get_hostlist_ch(), user)
-            except Exception as e:
-                await asyncio.sleep(5)
-                logger.exception(type(e).__name__, exc_info=e)
-            else:
-                return
-
-    async def _delete_messages_from(
-        self,
-        channel: discord.Channel,
-        user: discord.User
-    ):
-        async for message in self.bot.logs_from(channel):
-            if message.mentions and message.mentions[0] == user:
-                await self.bot.delete_message(message)
+        _, protocol = await connect
+        HostListObserver.append(protocol)
