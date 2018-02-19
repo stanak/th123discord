@@ -7,9 +7,11 @@
 [Ll]ib64
 [Ll]ocal
 [Ss]cripts
+share
 pyvenv.cfg
 .venv
 pip-selfcheck.json
 .*
 __pycache__/
+!.gitmessage
 !.gitignore
