@@ -128,7 +128,7 @@ class HostListObserver:
                 else:
                     await host.bot.edit_message(
                             host.message,
-                            host.get_host_message(cls.WAIT))
+                            host.get_host_message(cls.WAIT * 3))
 
     @classmethod
     async def close(cls, host, close_message):
