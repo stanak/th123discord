@@ -34,9 +34,10 @@ def get_echo_packet(is_sokuroll=None):
 
 
 class EchoClientProtocol:
-    def __init__(self, bot, host_message, message, echo_packet):
+    def __init__(self, bot, user, host_message, message, echo_packet):
         self.bot = bot
         self.loop = bot.loop
+        self.user = user
         self.host_message = host_message
         self.message = message
         self.echo_packet = echo_packet
@@ -189,6 +190,7 @@ class Hosting(CogMixin):
         connect = self.bot.loop.create_datagram_endpoint(
             lambda: EchoClientProtocol(
                 self.bot,
+                user,
                 host_message,
                 message,
                 get_echo_packet(is_sokuroll=False)),
