@@ -123,13 +123,14 @@ class HostListObserver:
             base_message.format(0))
 
         while True:
-            for host in cls._host_list:
+            host_list = cls._host_list[:]
+            for host in host_list:
                 host.try_echo()
 
             await asyncio.sleep(cls.WAIT.seconds)
 
             host_messages = list()
-            for host in cls._host_list:
+            for host in host_list:
                 elapsed_time = host.elapsed_time_from_ack()
                 if elapsed_time >= cls.LIFETIME:
                     close_message = (
