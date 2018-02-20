@@ -115,13 +115,19 @@ class HostListObserver:
     _host_list = []
 
     @classmethod
-    async def update_hostlist(cls):
+    async def update_hostlist(cls, bot):
+        base_message = "**{}人が対戦相手を募集しています:**\n"
+        message = await bot.send_message(
+            get_hostlist_ch(bot),
+            base_message.format(0))
+
         while True:
             for host in cls._host_list:
                 host.try_echo()
 
             await asyncio.sleep(cls.WAIT.seconds)
 
+            host_messages = list()
             for host in cls._host_list:
                 elapsed_time = host.elapsed_time_from_ack()
                 if elapsed_time >= cls.LIFETIME:
@@ -129,10 +135,15 @@ class HostListObserver:
                         "一定時間ホストが検知されなかったため、"
                         "募集を終了します。")
                     await cls.close(host, close_message)
-                else:
-                    await host.bot.edit_message(
-                            host.message,
-                            host.get_host_message(cls.WAIT * 3))
+                    continue
+
+                host_messages.append(host.get_host_message(cls.WAIT * 3))
+                await bot.edit_message(
+                        host.message,
+                        host_messages[-1])
+
+            post_message = base_message.format(len(host_messages))
+            await bot.edit_message(message, post_message)
 
     @classmethod
     async def close(cls, host, close_message):
@@ -153,8 +164,7 @@ class HostListObserver:
 class Hosting(CogMixin):
     def __init__(self, bot):
         self.bot = bot
-        self.observer = discord.compat.create_task(
-            HostListObserver.update_hostlist())
+        self.observer = None
 
     @commands.command(pass_context=True)
     async def host(self, ctx, ip_port: str, *comment):
@@ -163,6 +173,10 @@ class Hosting(CogMixin):
         約20秒間ホストが検知されなければ、自動で投稿を取り下げます。
         募集例「!host 123.456.xxx.xxx:10800 霊夢　レート1500　どなたでもどうぞ！」
         """
+        if self.observer is None:
+            self.observer = discord.compat.create_task(
+                HostListObserver.update_hostlist(self.bot))
+
         user = ctx.message.author
         ip, port = unicodedata.normalize('NFKC', ip_port).split(":")
         try:
