@@ -35,9 +35,7 @@ def get_hostlist_ch(bot):
 
 
 class EchoClientProtocol:
-    def __init__(self, bot, user, host_message, message, echo_packet):
-        self.bot = bot
-        self.loop = bot.loop
+    def __init__(self, user, host_message, message, echo_packet):
         self.user = user
         self.host_message = host_message
         self.message = message
@@ -112,13 +110,17 @@ class EchoClientProtocol:
 class HostListObserver:
     WAIT = timedelta(seconds=2)
     LIFETIME = timedelta(seconds=WAIT.seconds * 10)
+
+    _bot = None
     _host_list = []
 
     @classmethod
     async def update_hostlist(cls, bot):
+        cls._bot = bot
+
         base_message = "**{}人が対戦相手を募集しています:**\n"
-        message = await bot.send_message(
-            get_hostlist_ch(bot),
+        message = await cls._bot.send_message(
+            get_hostlist_ch(cls._bot),
             base_message.format(0))
 
         while True:
@@ -138,17 +140,17 @@ class HostListObserver:
                     continue
 
                 host_messages.append(host.get_host_message(cls.WAIT * 3))
-                await bot.edit_message(
+                await cls._bot.edit_message(
                         host.message,
                         host_messages[-1])
 
             post_message = base_message.format(len(host_messages))
-            await bot.edit_message(message, post_message)
+            await cls._bot.edit_message(message, post_message)
 
     @classmethod
     async def close(cls, host, close_message):
-        await host.bot.send_message(host.user, close_message)
-        await host.bot.delete_message(host.message)
+        await cls._bot.send_message(host.user, close_message)
+        await cls._bot.delete_message(host.message)
         cls._remove(host)
         host.transport.close()
 
@@ -203,7 +205,6 @@ class Hosting(CogMixin):
 
         connect = self.bot.loop.create_datagram_endpoint(
             lambda: EchoClientProtocol(
-                self.bot,
                 user,
                 host_message,
                 message,
@@ -245,7 +246,6 @@ class Hosting(CogMixin):
 
         connect = self.bot.loop.create_datagram_endpoint(
             lambda: EchoClientProtocol(
-                self.bot,
                 user,
                 ":regional_indicator_r:" + host_message,
                 message,
