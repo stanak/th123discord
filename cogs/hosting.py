@@ -35,10 +35,9 @@ def get_hostlist_ch(bot):
 
 
 class EchoClientProtocol:
-    def __init__(self, user, host_message, message, echo_packet):
+    def __init__(self, user, host_message, echo_packet):
         self.user = user
         self.host_message = host_message
-        self.message = message
         self.echo_packet = echo_packet
         self.transport = None
         self.start_datetime = datetime.now()
@@ -140,17 +139,15 @@ class HostListObserver:
                     continue
 
                 host_messages.append(host.get_host_message(cls.WAIT * 3))
-                await cls._bot.edit_message(
-                        host.message,
-                        host_messages[-1])
 
-            post_message = base_message.format(len(host_messages))
+            post_message = (
+                base_message.format(len(host_messages)) +
+                "\n".join(host_messages))
             await cls._bot.edit_message(message, post_message)
 
     @classmethod
     async def close(cls, host, close_message):
         await cls._bot.send_message(host.user, close_message)
-        await cls._bot.delete_message(host.message)
         cls._remove(host)
         host.transport.close()
 
@@ -199,15 +196,10 @@ class Hosting(CogMixin):
                 return
 
         await self.bot.whisper("ホストの検知を開始します。")
-        message = await self.bot.send_message(
-            get_hostlist_ch(self.bot),
-            host_message)
-
         connect = self.bot.loop.create_datagram_endpoint(
             lambda: EchoClientProtocol(
                 user,
                 host_message,
-                message,
                 get_echo_packet(is_sokuroll=False)),
             remote_addr=(ip, int(port)))
         _, protocol = await connect
@@ -240,15 +232,10 @@ class Hosting(CogMixin):
                 return
 
         await self.bot.whisper("ホストの検知を開始します。")
-        message = await self.bot.send_message(
-            get_hostlist_ch(self.bot),
-            host_message)
-
         connect = self.bot.loop.create_datagram_endpoint(
             lambda: EchoClientProtocol(
                 user,
                 ":regional_indicator_r:" + host_message,
-                message,
                 get_echo_packet(is_sokuroll=True)),
             remote_addr=(ip, int(port)))
         _, protocol = await connect
