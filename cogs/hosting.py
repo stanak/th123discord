@@ -169,7 +169,7 @@ class Hosting(CogMixin):
             int(port)
         except ValueError:
             raise commands.BadArgument
-        ip_port_comments = f"{ip}:{port} |  {' '.join(comment)}"
+        ip_port_comments = f"{ip}:{port} | {' '.join(comment)}"
         host_message = f"{user.mention}, {ip_port_comments}"
 
         not_private = not ctx.message.channel.is_private
@@ -211,7 +211,7 @@ class Hosting(CogMixin):
             int(port)
         except ValueError:
             raise commands.BadArgument
-        ip_port_comments = f"{ip}:{port} |  {' '.join(comment)}"
+        ip_port_comments = f"{ip}:{port} | {' '.join(comment)}"
         host_message = f"{user.mention}, {ip_port_comments}"
 
         not_private = not ctx.message.channel.is_private
