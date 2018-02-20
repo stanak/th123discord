@@ -190,11 +190,6 @@ class Hosting(CogMixin):
             await self.bot.delete_message(ctx.message)
             raise errors.OnlyPrivateMessage
 
-        # 自分の投稿が残っていたら何もせず終了
-        async for message in self.bot.logs_from(self.get_hostlist_ch()):
-            if message.mentions and message.mentions[0] == user:
-                return
-
         await self.bot.whisper("ホストの検知を開始します。")
         connect = self.bot.loop.create_datagram_endpoint(
             lambda: EchoClientProtocol(
@@ -225,11 +220,6 @@ class Hosting(CogMixin):
         if not_private:
             await self.bot.delete_message(ctx.message)
             raise errors.OnlyPrivateMessage
-
-        # 自分の投稿が残っていたら何もせず終了
-        async for message in self.bot.logs_from(self.get_hostlist_ch()):
-            if message.mentions and message.mentions[0] == user:
-                return
 
         await self.bot.whisper("ホストの検知を開始します。")
         connect = self.bot.loop.create_datagram_endpoint(
