@@ -30,6 +30,10 @@ def get_echo_packet(is_sokuroll=None):
     return PACKET_TO_SOKUROLL if is_sokuroll else PACKET_TO_HOST
 
 
+def get_hostlist_ch(bot):
+    return discord.utils.get(bot.get_all_channels(), name="hostlist")
+
+
 class EchoClientProtocol:
     def __init__(self, bot, user, host_message, message, echo_packet):
         self.bot = bot
@@ -152,9 +156,6 @@ class Hosting(CogMixin):
         self.observer = discord.compat.create_task(
             HostListObserver.update_hostlist())
 
-    def get_hostlist_ch(self):
-        return discord.utils.get(self.bot.get_all_channels(), name="hostlist")
-
     @commands.command(pass_context=True)
     async def host(self, ctx, ip_port: str, *comment):
         """
@@ -183,7 +184,7 @@ class Hosting(CogMixin):
 
         await self.bot.whisper("ホストの検知を開始します。")
         message = await self.bot.send_message(
-            self.get_hostlist_ch(),
+            get_hostlist_ch(self.bot),
             host_message)
 
         connect = self.bot.loop.create_datagram_endpoint(
@@ -225,7 +226,7 @@ class Hosting(CogMixin):
 
         await self.bot.whisper("ホストの検知を開始します。")
         message = await self.bot.send_message(
-            self.get_hostlist_ch(),
+            get_hostlist_ch(self.bot),
             host_message)
 
         connect = self.bot.loop.create_datagram_endpoint(
