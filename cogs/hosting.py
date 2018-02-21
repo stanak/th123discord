@@ -34,43 +34,11 @@ def get_hostlist_ch(bot):
     return discord.utils.get(bot.get_all_channels(), name="hostlist")
 
 
-class EchoClientProtocol:
-    def __init__(self, user, host_message, echo_packet):
-        self.user = user
-        self.host_message = host_message
-        self.echo_packet = echo_packet
-        self.transport = None
-        self.start_datetime = datetime.now()
+class HostStatus:
+    def __init__(self):
         self.hosting = False
         self.matching = False
         self.watchable = False
-
-        self.ack_datetime = datetime.now()
-
-    def connection_made(self, transport):
-        self.transport = transport
-
-    def datagram_received(self, data, addr):
-        self.update_host_status(data)
-        if not self.hosting and not self.matching and not self.watchable:
-            logger.error(data)
-
-        if not self.hosting:
-            return
-
-        self.ack_datetime = datetime.now()
-
-    def error_received(self, exc):
-        pass
-
-    def connection_lost(self, exc):
-        pass
-
-    def try_echo(self):
-        _ = self.transport.sendto(self.echo_packet)
-
-    def elapsed_time_from_ack(self):
-        return datetime.now() - self.ack_datetime
 
     def update_host_status(self, packet):
         if packet.startswith(b'\x07\x01'):
@@ -90,8 +58,51 @@ class EchoClientProtocol:
             self.matching = False
             self.watchable = False
 
+    def is_unknown(self):
+        return (
+            not self.hosting and
+            not self.matching and
+            not self.watchable)
+
+
+class EchoClientProtocol:
+    def __init__(self, user, host_message, echo_packet):
+        self.user = user
+        self.host_message = host_message
+        self.echo_packet = echo_packet
+        self.transport = None
+        self.start_datetime = datetime.now()
+        self.host_status = HostStatus()
+
+        self.ack_datetime = datetime.now()
+
+    def connection_made(self, transport):
+        self.transport = transport
+
+    def datagram_received(self, data, addr):
+        self.host_status.update_host_status(data)
+        if self.host_status.is_unknown():
+            logger.error(data)
+
+        if not self.host_status.hosting:
+            return
+
+        self.ack_datetime = datetime.now()
+
+    def error_received(self, exc):
+        pass
+
+    def connection_lost(self, exc):
+        pass
+
+    def try_echo(self):
+        self.transport.sendto(self.echo_packet)
+
+    def elapsed_time_from_ack(self):
+        return datetime.now() - self.ack_datetime
+
     def get_host_message(self, ack_lost_threshold_time):
-        if not self.hosting:
+        if not self.host_status.hosting:
             return f":x: {self.host_message}"
 
         if self.elapsed_time_from_ack() >= ack_lost_threshold_time:
@@ -100,8 +111,8 @@ class EchoClientProtocol:
         elapsed_seconds = (datetime.now() - self.start_datetime).seconds
         elapsed_time = f"{int(elapsed_seconds / 60)}m{elapsed_seconds % 60}s"
         return " ".join([
-            ":crossed_swords:" if self.matching else ":o:",
-            ":eye:" if self.watchable else ":see_no_evil:",
+            ":crossed_swords:" if self.host_status.matching else ":o:",
+            ":eye:" if self.host_status.watchable else ":see_no_evil:",
             elapsed_time,
             self.host_message])
 
