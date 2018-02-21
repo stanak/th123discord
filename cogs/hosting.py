@@ -208,6 +208,10 @@ class Hosting(CogMixin):
         約20秒間ホストが検知されなければ、自動で投稿を取り下げます。
         募集例「!host 123.456.xxx.xxx:10800 霊夢　レート1500　どなたでもどうぞ！」
         """
+        if self.observer is None:
+            self.observer = discord.compat.create_task(
+                HostListObserver.update_hostlist(self.bot))
+
         user = ctx.message.author
         ip, port = unicodedata.normalize('NFKC', ip_port).split(":")
         try:
