@@ -101,11 +101,8 @@ class EchoClientProtocol:
     def elapsed_time_from_ack(self):
         return datetime.now() - self.ack_datetime
 
-    def get_host_message(self, ack_lost_threshold_time):
-        if not self.host_status.hosting:
-            return f":x: {self.host_message}"
-
-        if self.elapsed_time_from_ack() >= ack_lost_threshold_time:
+    def get_host_message(self, ack_loses):
+        if ack_loses or not self.host_status.hosting:
             return f":x: {self.host_message}"
 
         elapsed_seconds = (datetime.now() - self.start_datetime).seconds
@@ -150,7 +147,8 @@ class HostListObserver:
                     await cls.close(host, close_message)
                     continue
 
-                host_messages.append(host.get_host_message(cls.WAIT * 3))
+                ack_loses = elapsed_time >= (cls.WAIT * 3)
+                host_messages.append(host.get_host_message(ack_loses))
 
             post_message = (
                 base_message.format(len(host_messages)) +
