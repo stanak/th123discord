@@ -30,13 +30,14 @@ def get_echo_packet(is_sokuroll=None):
     return PACKET_TO_SOKUROLL if is_sokuroll else PACKET_TO_HOST
 
 
+def get_hostlist_ch(bot):
+    return discord.utils.get(bot.get_all_channels(), name="hostlist")
+
+
 class EchoClientProtocol:
-    def __init__(self, bot, user, host_message, message, echo_packet):
-        self.bot = bot
-        self.loop = bot.loop
+    def __init__(self, user, host_message, echo_packet):
         self.user = user
         self.host_message = host_message
-        self.message = message
         self.echo_packet = echo_packet
         self.transport = None
         self.start_datetime = datetime.now()
@@ -108,32 +109,46 @@ class EchoClientProtocol:
 class HostListObserver:
     WAIT = timedelta(seconds=2)
     LIFETIME = timedelta(seconds=WAIT.seconds * 10)
+
+    _bot = None
     _host_list = []
 
     @classmethod
-    async def update_hostlist(cls):
+    async def update_hostlist(cls, bot):
+        cls._bot = bot
+
+        base_message = "**{}人が対戦相手を募集しています:**\n"
+        message = await cls._bot.send_message(
+            get_hostlist_ch(cls._bot),
+            base_message.format(0))
+
         while True:
-            for host in cls._host_list:
+            host_list = cls._host_list[:]
+            for host in host_list:
                 host.try_echo()
 
             await asyncio.sleep(cls.WAIT.seconds)
 
-            for host in cls._host_list:
+            host_messages = list()
+            for host in host_list:
                 elapsed_time = host.elapsed_time_from_ack()
                 if elapsed_time >= cls.LIFETIME:
                     close_message = (
                         "一定時間ホストが検知されなかったため、"
                         "募集を終了します。")
                     await cls.close(host, close_message)
-                else:
-                    await host.bot.edit_message(
-                            host.message,
-                            host.get_host_message(cls.WAIT * 3))
+                    continue
+
+                host_messages.append(host.get_host_message(cls.WAIT * 3))
+
+            post_message = (
+                base_message.format(len(host_messages)) +
+                "\n".join(host_messages))
+            await cls._bot.edit_message(message, post_message)
 
     @classmethod
     async def close(cls, host, close_message):
-        await host.bot.send_message(host.user, close_message)
-        await host.bot.delete_message(host.message)
+        await cls._bot.send_message(host.user, close_message)
         cls._remove(host)
         host.transport.close()
 
@@ -149,11 +164,7 @@ class HostListObserver:
 class Hosting(CogMixin):
     def __init__(self, bot):
         self.bot = bot
-        self.observer = discord.compat.create_task(
-            HostListObserver.update_hostlist())
-
-    def get_hostlist_ch(self):
-        return discord.utils.get(self.bot.get_all_channels(), name="hostlist")
+        self.observer = None
 
     @commands.command(pass_context=True)
     async def host(self, ctx, ip_port: str, *comment):
@@ -162,13 +173,17 @@ class Hosting(CogMixin):
         約20秒間ホストが検知されなければ、自動で投稿を取り下げます。
         募集例「!host 123.456.xxx.xxx:10800 霊夢　レート1500　どなたでもどうぞ！」
         """
+        if self.observer is None:
+            self.observer = discord.compat.create_task(
+                HostListObserver.update_hostlist(self.bot))
+
         user = ctx.message.author
         ip, port = unicodedata.normalize('NFKC', ip_port).split(":")
         try:
             int(port)
         except ValueError:
             raise commands.BadArgument
-        ip_port_comments = f"{ip}:{port} |  {' '.join(comment)}"
+        ip_port_comments = f"{ip}:{port} | {' '.join(comment)}"
         host_message = f"{user.mention}, {ip_port_comments}"
 
         not_private = not ctx.message.channel.is_private
@@ -176,22 +191,11 @@ class Hosting(CogMixin):
             await self.bot.delete_message(ctx.message)
             raise errors.OnlyPrivateMessage
 
-        # 自分の投稿が残っていたら何もせず終了
-        async for message in self.bot.logs_from(self.get_hostlist_ch()):
-            if message.mentions and message.mentions[0] == user:
-                return
-
         await self.bot.whisper("ホストの検知を開始します。")
-        message = await self.bot.send_message(
-            self.get_hostlist_ch(),
-            host_message)
-
         connect = self.bot.loop.create_datagram_endpoint(
             lambda: EchoClientProtocol(
-                self.bot,
                 user,
                 host_message,
-                message,
                 get_echo_packet(is_sokuroll=False)),
             remote_addr=(ip, int(port)))
         _, protocol = await connect
@@ -210,7 +214,7 @@ class Hosting(CogMixin):
             int(port)
         except ValueError:
             raise commands.BadArgument
-        ip_port_comments = f"{ip}:{port} |  {' '.join(comment)}"
+        ip_port_comments = f"{ip}:{port} | {' '.join(comment)}"
         host_message = f"{user.mention}, {ip_port_comments}"
 
         not_private = not ctx.message.channel.is_private
@@ -218,22 +222,11 @@ class Hosting(CogMixin):
             await self.bot.delete_message(ctx.message)
             raise errors.OnlyPrivateMessage
 
-        # 自分の投稿が残っていたら何もせず終了
-        async for message in self.bot.logs_from(self.get_hostlist_ch()):
-            if message.mentions and message.mentions[0] == user:
-                return
-
         await self.bot.whisper("ホストの検知を開始します。")
-        message = await self.bot.send_message(
-            self.get_hostlist_ch(),
-            host_message)
-
         connect = self.bot.loop.create_datagram_endpoint(
             lambda: EchoClientProtocol(
-                self.bot,
                 user,
                 ":regional_indicator_r:" + host_message,
-                message,
                 get_echo_packet(is_sokuroll=True)),
             remote_addr=(ip, int(port)))
         _, protocol = await connect
