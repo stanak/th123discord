@@ -66,14 +66,10 @@ class HostStatus:
 
 
 class EchoClientProtocol:
-    def __init__(self, user, host_message, echo_packet):
-        self.user = user
-        self.host_message = host_message
+    def __init__(self, echo_packet):
         self.echo_packet = echo_packet
         self.transport = None
-        self.start_datetime = datetime.now()
         self.host_status = HostStatus()
-
         self.ack_datetime = datetime.now()
 
     def connection_made(self, transport):
@@ -101,15 +97,25 @@ class EchoClientProtocol:
     def elapsed_time_from_ack(self):
         return datetime.now() - self.ack_datetime
 
+
+class HostPostAsset:
+    def __init__(self, user, host_message, protocol):
+        self.user = user
+        self.host_message = host_message
+        self.protocol = protocol
+
+        self.start_datetime = datetime.now()
+
     def get_host_message(self, ack_loses):
-        if ack_loses or not self.host_status.hosting:
+        host_status = self.protocol.host_status
+        if ack_loses or not host_status.hosting:
             return f":x: {self.host_message}"
 
         elapsed_seconds = (datetime.now() - self.start_datetime).seconds
         elapsed_time = f"{int(elapsed_seconds / 60)}m{elapsed_seconds % 60}s"
         return " ".join([
-            ":crossed_swords:" if self.host_status.matching else ":o:",
-            ":eye:" if self.host_status.watchable else ":see_no_evil:",
+            ":crossed_swords:" if host_status.matching else ":o:",
+            ":eye:" if host_status.watchable else ":see_no_evil:",
             elapsed_time,
             self.host_message])
 
@@ -133,13 +139,13 @@ class HostListObserver:
         while True:
             host_list = cls._host_list[:]
             for host in host_list:
-                host.try_echo()
+                host.protocol.try_echo()
 
             await asyncio.sleep(cls.WAIT.seconds)
 
             host_messages = list()
             for host in host_list:
-                elapsed_time = host.elapsed_time_from_ack()
+                elapsed_time = host.protocol.elapsed_time_from_ack()
                 if elapsed_time >= cls.LIFETIME:
                     close_message = (
                         "一定時間ホストが検知されなかったため、"
@@ -159,7 +165,7 @@ class HostListObserver:
     async def close(cls, host, close_message):
         await cls._bot.send_message(host.user, close_message)
         cls._remove(host)
-        host.transport.close()
+        host.protocol.transport.close()
 
     @classmethod
     def append(cls, host):
@@ -202,13 +208,11 @@ class Hosting(CogMixin):
 
         await self.bot.whisper("ホストの検知を開始します。")
         connect = self.bot.loop.create_datagram_endpoint(
-            lambda: EchoClientProtocol(
-                user,
-                host_message,
-                get_echo_packet(is_sokuroll=False)),
+            lambda: EchoClientProtocol(get_echo_packet(is_sokuroll=False)),
             remote_addr=(ip, int(port)))
         _, protocol = await connect
-        HostListObserver.append(protocol)
+        host = HostPostAsset(user, host_message, protocol)
+        HostListObserver.append(host)
 
     @commands.command(pass_context=True)
     async def rhost(self, ctx, ip_port: str, *comment):
@@ -228,7 +232,8 @@ class Hosting(CogMixin):
         except ValueError:
             raise commands.BadArgument
         ip_port_comments = f"{ip}:{port} | {' '.join(comment)}"
-        host_message = f"{user.mention}, {ip_port_comments}"
+        sokuroll_icon = ":regional_indicator_r:"
+        host_message = f"{sokuroll_icon} {user.mention}, {ip_port_comments}"
 
         not_private = not ctx.message.channel.is_private
         if not_private:
@@ -237,10 +242,8 @@ class Hosting(CogMixin):
 
         await self.bot.whisper("ホストの検知を開始します。")
         connect = self.bot.loop.create_datagram_endpoint(
-            lambda: EchoClientProtocol(
-                user,
-                ":regional_indicator_r:" + host_message,
-                get_echo_packet(is_sokuroll=True)),
+            lambda: EchoClientProtocol(get_echo_packet(is_sokuroll=True)),
             remote_addr=(ip, int(port)))
         _, protocol = await connect
-        HostListObserver.append(protocol)
+        host = HostPostAsset(user, host_message, protocol)
+        HostListObserver.append(host)
