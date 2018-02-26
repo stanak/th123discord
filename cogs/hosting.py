@@ -123,6 +123,9 @@ class HostPostAsset:
             elapsed_time,
             self.host_message])
 
+    def get_close_message(self):
+        return "一定時間ホストが検知されなかったため、募集を終了します。"
+
     def should_close(self):
         return self.protocol.is_expired()
 
@@ -153,10 +156,7 @@ class HostListObserver:
             for host in host_list:
                 elapsed_time = host.protocol.elapsed_time_from_ack()
                 if host.should_close():
-                    close_message = (
-                        "一定時間ホストが検知されなかったため、"
-                        "募集を終了します。")
-                    await cls.close(host, close_message)
+                    await cls.close(host)
                     continue
 
                 ack_loses = elapsed_time >= (cls.WAIT * 3)
@@ -168,7 +168,8 @@ class HostListObserver:
             await cls._bot.edit_message(message, post_message)
 
     @classmethod
-    async def close(cls, host, close_message):
+    async def close(cls, host):
+        close_message = host.get_close_message()
         await cls._bot.send_message(host.user, close_message)
         cls._remove(host)
         host.protocol.transport.close()
