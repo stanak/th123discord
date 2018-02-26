@@ -66,8 +66,9 @@ class HostStatus:
 
 
 class EchoClientProtocol:
-    def __init__(self, echo_packet):
+    def __init__(self, echo_packet, lifetime=timedelta(seconds=20)):
         self.echo_packet = echo_packet
+        self.lifetime = lifetime
         self.transport = None
         self.host_status = HostStatus()
         self.ack_datetime = datetime.now()
@@ -97,6 +98,9 @@ class EchoClientProtocol:
     def elapsed_time_from_ack(self):
         return datetime.now() - self.ack_datetime
 
+    def is_expired(self):
+        return self.elapsed_time_from_ack() >= self.lifetime
+
 
 class HostPostAsset:
     def __init__(self, user, host_message, protocol):
@@ -119,10 +123,12 @@ class HostPostAsset:
             elapsed_time,
             self.host_message])
 
+    def should_close(self):
+        return self.protocol.is_expired()
+
 
 class HostListObserver:
     WAIT = timedelta(seconds=2)
-    LIFETIME = timedelta(seconds=WAIT.seconds * 10)
 
     _bot = None
     _host_list = []
@@ -146,7 +152,7 @@ class HostListObserver:
             host_messages = list()
             for host in host_list:
                 elapsed_time = host.protocol.elapsed_time_from_ack()
-                if elapsed_time >= cls.LIFETIME:
+                if host.should_close():
                     close_message = (
                         "一定時間ホストが検知されなかったため、"
                         "募集を終了します。")
