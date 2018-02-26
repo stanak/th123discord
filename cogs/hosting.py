@@ -207,10 +207,7 @@ class Hosting(CogMixin):
         ip_port_comments = f"{ip}:{port} | {' '.join(comment)}"
         host_message = f"{user.mention}, {ip_port_comments}"
 
-        not_private = not ctx.message.channel.is_private
-        if not_private:
-            await self.bot.delete_message(ctx.message)
-            raise errors.OnlyPrivateMessage
+        await self._validate_direct_message(ctx)
 
         await self.bot.whisper("ホストの検知を開始します。")
         connect = self.bot.loop.create_datagram_endpoint(
@@ -241,10 +238,7 @@ class Hosting(CogMixin):
         sokuroll_icon = ":regional_indicator_r:"
         host_message = f"{sokuroll_icon} {user.mention}, {ip_port_comments}"
 
-        not_private = not ctx.message.channel.is_private
-        if not_private:
-            await self.bot.delete_message(ctx.message)
-            raise errors.OnlyPrivateMessage
+        await self._validate_direct_message(ctx)
 
         await self.bot.whisper("ホストの検知を開始します。")
         connect = self.bot.loop.create_datagram_endpoint(
@@ -253,3 +247,9 @@ class Hosting(CogMixin):
         _, protocol = await connect
         host = HostPostAsset(user, host_message, protocol)
         HostListObserver.append(host)
+
+    async def _validate_direct_message(self, ctx):
+        not_private = not ctx.message.channel.is_private
+        if not_private:
+            await self.bot.delete_message(ctx.message)
+            raise errors.OnlyPrivateMessage
