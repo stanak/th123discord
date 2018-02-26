@@ -107,6 +107,7 @@ class HostPostAsset:
         self.user = user
         self.host_message = host_message
         self.protocol = protocol
+        self.terminates = False
 
         self.start_datetime = datetime.now()
 
@@ -124,10 +125,17 @@ class HostPostAsset:
             self.host_message])
 
     def get_close_message(self):
+        if self.terminates:
+            return str()
+
+
         return "一定時間ホストが検知されなかったため、募集を終了します。"
 
     def should_close(self):
-        return self.protocol.is_expired()
+        return self.terminates or self.protocol.is_expired()
+
+    def terminate(self):
+        self.terminates = True
 
 
 class HostListObserver:
@@ -170,13 +178,21 @@ class HostListObserver:
     @classmethod
     async def close(cls, host):
         close_message = host.get_close_message()
-        await cls._bot.send_message(host.user, close_message)
+        if close_message:
+            await cls._bot.send_message(host.user, close_message)
+
         cls._remove(host)
         host.protocol.transport.close()
 
     @classmethod
     def append(cls, host):
         cls._host_list.append(host)
+
+    @classmethod
+    def terminate(cls, *, user):
+        target_posts = [host for host in cls._host_list if host.user == user]
+        for post in target_posts:
+            post.terminate()
 
     @classmethod
     def _remove(cls, host):
@@ -248,6 +264,17 @@ class Hosting(CogMixin):
         _, protocol = await connect
         host = HostPostAsset(user, host_message, protocol)
         HostListObserver.append(host)
+
+    @commands.command(pass_context=True)
+    async def close(self, ctx):
+        """
+        #hostlistへの投稿を取り下げます。
+        """
+        await self._validate_direct_message(ctx)
+
+        await self.bot.whisper("対戦相手の募集を取り下げます。")
+        user = ctx.message.author
+        HostListObserver.terminate(user=user)
 
     async def _validate_direct_message(self, ctx):
         not_private = not ctx.message.channel.is_private
