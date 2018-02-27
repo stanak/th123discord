@@ -8,8 +8,8 @@ import unicodedata
 import asyncio
 
 import binascii
-import socket
 from datetime import (datetime, timedelta)
+from ipaddress import IPv4Address as ipv4
 import logging
 
 logger = logging.getLogger(__name__)
@@ -186,19 +186,22 @@ class Hosting(CogMixin):
         """
         #holtlistに対戦募集を投稿します。
         約20秒間ホストが検知されなければ、自動で投稿を取り下げます。
-        募集例「!host 123.456.xxx.xxx:10800 霊夢　レート1500　どなたでもどうぞ！」
+        募集例「!host 198.51.100.123:10800 霊夢　レート1500　どなたでもどうぞ！」
         """
         if self.observer is None:
             self.observer = discord.compat.create_task(
                 HostListObserver.update_hostlist(self.bot))
 
         user = ctx.message.author
-        ip, port = unicodedata.normalize('NFKC', ip_port).split(":")
         try:
-            int(port)
+            ip, port = unicodedata.normalize('NFKC', ip_port).split(":", 1)
+            ip = ipv4(ip)
+            port = int(port)
+            if port > 65535:
+                raise ValueError
         except ValueError:
             raise commands.BadArgument
-        ip_port_comments = f"{ip}:{port} | {' '.join(comment)}"
+        ip_port_comments = f"{ip.exploded}:{port} | {' '.join(comment)}"
         host_message = f"{user.mention}, {ip_port_comments}"
 
         not_private = not ctx.message.channel.is_private
@@ -209,7 +212,7 @@ class Hosting(CogMixin):
         await self.bot.whisper("ホストの検知を開始します。")
         connect = self.bot.loop.create_datagram_endpoint(
             lambda: EchoClientProtocol(get_echo_packet(is_sokuroll=False)),
-            remote_addr=(ip, int(port)))
+            remote_addr=(ip.exploded, port))
         _, protocol = await connect
         host = HostPostAsset(user, host_message, protocol)
         HostListObserver.append(host)
@@ -219,19 +222,22 @@ class Hosting(CogMixin):
         """
         #holtlistにsokuroll有りの対戦募集を投稿します。
         約20秒間ホストが検知されなければ、自動で投稿を取り下げます。
-        募集例「!host 123.456.xxx.xxx:10800 霊夢　レート1500　どなたでもどうぞ！」
+        募集例「!rhost 198.51.100.123:10800 霊夢　レート1500　どなたでもどうぞ！」
         """
         if self.observer is None:
             self.observer = discord.compat.create_task(
                 HostListObserver.update_hostlist(self.bot))
 
         user = ctx.message.author
-        ip, port = unicodedata.normalize('NFKC', ip_port).split(":")
         try:
-            int(port)
+            ip, port = unicodedata.normalize('NFKC', ip_port).split(":", 1)
+            ip = ipv4(ip)
+            port = int(port)
+            if port > 65535:
+                raise ValueError
         except ValueError:
             raise commands.BadArgument
-        ip_port_comments = f"{ip}:{port} | {' '.join(comment)}"
+        ip_port_comments = f"{ip.exploded}:{port} | {' '.join(comment)}"
         sokuroll_icon = ":regional_indicator_r:"
         host_message = f"{sokuroll_icon} {user.mention}, {ip_port_comments}"
 
@@ -243,7 +249,7 @@ class Hosting(CogMixin):
         await self.bot.whisper("ホストの検知を開始します。")
         connect = self.bot.loop.create_datagram_endpoint(
             lambda: EchoClientProtocol(get_echo_packet(is_sokuroll=True)),
-            remote_addr=(ip, int(port)))
+            remote_addr=(ip.exploded, port))
         _, protocol = await connect
         host = HostPostAsset(user, host_message, protocol)
         HostListObserver.append(host)
