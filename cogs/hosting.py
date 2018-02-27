@@ -1,5 +1,5 @@
 from .cogmixin import CogMixin
-from .common import errors
+from .common import errors, checks
 
 from discord.ext import commands
 import discord
@@ -34,43 +34,11 @@ def get_hostlist_ch(bot):
     return discord.utils.get(bot.get_all_channels(), name="hostlist")
 
 
-class EchoClientProtocol:
-    def __init__(self, user, host_message, echo_packet):
-        self.user = user
-        self.host_message = host_message
-        self.echo_packet = echo_packet
-        self.transport = None
-        self.start_datetime = datetime.now()
+class HostStatus:
+    def __init__(self):
         self.hosting = False
         self.matching = False
         self.watchable = False
-
-        self.ack_datetime = datetime.now()
-
-    def connection_made(self, transport):
-        self.transport = transport
-
-    def datagram_received(self, data, addr):
-        self.update_host_status(data)
-        if not self.hosting and not self.matching and not self.watchable:
-            logger.error(data)
-
-        if not self.hosting:
-            return
-
-        self.ack_datetime = datetime.now()
-
-    def error_received(self, exc):
-        pass
-
-    def connection_lost(self, exc):
-        pass
-
-    def try_echo(self):
-        _ = self.transport.sendto(self.echo_packet)
-
-    def elapsed_time_from_ack(self):
-        return datetime.now() - self.ack_datetime
 
     def update_host_status(self, packet):
         if packet.startswith(b'\x07\x01'):
@@ -90,25 +58,88 @@ class EchoClientProtocol:
             self.matching = False
             self.watchable = False
 
-    def get_host_message(self, ack_lost_threshold_time):
-        if not self.hosting:
-            return f":x: {self.host_message}"
+    def is_unknown(self):
+        return (
+            not self.hosting and
+            not self.matching and
+            not self.watchable)
 
-        if self.elapsed_time_from_ack() >= ack_lost_threshold_time:
+
+class EchoClientProtocol:
+    def __init__(self, echo_packet, lifetime=timedelta(seconds=20)):
+        self.echo_packet = echo_packet
+        self.lifetime = lifetime
+        self.transport = None
+        self.host_status = HostStatus()
+        self.ack_datetime = datetime.now()
+
+    def connection_made(self, transport):
+        self.transport = transport
+
+    def datagram_received(self, data, addr):
+        self.host_status.update_host_status(data)
+        if self.host_status.is_unknown():
+            logger.error(data)
+
+        if not self.host_status.hosting:
+            return
+
+        self.ack_datetime = datetime.now()
+
+    def error_received(self, exc):
+        pass
+
+    def connection_lost(self, exc):
+        pass
+
+    def try_echo(self):
+        self.transport.sendto(self.echo_packet)
+
+    def elapsed_time_from_ack(self):
+        return datetime.now() - self.ack_datetime
+
+    def is_expired(self):
+        return self.elapsed_time_from_ack() >= self.lifetime
+
+
+class HostPostAsset:
+    def __init__(self, user, host_message, protocol):
+        self.user = user
+        self.host_message = host_message
+        self.protocol = protocol
+        self.terminates = False
+
+        self.start_datetime = datetime.now()
+
+    def get_host_message(self, ack_loses):
+        host_status = self.protocol.host_status
+        if ack_loses or not host_status.hosting:
             return f":x: {self.host_message}"
 
         elapsed_seconds = (datetime.now() - self.start_datetime).seconds
         elapsed_time = f"{int(elapsed_seconds / 60)}m{elapsed_seconds % 60}s"
         return " ".join([
-            ":crossed_swords:" if self.matching else ":o:",
-            ":eye:" if self.watchable else ":see_no_evil:",
+            ":crossed_swords:" if host_status.matching else ":o:",
+            ":eye:" if host_status.watchable else ":see_no_evil:",
             elapsed_time,
             self.host_message])
+
+    def get_close_message(self):
+        if self.terminates:
+            return str()
+
+
+        return "一定時間ホストが検知されなかったため、募集を終了します。"
+
+    def should_close(self):
+        return self.terminates or self.protocol.is_expired()
+
+    def terminate(self):
+        self.terminates = True
 
 
 class HostListObserver:
     WAIT = timedelta(seconds=2)
-    LIFETIME = timedelta(seconds=WAIT.seconds * 10)
 
     _bot = None
     _host_list = []
@@ -125,21 +156,19 @@ class HostListObserver:
         while True:
             host_list = cls._host_list[:]
             for host in host_list:
-                host.try_echo()
+                host.protocol.try_echo()
 
             await asyncio.sleep(cls.WAIT.seconds)
 
             host_messages = list()
             for host in host_list:
-                elapsed_time = host.elapsed_time_from_ack()
-                if elapsed_time >= cls.LIFETIME:
-                    close_message = (
-                        "一定時間ホストが検知されなかったため、"
-                        "募集を終了します。")
-                    await cls.close(host, close_message)
+                elapsed_time = host.protocol.elapsed_time_from_ack()
+                if host.should_close():
+                    await cls.close(host)
                     continue
 
-                host_messages.append(host.get_host_message(cls.WAIT * 3))
+                ack_loses = elapsed_time >= (cls.WAIT * 3)
+                host_messages.append(host.get_host_message(ack_loses))
 
             post_message = (
                 base_message.format(len(host_messages)) +
@@ -147,14 +176,23 @@ class HostListObserver:
             await cls._bot.edit_message(message, post_message)
 
     @classmethod
-    async def close(cls, host, close_message):
-        await cls._bot.send_message(host.user, close_message)
+    async def close(cls, host):
+        close_message = host.get_close_message()
+        if close_message:
+            await cls._bot.send_message(host.user, close_message)
+
         cls._remove(host)
-        host.transport.close()
+        host.protocol.transport.close()
 
     @classmethod
     def append(cls, host):
         cls._host_list.append(host)
+
+    @classmethod
+    def terminate(cls, *, user):
+        target_posts = [host for host in cls._host_list if host.user == user]
+        for post in target_posts:
+            post.terminate()
 
     @classmethod
     def _remove(cls, host):
@@ -166,6 +204,7 @@ class Hosting(CogMixin):
         self.bot = bot
         self.observer = None
 
+    @checks.only_private()
     @commands.command(pass_context=True)
     async def host(self, ctx, ip_port: str, *comment):
         """
@@ -186,21 +225,15 @@ class Hosting(CogMixin):
         ip_port_comments = f"{ip}:{port} | {' '.join(comment)}"
         host_message = f"{user.mention}, {ip_port_comments}"
 
-        not_private = not ctx.message.channel.is_private
-        if not_private:
-            await self.bot.delete_message(ctx.message)
-            raise errors.OnlyPrivateMessage
-
         await self.bot.whisper("ホストの検知を開始します。")
         connect = self.bot.loop.create_datagram_endpoint(
-            lambda: EchoClientProtocol(
-                user,
-                host_message,
-                get_echo_packet(is_sokuroll=False)),
+            lambda: EchoClientProtocol(get_echo_packet(is_sokuroll=False)),
             remote_addr=(ip, int(port)))
         _, protocol = await connect
-        HostListObserver.append(protocol)
+        host = HostPostAsset(user, host_message, protocol)
+        HostListObserver.append(host)
 
+    @checks.only_private()
     @commands.command(pass_context=True)
     async def rhost(self, ctx, ip_port: str, *comment):
         """
@@ -219,19 +252,23 @@ class Hosting(CogMixin):
         except ValueError:
             raise commands.BadArgument
         ip_port_comments = f"{ip}:{port} | {' '.join(comment)}"
-        host_message = f"{user.mention}, {ip_port_comments}"
-
-        not_private = not ctx.message.channel.is_private
-        if not_private:
-            await self.bot.delete_message(ctx.message)
-            raise errors.OnlyPrivateMessage
+        sokuroll_icon = ":regional_indicator_r:"
+        host_message = f"{sokuroll_icon} {user.mention}, {ip_port_comments}"
 
         await self.bot.whisper("ホストの検知を開始します。")
         connect = self.bot.loop.create_datagram_endpoint(
-            lambda: EchoClientProtocol(
-                user,
-                ":regional_indicator_r:" + host_message,
-                get_echo_packet(is_sokuroll=True)),
+            lambda: EchoClientProtocol(get_echo_packet(is_sokuroll=True)),
             remote_addr=(ip, int(port)))
         _, protocol = await connect
-        HostListObserver.append(protocol)
+        host = HostPostAsset(user, host_message, protocol)
+        HostListObserver.append(host)
+
+    @checks.only_private()
+    @commands.command(pass_context=True)
+    async def close(self, ctx):
+        """
+        #hostlistへの投稿を取り下げます。
+        """
+        await self.bot.whisper("対戦相手の募集を取り下げます。")
+        user = ctx.message.author
+        HostListObserver.terminate(user=user)
