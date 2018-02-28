@@ -93,7 +93,11 @@ class EchoClientProtocol:
         pass
 
     def try_echo(self):
-        self.transport.sendto(self.echo_packet)
+        try:
+            self.transport.sendto(self.echo_packet)
+        except Exception as e:
+            logger.exception(type(e).__name__, exc_info=e)
+            self.transport.sendto(self.echo_packet)
 
     def elapsed_time_from_ack(self):
         return datetime.now() - self.ack_datetime
@@ -127,8 +131,6 @@ class HostPostAsset:
     def get_close_message(self):
         if self.terminates:
             return str()
-
-
         return "一定時間ホストが検知されなかったため、募集を終了します。"
 
     def should_close(self):
@@ -154,26 +156,29 @@ class HostListObserver:
             base_message.format(0))
 
         while True:
-            host_list = cls._host_list[:]
-            for host in host_list:
-                host.protocol.try_echo()
+            try:
+                host_list = cls._host_list[:]
+                for host in host_list:
+                    host.protocol.try_echo()
 
-            await asyncio.sleep(cls.WAIT.seconds)
+                await asyncio.sleep(cls.WAIT.seconds)
 
-            host_messages = list()
-            for host in host_list:
-                elapsed_time = host.protocol.elapsed_time_from_ack()
-                if host.should_close():
-                    await cls.close(host)
-                    continue
+                host_messages = list()
+                for host in host_list:
+                    elapsed_time = host.protocol.elapsed_time_from_ack()
+                    if host.should_close():
+                        await cls.close(host)
+                        continue
 
-                ack_loses = elapsed_time >= (cls.WAIT * 3)
-                host_messages.append(host.get_host_message(ack_loses))
+                    ack_loses = elapsed_time >= (cls.WAIT * 3)
+                    host_messages.append(host.get_host_message(ack_loses))
 
-            post_message = (
-                base_message.format(len(host_messages)) +
-                "\n".join(host_messages))
-            await cls._bot.edit_message(message, post_message)
+                post_message = (
+                    base_message.format(len(host_messages)) +
+                    "\n".join(host_messages))
+                await cls._bot.edit_message(message, post_message)
+            except Exception as e:
+                logger.exception(type(e).__name__, exc_info=e)
 
     @classmethod
     async def close(cls, host):
