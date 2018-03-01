@@ -36,6 +36,9 @@ def get_hostlist_ch(bot):
 
 class HostStatus:
     def __init__(self):
+        self.reset()
+
+    def reset(self):
         self.hosting = False
         self.matching = False
         self.watchable = False
@@ -54,15 +57,21 @@ class HostStatus:
             self.matching = True
             self.watchable = self.watchable
         else:
-            self.hosting = False
-            self.matching = False
-            self.watchable = False
+            self.reset()
 
     def is_unknown(self):
         return (
             not self.hosting and
             not self.matching and
             not self.watchable)
+
+    def __str__(self):
+        if self.is_unknown():
+            return ":question:"
+
+        return " ".join([
+            ":crossed_swords:" if self.matching else ":o:",
+            ":eye:" if self.watchable else ":see_no_evil:"])
 
 
 class EchoClientProtocol:
@@ -116,15 +125,13 @@ class HostPostAsset:
         self.start_datetime = datetime.now()
 
     def get_host_message(self, ack_loses):
-        host_status = self.protocol.host_status
-        if ack_loses or not host_status.hosting:
+        if ack_loses:
             return f":x: {self.host_message}"
 
         elapsed_seconds = (datetime.now() - self.start_datetime).seconds
         elapsed_time = f"{int(elapsed_seconds / 60)}m{elapsed_seconds % 60}s"
         return " ".join([
-            ":crossed_swords:" if host_status.matching else ":o:",
-            ":eye:" if host_status.watchable else ":see_no_evil:",
+            str(self.protocol.host_status),
             elapsed_time,
             self.host_message])
 
