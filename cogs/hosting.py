@@ -64,6 +64,11 @@ class HostStatus:
             not self.matching and
             not self.watchable)
 
+    def __str__(self):
+        return " ".join([
+            ":crossed_swords:" if self.matching else ":o:",
+            ":eye:" if self.watchable else ":see_no_evil:"])
+
 
 class EchoClientProtocol:
     def __init__(self, echo_packet, lifetime=timedelta(seconds=20)):
@@ -123,8 +128,7 @@ class HostPostAsset:
         elapsed_seconds = (datetime.now() - self.start_datetime).seconds
         elapsed_time = f"{int(elapsed_seconds / 60)}m{elapsed_seconds % 60}s"
         return " ".join([
-            ":crossed_swords:" if host_status.matching else ":o:",
-            ":eye:" if host_status.watchable else ":see_no_evil:",
+            str(host_status),
             elapsed_time,
             self.host_message])
 
