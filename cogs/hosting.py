@@ -190,8 +190,12 @@ class HostListObserver:
         host.protocol.transport.close()
 
     @classmethod
-    def append(cls, host):
+    async def append(cls, host):
         cls._host_list.append(host)
+        message = await cls._bot.send_message(
+            get_hostlist_ch(cls._bot),
+            ".")
+        await cls._bot.delete_message(message)
 
     @classmethod
     def terminate(cls, *, user):
@@ -239,7 +243,7 @@ class Hosting(CogMixin):
             remote_addr=(ip.exploded, port))
         _, protocol = await connect
         host = HostPostAsset(user, host_message, protocol)
-        HostListObserver.append(host)
+        await HostListObserver.append(host)
 
     @checks.only_private()
     @commands.command(pass_context=True)
@@ -272,7 +276,7 @@ class Hosting(CogMixin):
             remote_addr=(ip.exploded, port))
         _, protocol = await connect
         host = HostPostAsset(user, host_message, protocol)
-        HostListObserver.append(host)
+        await HostListObserver.append(host)
 
     @checks.only_private()
     @commands.command(pass_context=True)
