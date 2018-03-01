@@ -34,6 +34,21 @@ def get_hostlist_ch(bot):
     return discord.utils.get(bot.get_all_channels(), name="hostlist")
 
 
+class Lifetime:
+    def __init__(self, lifetime):
+        self.lifetime = lifetime
+        self.reset()
+
+    def reset(self):
+        self.ack_datetime = datetime.now()
+
+    def elapsed_datetime(self):
+        return datetime.now() - self.ack_datetime
+
+    def is_expired(self):
+        return self.elapsed_datetime() >= self.lifetime
+
+
 class HostStatus:
     def __init__(self):
         self.reset()
@@ -75,12 +90,12 @@ class HostStatus:
 
 
 class EchoClientProtocol:
-    def __init__(self, echo_packet, lifetime=timedelta(seconds=20)):
+    def __init__(self, echo_packet, *, lifetime=None):
         self.echo_packet = echo_packet
-        self.lifetime = lifetime
+        self.lifetime = lifetime or Lifetime(timedelta(seconds=20))
+
         self.transport = None
         self.host_status = HostStatus()
-        self.ack_datetime = datetime.now()
 
     def connection_made(self, transport):
         self.transport = transport
@@ -93,7 +108,7 @@ class EchoClientProtocol:
         if not self.host_status.hosting:
             return
 
-        self.ack_datetime = datetime.now()
+        self.lifetime.reset()
 
     def error_received(self, exc):
         pass
@@ -107,12 +122,6 @@ class EchoClientProtocol:
         except Exception as e:
             logger.exception(type(e).__name__, exc_info=e)
             self.transport.sendto(self.echo_packet)
-
-    def elapsed_time_from_ack(self):
-        return datetime.now() - self.ack_datetime
-
-    def is_expired(self):
-        return self.elapsed_time_from_ack() >= self.lifetime
 
 
 class HostPostAsset:
@@ -141,7 +150,7 @@ class HostPostAsset:
         return "一定時間ホストが検知されなかったため、募集を終了します。"
 
     def should_close(self):
-        return self.terminates or self.protocol.is_expired()
+        return self.terminates or self.protocol.lifetime.is_expired()
 
     def terminate(self):
         self.terminates = True
@@ -172,11 +181,11 @@ class HostListObserver:
 
                 host_messages = list()
                 for host in host_list:
-                    elapsed_time = host.protocol.elapsed_time_from_ack()
                     if host.should_close():
                         await cls.close(host)
                         continue
 
+                    elapsed_time = host.protocol.lifetime.elapsed_datetime()
                     ack_loses = elapsed_time >= (cls.WAIT * 3)
                     host_messages.append(host.get_host_message(ack_loses))
 
