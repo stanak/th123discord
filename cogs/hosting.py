@@ -123,6 +123,10 @@ class EchoClientProtocol:
             logger.exception(type(e).__name__, exc_info=e)
             self.transport.sendto(self.echo_packet)
 
+    def discard(self):
+        if self.transport and not self.transport.is_closing():
+            self.transport.close()
+
 
 class HostPostAsset:
     def __init__(self, user, host_message, protocol):
@@ -203,7 +207,7 @@ class HostListObserver:
             await cls._bot.send_message(host.user, close_message)
 
         cls._remove(host)
-        host.protocol.transport.close()
+        host.protocol.discard()
 
     @classmethod
     async def append(cls, host):
