@@ -43,7 +43,7 @@ class HostStatus:
         self.matching = False
         self.watchable = False
 
-    def update_host_status(self, packet):
+    def __call__(self, packet):
         if packet.startswith(b'\x07\x01'):
             self.hosting = True
             self.matching = False
@@ -86,7 +86,7 @@ class EchoClientProtocol:
         self.transport = transport
 
     def datagram_received(self, data, addr):
-        self.host_status.update_host_status(data)
+        self.host_status(data)
         if self.host_status.is_unknown():
             logger.error(data)
 
