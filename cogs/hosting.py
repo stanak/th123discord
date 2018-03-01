@@ -36,6 +36,9 @@ def get_hostlist_ch(bot):
 
 class HostStatus:
     def __init__(self):
+        self.reset()
+
+    def reset(self):
         self.hosting = False
         self.matching = False
         self.watchable = False
@@ -54,9 +57,7 @@ class HostStatus:
             self.matching = True
             self.watchable = self.watchable
         else:
-            self.hosting = False
-            self.matching = False
-            self.watchable = False
+            self.reset()
 
     def is_unknown(self):
         return (
