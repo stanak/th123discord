@@ -163,13 +163,11 @@ class HostPostAsset:
 
 
 class HostListObserver:
-    WAIT = timedelta(seconds=2)
-
     _bot = None
     _host_list = []
 
     @classmethod
-    async def update_hostlist(cls, bot):
+    async def update_hostlist(cls, bot, interval=timedelta(seconds=2)):
         cls._bot = bot
 
         base_message = "**{}人が対戦相手を募集しています:**\n"
@@ -183,7 +181,7 @@ class HostListObserver:
                 for host in host_list:
                     host.protocol.try_echo()
 
-                await asyncio.sleep(cls.WAIT.seconds)
+                await asyncio.sleep(interval.seconds)
 
                 host_messages = list()
                 for host in host_list:
