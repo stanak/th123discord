@@ -90,22 +90,23 @@ class HostStatus:
 
 
 class EchoClientProtocol:
-    def __init__(self, echo_packet, *, lifetime=None):
+    def __init__(self, echo_packet, *, lifetime=None, ack_lifetime=None):
         self.echo_packet = echo_packet
         self.lifetime = lifetime or Lifetime(timedelta(seconds=20))
 
         self.transport = None
         self.host_status = HostStatus()
+        self.ack_lifetime = ack_lifetime or Lifetime(timedelta(seconds=6))
 
     def connection_made(self, transport):
         self.transport = transport
 
     def datagram_received(self, data, addr):
+        self.ack_lifetime.reset()
         self.host_status(data)
+
         if self.host_status.is_unknown():
             logger.error(data)
-
-        if not self.host_status.hosting:
             return
 
         self.lifetime.reset()
@@ -137,8 +138,8 @@ class HostPostAsset:
 
         self.start_datetime = datetime.now()
 
-    def get_host_message(self, ack_loses):
-        if ack_loses:
+    def get_host_message(self):
+        if self.protocol.ack_lifetime.is_expired():
             return f":x: {self.host_message}"
 
         elapsed_seconds = (datetime.now() - self.start_datetime).seconds
@@ -189,9 +190,7 @@ class HostListObserver:
                         await cls.close(host)
                         continue
 
-                    elapsed_time = host.protocol.lifetime.elapsed_datetime()
-                    ack_loses = elapsed_time >= (cls.WAIT * 3)
-                    host_messages.append(host.get_host_message(ack_loses))
+                    host_messages.append(host.get_host_message())
 
                 post_message = (
                     base_message.format(len(host_messages)) +
