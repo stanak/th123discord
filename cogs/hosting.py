@@ -233,24 +233,7 @@ class Hosting(CogMixin):
                 HostListObserver.update_hostlist(self.bot))
 
         user = ctx.message.author
-        try:
-            ip, port = unicodedata.normalize('NFKC', ip_port).split(":", 1)
-            ip = ipv4(ip)
-            port = int(port)
-            if port > 65535:
-                raise ValueError
-        except ValueError:
-            raise commands.BadArgument
-        ip_port_comments = f"{ip.exploded}:{port} | {' '.join(comment)}"
-        host_message = f"{user.mention}, {ip_port_comments}"
-
-        await self.bot.whisper("ホストの検知を開始します。")
-        connect = self.bot.loop.create_datagram_endpoint(
-            lambda: EchoClientProtocol(get_echo_packet(is_sokuroll=False)),
-            remote_addr=(ip.exploded, port))
-        _, protocol = await connect
-        host = HostPostAsset(user, host_message, protocol)
-        await HostListObserver.append(host)
+        await self.invite_as_host(user, ip_port, comment, sokuroll_uses=False)
 
     @checks.only_private()
     @commands.command(pass_context=True)
@@ -265,21 +248,26 @@ class Hosting(CogMixin):
                 HostListObserver.update_hostlist(self.bot))
 
         user = ctx.message.author
+        await self.invite_as_host(user, ip_port, comment, sokuroll_uses=True)
+
+    async def invite_as_host(self, user, ip_port, comment, *, sokuroll_uses):
         try:
             ip, port = unicodedata.normalize('NFKC', ip_port).split(":", 1)
             ip = ipv4(ip)
             port = int(port)
-            if port > 65535:
+            if port not in range(0x0000, 0xffff):
                 raise ValueError
         except ValueError:
             raise commands.BadArgument
-        ip_port_comments = f"{ip.exploded}:{port} | {' '.join(comment)}"
-        sokuroll_icon = ":regional_indicator_r:"
-        host_message = f"{sokuroll_icon} {user.mention}, {ip_port_comments}"
+
+        host_message = " ".join([
+            ":regional_indicator_r:" if sokuroll_uses else "",
+            f"{user.mention},",
+            f"{ip.exploded}:{port} | {' '.join(comment)}"]).strip()
 
         await self.bot.whisper("ホストの検知を開始します。")
         connect = self.bot.loop.create_datagram_endpoint(
-            lambda: EchoClientProtocol(get_echo_packet(is_sokuroll=True)),
+            lambda: EchoClientProtocol(get_echo_packet(sokuroll_uses)),
             remote_addr=(ip.exploded, port))
         _, protocol = await connect
         host = HostPostAsset(user, host_message, protocol)
