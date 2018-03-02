@@ -159,6 +159,7 @@ class HostPostAsset:
 
     def terminate(self):
         self.terminates = True
+        self.protocol.discard()
 
 
 class HostListObserver:
@@ -206,7 +207,7 @@ class HostListObserver:
             await cls._bot.send_message(host.user, close_message)
 
         cls._remove(host)
-        host.protocol.discard()
+        host.terminate()
 
     @classmethod
     async def append(cls, host):
