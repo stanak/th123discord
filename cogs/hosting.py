@@ -142,7 +142,21 @@ class Th123HostProtocol(Th123DatagramProtocol):
             self.transport.close()
 
 
-class HostPostAsset:
+class PostAsset:
+    def get_host_message(self):
+        raise NotImplementedError
+
+    def get_close_message(self):
+        raise NotImplementedError
+
+    def should_close(self):
+        raise NotImplementedError
+
+    def terminate(self):
+        raise NotImplementedError
+
+
+class HostPostAsset(PostAsset):
     def __init__(self, user, host_message, protocol):
         self.user = user
         self.host_message = host_message
