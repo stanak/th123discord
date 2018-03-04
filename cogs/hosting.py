@@ -34,6 +34,21 @@ def get_hostlist_ch(bot):
     return discord.utils.get(bot.get_all_channels(), name="hostlist")
 
 
+class Lifetime:
+    def __init__(self, lifetime):
+        self.lifetime = lifetime
+        self.reset()
+
+    def reset(self):
+        self.ack_datetime = datetime.now()
+
+    def elapsed_datetime(self):
+        return datetime.now() - self.ack_datetime
+
+    def is_expired(self):
+        return self.elapsed_datetime() >= self.lifetime
+
+
 class HostStatus:
     def __init__(self):
         self.reset()
@@ -43,7 +58,7 @@ class HostStatus:
         self.matching = False
         self.watchable = False
 
-    def update_host_status(self, packet):
+    def __call__(self, packet):
         if packet.startswith(b'\x07\x01'):
             self.hosting = True
             self.matching = False
@@ -75,25 +90,26 @@ class HostStatus:
 
 
 class EchoClientProtocol:
-    def __init__(self, echo_packet, lifetime=timedelta(seconds=20)):
+    def __init__(self, echo_packet, *, lifetime=None, ack_lifetime=None):
         self.echo_packet = echo_packet
-        self.lifetime = lifetime
+        self.lifetime = lifetime or Lifetime(timedelta(seconds=20))
+
         self.transport = None
         self.host_status = HostStatus()
-        self.ack_datetime = datetime.now()
+        self.ack_lifetime = ack_lifetime or Lifetime(timedelta(seconds=6))
 
     def connection_made(self, transport):
         self.transport = transport
 
     def datagram_received(self, data, addr):
-        self.host_status.update_host_status(data)
+        self.ack_lifetime.reset()
+        self.host_status(data)
+
         if self.host_status.is_unknown():
             logger.error(data)
-
-        if not self.host_status.hosting:
             return
 
-        self.ack_datetime = datetime.now()
+        self.lifetime.reset()
 
     def error_received(self, exc):
         pass
@@ -108,11 +124,9 @@ class EchoClientProtocol:
             logger.exception(type(e).__name__, exc_info=e)
             self.transport.sendto(self.echo_packet)
 
-    def elapsed_time_from_ack(self):
-        return datetime.now() - self.ack_datetime
-
-    def is_expired(self):
-        return self.elapsed_time_from_ack() >= self.lifetime
+    def discard(self):
+        if self.transport and not self.transport.is_closing():
+            self.transport.close()
 
 
 class HostPostAsset:
@@ -124,8 +138,8 @@ class HostPostAsset:
 
         self.start_datetime = datetime.now()
 
-    def get_host_message(self, ack_loses):
-        if ack_loses:
+    def get_host_message(self):
+        if self.protocol.ack_lifetime.is_expired():
             return f":x: {self.host_message}"
 
         elapsed_seconds = (datetime.now() - self.start_datetime).seconds
@@ -141,20 +155,19 @@ class HostPostAsset:
         return "一定時間ホストが検知されなかったため、募集を終了します。"
 
     def should_close(self):
-        return self.terminates or self.protocol.is_expired()
+        return self.terminates or self.protocol.lifetime.is_expired()
 
     def terminate(self):
         self.terminates = True
+        self.protocol.discard()
 
 
 class HostListObserver:
-    WAIT = timedelta(seconds=2)
-
     _bot = None
     _host_list = []
 
     @classmethod
-    async def update_hostlist(cls, bot):
+    async def update_hostlist(cls, bot, interval=timedelta(seconds=2)):
         cls._bot = bot
 
         base_message = "**{}人が対戦相手を募集しています:**\n"
@@ -168,17 +181,15 @@ class HostListObserver:
                 for host in host_list:
                     host.protocol.try_echo()
 
-                await asyncio.sleep(cls.WAIT.seconds)
+                await asyncio.sleep(interval.seconds)
 
                 host_messages = list()
                 for host in host_list:
-                    elapsed_time = host.protocol.elapsed_time_from_ack()
                     if host.should_close():
                         await cls.close(host)
                         continue
 
-                    ack_loses = elapsed_time >= (cls.WAIT * 3)
-                    host_messages.append(host.get_host_message(ack_loses))
+                    host_messages.append(host.get_host_message())
 
                 post_message = (
                     base_message.format(len(host_messages)) +
@@ -194,7 +205,7 @@ class HostListObserver:
             await cls._bot.send_message(host.user, close_message)
 
         cls._remove(host)
-        host.protocol.transport.close()
+        host.terminate()
 
     @classmethod
     async def append(cls, host):
