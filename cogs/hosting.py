@@ -89,14 +89,27 @@ class HostStatus:
             ":eye:" if self.watchable else ":see_no_evil:"])
 
 
-class Th123HostProtocol:
+class Th123DatagramProtocol(asyncio.DatagramProtocol):
+    def __init__(self, lifetime, ack_lifetime):
+        self.lifetime = lifetime
+        self.ack_lifetime = ack_lifetime
+
+    def try_echo(self):
+        pass
+
+    def discard(self):
+        pass
+
+
+class Th123HostProtocol(Th123DatagramProtocol):
     def __init__(self, echo_packet, *, lifetime=None, ack_lifetime=None):
+        super().__init__(
+            lifetime or Lifetime(timedelta(seconds=20)),
+            ack_lifetime or Lifetime(timedelta(seconds=6)))
         self.echo_packet = echo_packet
-        self.lifetime = lifetime or Lifetime(timedelta(seconds=20))
 
         self.transport = None
         self.host_status = HostStatus()
-        self.ack_lifetime = ack_lifetime or Lifetime(timedelta(seconds=6))
 
     def connection_made(self, transport):
         self.transport = transport
