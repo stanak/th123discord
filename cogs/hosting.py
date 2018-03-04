@@ -89,7 +89,7 @@ class HostStatus:
             ":eye:" if self.watchable else ":see_no_evil:"])
 
 
-class EchoClientProtocol:
+class Th123HostProtocol:
     def __init__(self, echo_packet, *, lifetime=None, ack_lifetime=None):
         self.echo_packet = echo_packet
         self.lifetime = lifetime or Lifetime(timedelta(seconds=20))
@@ -278,7 +278,7 @@ class Hosting(CogMixin):
 
         await self.bot.whisper("ホストの検知を開始します。")
         connect = self.bot.loop.create_datagram_endpoint(
-            lambda: EchoClientProtocol(get_echo_packet(sokuroll_uses)),
+            lambda: Th123HostProtocol(get_echo_packet(sokuroll_uses)),
             remote_addr=(ip.exploded, port))
         _, protocol = await connect
         host = HostPostAsset(user, host_message, protocol)
