@@ -89,14 +89,27 @@ class HostStatus:
             ":eye:" if self.watchable else ":see_no_evil:"])
 
 
-class EchoClientProtocol:
+class Th123DatagramProtocol(asyncio.DatagramProtocol):
+    def __init__(self, lifetime, ack_lifetime):
+        self.lifetime = lifetime
+        self.ack_lifetime = ack_lifetime
+
+    def try_echo(self):
+        pass
+
+    def discard(self):
+        pass
+
+
+class Th123HostProtocol(Th123DatagramProtocol):
     def __init__(self, echo_packet, *, lifetime=None, ack_lifetime=None):
+        super().__init__(
+            lifetime or Lifetime(timedelta(seconds=20)),
+            ack_lifetime or Lifetime(timedelta(seconds=6)))
         self.echo_packet = echo_packet
-        self.lifetime = lifetime or Lifetime(timedelta(seconds=20))
 
         self.transport = None
         self.host_status = HostStatus()
-        self.ack_lifetime = ack_lifetime or Lifetime(timedelta(seconds=6))
 
     def connection_made(self, transport):
         self.transport = transport
@@ -129,7 +142,28 @@ class EchoClientProtocol:
             self.transport.close()
 
 
-class HostPostAsset:
+class Th123ClientProtocol(Th123DatagramProtocol):
+    def __init__(self, *, lifetime=None):
+        super().__init__(
+            lifetime or Lifetime(timedelta(hours=1)),
+            Lifetime(timedelta()))
+
+
+class PostAsset:
+    def get_host_message(self):
+        raise NotImplementedError
+
+    def get_close_message(self):
+        raise NotImplementedError
+
+    def should_close(self):
+        raise NotImplementedError
+
+    def terminate(self):
+        raise NotImplementedError
+
+
+class HostPostAsset(PostAsset):
     def __init__(self, user, host_message, protocol):
         self.user = user
         self.host_message = host_message
@@ -153,6 +187,36 @@ class HostPostAsset:
         if self.terminates:
             return str()
         return "一定時間ホストが検知されなかったため、募集を終了します。"
+
+    def should_close(self):
+        return self.terminates or self.protocol.lifetime.is_expired()
+
+    def terminate(self):
+        self.terminates = True
+        self.protocol.discard()
+
+
+class ClientPostAsset(PostAsset):
+    def __init__(self, user, host_message, protocol):
+        self.user = user
+        self.host_message = host_message
+        self.protocol = protocol
+        self.terminates = False
+
+        self.start_datetime = datetime.now()
+
+    def get_host_message(self):
+        elapsed_seconds = (datetime.now() - self.start_datetime).seconds
+        elapsed_time = f"{int(elapsed_seconds / 60)}m{elapsed_seconds % 60}s"
+        return " ".join([
+            ":loudspeaker:",
+            elapsed_time,
+            self.host_message])
+
+    def get_close_message(self):
+        if self.terminates:
+            return str()
+        return "投稿から一定時間経過したため、募集を終了します。"
 
     def should_close(self):
         return self.terminates or self.protocol.lifetime.is_expired()
@@ -278,10 +342,30 @@ class Hosting(CogMixin):
 
         await self.bot.whisper("ホストの検知を開始します。")
         connect = self.bot.loop.create_datagram_endpoint(
-            lambda: EchoClientProtocol(get_echo_packet(sokuroll_uses)),
+            lambda: Th123HostProtocol(get_echo_packet(sokuroll_uses)),
             remote_addr=(ip.exploded, port))
         _, protocol = await connect
         host = HostPostAsset(user, host_message, protocol)
+        await HostListObserver.append(host)
+
+    @checks.only_private()
+    @commands.command(pass_context=True)
+    async def client(self, ctx, *comment):
+        """
+        #holtlistにホスト検知を行わない対戦募集を投稿します。
+        投稿から60分経過するか、closeコマンドで、投稿を取り下げます。
+        募集例「!client 霊夢　レート1500　どなたでもどうぞ！」
+        """
+        if self.observer is None:
+            self.observer = discord.compat.create_task(
+                HostListObserver.update_hostlist(self.bot))
+
+        user = ctx.message.author
+        message_body = f"{user.mention}, {' '.join(comment)}"
+
+        await self.bot.whisper("対戦募集を投稿します。")
+        protocol = Th123ClientProtocol()
+        host = ClientPostAsset(user, message_body, protocol)
         await HostListObserver.append(host)
 
     @checks.only_private()
