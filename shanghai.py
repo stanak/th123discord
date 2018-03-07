@@ -14,19 +14,6 @@ class Shanghai(commands.Bot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, command_prefix="!", pm_help=True, **kwargs)
 
-    def post(self, *args, **kwargs):
-        """
-        deleate_after付きのsend_message
-        hostコマンド本格実装までのつなぎ
-        """
-        extensions = ('delete_after',)
-        params = {
-            k: kwargs.pop(k, None) for k in extensions
-        }
-        coro = self.send_message(*args, **kwargs)
-        return super()._augmented_msg(coro, **params)
-
-
     async def send_command_help(self, ctx):
         if ctx.invoked_subcommand is None:
             pages = self.formatter.format_help_for(ctx, ctx.command)
