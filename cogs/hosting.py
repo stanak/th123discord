@@ -150,7 +150,7 @@ class Th123ClientProtocol(Th123DatagramProtocol):
 
 
 class PostAsset:
-    def get_host_message(self):
+    def get_message_body(self):
         raise NotImplementedError
 
     def get_close_message(self):
@@ -164,24 +164,24 @@ class PostAsset:
 
 
 class HostPostAsset(PostAsset):
-    def __init__(self, user, host_message, protocol):
+    def __init__(self, user, message_body, protocol):
         self.user = user
-        self.host_message = host_message
+        self.message_body = message_body
         self.protocol = protocol
         self.terminates = False
 
         self.start_datetime = datetime.now()
 
-    def get_host_message(self):
+    def get_message_body(self):
         if self.protocol.ack_lifetime.is_expired():
-            return f":x: {self.host_message}"
+            return f":x: {self.message_body}"
 
         elapsed_seconds = (datetime.now() - self.start_datetime).seconds
         elapsed_time = f"{int(elapsed_seconds / 60)}m{elapsed_seconds % 60}s"
         return " ".join([
             str(self.protocol.host_status),
             elapsed_time,
-            self.host_message])
+            self.message_body])
 
     def get_close_message(self):
         if self.terminates:
@@ -197,21 +197,21 @@ class HostPostAsset(PostAsset):
 
 
 class ClientPostAsset(PostAsset):
-    def __init__(self, user, host_message, protocol):
+    def __init__(self, user, message_body, protocol):
         self.user = user
-        self.host_message = host_message
+        self.message_body = message_body
         self.protocol = protocol
         self.terminates = False
 
         self.start_datetime = datetime.now()
 
-    def get_host_message(self):
+    def get_message_body(self):
         elapsed_seconds = (datetime.now() - self.start_datetime).seconds
         elapsed_time = f"{int(elapsed_seconds / 60)}m{elapsed_seconds % 60}s"
         return " ".join([
             ":loudspeaker:",
             elapsed_time,
-            self.host_message])
+            self.message_body])
 
     def get_close_message(self):
         if self.terminates:
@@ -247,17 +247,17 @@ class HostListObserver:
 
                 await asyncio.sleep(interval.seconds)
 
-                host_messages = list()
+                message_body_list = list()
                 for host in host_list:
                     if host.should_close():
                         await cls.close(host)
                         continue
 
-                    host_messages.append(host.get_host_message())
+                    message_body_list.append(host.get_message_body())
 
                 post_message = (
-                    base_message.format(len(host_messages)) +
-                    "\n".join(host_messages))
+                    base_message.format(len(message_body_list)) +
+                    "\n".join(message_body_list))
                 await cls._bot.edit_message(message, post_message)
             except Exception as e:
                 logger.exception(type(e).__name__, exc_info=e)
@@ -335,7 +335,7 @@ class Hosting(CogMixin):
         except ValueError:
             raise commands.BadArgument
 
-        host_message = " ".join([
+        message_body = " ".join([
             ":regional_indicator_r:" if sokuroll_uses else "",
             f"{user.mention},",
             f"{ip.exploded}:{port} | {' '.join(comment)}"]).strip()
@@ -345,7 +345,7 @@ class Hosting(CogMixin):
             lambda: Th123HostProtocol(get_echo_packet(sokuroll_uses)),
             remote_addr=(ip.exploded, port))
         _, protocol = await connect
-        host = HostPostAsset(user, host_message, protocol)
+        host = HostPostAsset(user, message_body, protocol)
         await HostListObserver.append(host)
 
     @checks.only_private()
