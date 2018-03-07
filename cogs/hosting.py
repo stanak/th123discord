@@ -231,7 +231,7 @@ class HostListObserver:
     _host_list = []
 
     @classmethod
-    async def update_hostlist(cls, bot, interval=timedelta(seconds=2)):
+    async def task_func(cls, bot, interval=timedelta(seconds=2)):
         cls._bot = bot
 
         base_message = "**{}人が対戦相手を募集しています:**\n"
@@ -305,7 +305,7 @@ class Hosting(CogMixin):
         """
         if self.observer is None:
             self.observer = discord.compat.create_task(
-                HostListObserver.update_hostlist(self.bot))
+                HostListObserver.task_func(self.bot))
 
         user = ctx.message.author
         await self.invite_as_host(user, ip_port, comment, sokuroll_uses=False)
@@ -320,7 +320,7 @@ class Hosting(CogMixin):
         """
         if self.observer is None:
             self.observer = discord.compat.create_task(
-                HostListObserver.update_hostlist(self.bot))
+                HostListObserver.task_func(self.bot))
 
         user = ctx.message.author
         await self.invite_as_host(user, ip_port, comment, sokuroll_uses=True)
