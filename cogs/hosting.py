@@ -119,7 +119,8 @@ class Th123HostProtocol(Th123DatagramProtocol):
         self.host_status(data)
 
         if self.host_status.is_unknown():
-            logger.error(data)
+            logging_message = " ".join([str(addr), str(data)])
+            logger.error(logging_message)
             return
 
         self.lifetime.reset()
