@@ -1,5 +1,8 @@
 from .cogmixin import CogMixin
+from .common import checks
 from discord.ext import commands
+import discord
+from discord.enums import ServerRegion
 import random
 
 
@@ -32,3 +35,22 @@ class General(CogMixin):
         1人をランダムに選ぶ例「!choose alice iku utsuho」
         """
         await self.bot.say(random.choice(choices))
+
+    @checks.no_private()
+    @commands.command(
+        pass_context=True
+    )
+    async def region(self, ctx, region: str):
+        """
+        ボイスチャットのサーバーリージョンを変更します。推奨リージョンは「!help region」から。
+        サーバーリージョンを日本に変更する例「!region japan」
+        推奨リージョン
+        japan
+        hongkong
+        singapore
+        """
+        server = ctx.message.server
+        try:
+            await self.bot.edit_server(server, region=region)
+        except Exception as e:
+            raise commands.BadArgument
