@@ -28,13 +28,16 @@ class General(CogMixin):
         page = ', '.join(str(r) for r in result)
         await self.bot.say("sum:{0}, ave:{1:.2f}, exp:{2:.2f}\n{3}".format(sum_res, average, expected, page))
 
-    @commands.command()
-    async def choose(self, *choices: str):
+    @commands.command(
+        pass_context=True
+    )
+    async def choose(self, ctx, *choices: str):
         """
         スペース区切りの候補からランダムで1つ選びます。
         1人をランダムに選ぶ例「!choose alice iku utsuho」
         """
-        await self.bot.say(random.choice(choices))
+        author = ctx.message.author
+        await self.bot.say(f"{author.mention}, {random.choice(choices)}")
 
     @checks.no_private()
     @commands.command(
