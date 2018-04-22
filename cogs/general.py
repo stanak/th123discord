@@ -43,17 +43,21 @@ class General(CogMixin):
     @commands.command(
         pass_context=True
     )
-    async def region(self, ctx, region: str):
+    async def region(self, ctx, region: str=None):
         """
-        ボイスチャットのサーバーリージョンを変更します。推奨リージョンは「!help region」から。
+        サーバリージョンを変更します。現在リージョン確認は「!region」、推奨リージョンは「!help region」から。
         サーバーリージョンを日本に変更する例「!region japan」
-        推奨リージョン
+        推奨リージョン一覧
         japan
         hongkong
         singapore
         """
         server = ctx.message.server
-        try:
-            await self.bot.edit_server(server, region=region)
-        except Exception as e:
-            raise commands.BadArgument
+        if region is None:
+            await self.bot.say(f"現在のサーバーリージョンは{server.region}です")
+        else:
+            try:
+                await self.bot.edit_server(server, region=region)
+            except Exception as e:
+                raise commands.BadArgument
+            await self.bot.say(f"サーバーリージョンを{region}に変更しました。")
