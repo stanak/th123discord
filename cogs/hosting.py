@@ -177,11 +177,8 @@ class HostPostAsset(PostAsset):
         if self.protocol.ack_lifetime.is_expired():
             return f":x: {self.message_body}"
 
-        elapsed_seconds = (datetime.now() - self.start_datetime).seconds
-        elapsed_time = f"{int(elapsed_seconds / 60)}m{elapsed_seconds % 60}s"
         return " ".join([
             str(self.protocol.host_status),
-            elapsed_time,
             self.message_body])
 
     def get_close_message(self):
@@ -207,11 +204,8 @@ class ClientPostAsset(PostAsset):
         self.start_datetime = datetime.now()
 
     def get_message_body(self):
-        elapsed_seconds = (datetime.now() - self.start_datetime).seconds
-        elapsed_time = f"{int(elapsed_seconds / 60)}m{elapsed_seconds % 60}s"
         return " ".join([
             ":loudspeaker:",
-            elapsed_time,
             self.message_body])
 
     def get_close_message(self):
@@ -359,7 +353,7 @@ class Hosting(CogMixin):
         """
         if self.observer is None:
             self.observer = discord.compat.create_task(
-                HostListObserver.update_hostlist(self.bot))
+                HostListObserver.task_func(self.bot))
 
         user = ctx.message.author
         message_body = f"{user.mention}, {' '.join(comment)}"
