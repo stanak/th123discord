@@ -39,7 +39,6 @@ class General(CogMixin):
         author = ctx.message.author
         await self.bot.say(f"{author.mention}, {random.choice(choices)}")
 
-    @checks.no_private()
     @commands.command(
         pass_context=True
     )
