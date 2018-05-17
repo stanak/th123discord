@@ -82,6 +82,7 @@ def _get_cog_classes(cog_names):
 
 def load_cogs(bot, cog_names):
     cog_classes = _get_cog_classes(cog_names)
+    print(cog_classes)
     for cog_class in cog_classes:
         cog_class.setup(bot)
     return bot
@@ -115,7 +116,7 @@ if __name__ == "__main__":
     logging.getLogger("__main__").setLevel(logging.DEBUG)
 
     token = os.environ["DISCORD_TOKEN"]
-    cog_names = ["General", "HiddenChannel", "Manager", "Hosting", "Role"]
+    cog_names = ["General", "HiddenChannel", "Manager", "Hosting", "Role", "ClientMatching"]
     bot = Shanghai(formatter=Formatter())
     bot = load_cogs(bot, cog_names)
     bot.run(token)
