@@ -288,7 +288,10 @@ class HostListObserver:
 class Hosting(CogMixin):
     def __init__(self, bot):
         self.bot = bot
-        self.observer = None
+
+    async def on_ready(self):
+        discord.compat.create_task(HostListObserver.task_func(self.bot))
+        await super().on_ready()
 
     @checks.only_private()
     @commands.command(pass_context=True)
@@ -298,10 +301,6 @@ class Hosting(CogMixin):
         約20秒間ホストが検知されなければ、自動で投稿を取り下げます。
         募集例「!host 198.51.100.123:10800 霊夢　レート1500　どなたでもどうぞ！」
         """
-        if self.observer is None:
-            self.observer = discord.compat.create_task(
-                HostListObserver.task_func(self.bot))
-
         user = ctx.message.author
         await self.invite_as_host(user, ip_port, comment, sokuroll_uses=False)
 
@@ -313,10 +312,6 @@ class Hosting(CogMixin):
         約20秒間ホストが検知されなければ、自動で投稿を取り下げます。
         募集例「!rhost 198.51.100.123:10800 霊夢　レート1500　どなたでもどうぞ！」
         """
-        if self.observer is None:
-            self.observer = discord.compat.create_task(
-                HostListObserver.task_func(self.bot))
-
         user = ctx.message.author
         await self.invite_as_host(user, ip_port, comment, sokuroll_uses=True)
 
@@ -351,10 +346,6 @@ class Hosting(CogMixin):
         投稿から60分経過するか、closeコマンドで、投稿を取り下げます。
         募集例「!client 霊夢　レート1500　どなたでもどうぞ！」
         """
-        if self.observer is None:
-            self.observer = discord.compat.create_task(
-                HostListObserver.task_func(self.bot))
-
         user = ctx.message.author
         message_body = f"{user.mention}, {' '.join(comment)}"
 
