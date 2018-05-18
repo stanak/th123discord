@@ -9,8 +9,10 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 def get_client_ch(bot):
     return discord.utils.get(bot.get_all_channels(), name="client")
+
 
 def atob(address):
     return (address[0]).to_bytes(2, byteorder='big')+socket.inet_aton(address[1])
@@ -65,6 +67,7 @@ packet_07 = binascii.unhexlify(
 # host to client
 packet_0d_sp = binascii.unhexlify("0d0203")
 packet_0d_parts = [binascii.unhexlify(p) for p in ["0d03", "030200000000"]]
+
 
 def get_packet_0d(ack):
     return packet_0d_parts[0]+(ack).to_bytes(4, byteorder='little')+packet_0d_parts[1]
@@ -160,7 +163,9 @@ async def task_func(bot):
     )
 
     while True:
-        await asyncio.sleep(3) #クロック
+        # クロック
+        await asyncio.sleep(3)
+
         # 閉じていればサーバー再起動
         if transport.is_closing():
             transport, protocol = await bot.loop.create_datagram_endpoint(
@@ -175,7 +180,7 @@ async def task_func(bot):
         if protocol.profile_name is None:
             message = await bot.edit_message(message, base_message)
         else:
-            #一瞬メッセージを送信して通知を付ける
+            # 一瞬メッセージを送信して通知を付ける
             if message.content == base_message:
                 notify = await bot.send_message(
                     get_client_ch(bot), ".")
@@ -188,9 +193,9 @@ async def task_func(bot):
         if protocol.punched_flag:
             message = await bot.edit_message(
                     message, ":".join(map(str, protocol.client_addr)) + "に凸ができます。")
-            transport.close() #接続を切って通知
+            # 接続を切って通知を180秒間表示し続ける
+            transport.close()
             await asyncio.sleep(180)
-    
 
 class ClientMatching(CogMixin):
     def __init__(self, bot):
