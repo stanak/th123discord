@@ -152,7 +152,7 @@ class Th123HolePunchingProtocol:
 
 
 async def task_func(bot):
-    base_message = "上海は空いています。"
+    base_message = "***___上海は待っています。___***"
     message = await bot.send_message(
         get_client_ch(bot), base_message
     )
@@ -182,12 +182,12 @@ async def task_func(bot):
                 await bot.delete_message(notify)
 
             message = await bot.edit_message(
-                    message, f"{protocol.profile_name}さんが募集しています。")
+                    message, f"***___{protocol.profile_name}さんが募集しています。___***")
 
 
         if protocol.punched_flag:
             message = await bot.edit_message(
-                    message, ":".join(map(str, protocol.client_addr)) + "に凸ができます。")
+                    message, "***___" + ":".join(map(str, protocol.client_addr)) + "に凸ができます。___***")
             # 接続を切って通知を180秒間表示し続ける
             transport.close()
             await asyncio.sleep(180)
