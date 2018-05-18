@@ -152,11 +152,6 @@ class Th123HolePunchingProtocol:
 
 
 async def task_func(bot):
-    await asyncio.sleep(5)
-    transport, protocol = await bot.loop.create_datagram_endpoint(
-            Th123HolePunchingProtocol,
-            local_addr=('0.0.0.0', 38100))
-
     base_message = "上海は空いています。"
     message = await bot.send_message(
         get_client_ch(bot), base_message
@@ -167,7 +162,7 @@ async def task_func(bot):
         await asyncio.sleep(3)
 
         # 閉じていればサーバー再起動
-        if transport.is_closing():
+        if transport is None or transport.is_closing():
             transport, protocol = await bot.loop.create_datagram_endpoint(
                     Th123HolePunchingProtocol,
                     local_addr=('0.0.0.0', 38100))
@@ -199,4 +194,8 @@ async def task_func(bot):
 
 class ClientMatching(CogMixin):
     def __init__(self, bot):
-        discord.compat.create_task(task_func(bot))
+        self.bot = bot
+
+    async def on_ready(self):
+        discord.compat.create_task(task_func(self.bot))
+        await super().on_ready()
