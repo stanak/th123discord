@@ -156,6 +156,7 @@ async def task_func(bot):
     message = await bot.send_message(
         get_client_ch(bot), base_message
     )
+    transport = None
 
     while True:
         # クロック
