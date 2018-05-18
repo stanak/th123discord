@@ -91,8 +91,10 @@ def get_packet_02(port_ip):
 
 
 class Th123HolePunchingProtocol:
-    def __init__(self, bot):
-        self.bot = bot
+    def __init__(self):
+        self.initialize()
+
+    def initialize(self):
         self.client_addr = None
         self.watcher_addr = None
         self.profile_name = None
@@ -149,7 +151,7 @@ class Th123HolePunchingProtocol:
 async def task_func(bot):
     await asyncio.sleep(5)
     transport, protocol = await bot.loop.create_datagram_endpoint(
-            lambda: Th123HolePunchingProtocol(bot),
+            Th123HolePunchingProtocol,
             local_addr=('0.0.0.0', 38100))
 
     base_message = "上海は空いています。"
@@ -162,29 +164,29 @@ async def task_func(bot):
         # 閉じていればサーバー再起動
         if transport.is_closing():
             transport, protocol = await bot.loop.create_datagram_endpoint(
-                    lambda: Th123HolePunchingProtocol(bot),
+                    Th123HolePunchingProtocol,
                     local_addr=('0.0.0.0', 38100))
 
         # 一定時間通信なければ初期化
         ack_lifetime = timedelta(seconds=3)
         if datetime.now() - protocol.ack_datetime > ack_lifetime:
-            protocol.client_addr = None
-            protocol.watcher_addr = None
-            protocol.profile_name = None
-            protocol.punched_flag = None
+            protocol.initialize()
 
         if protocol.profile_name is None:
-            await bot.edit_message(message, base_message)
+            message = await bot.edit_message(message, base_message)
         else:
-            await bot.edit_message(
+            #一瞬メッセージを送信して通知を付ける
+            if message.content == base_message:
+                notify = await bot.send_message(
+                    get_client_ch(bot), ".")
+                await bot.delete_message(notify)
+
+            message = await bot.edit_message(
                     message, f"{protocol.profile_name}さんが募集しています。")
-            # 一瞬メッセージを送信して通知を付ける
-            #notify = await bot.send_message(
-            #        get_client_ch(bot), ".")
-            #await bot.delete_message(notify)
+
 
         if protocol.punched_flag:
-            await bot.edit_message(
+            message = await bot.edit_message(
                     message, ":".join(map(str, protocol.client_addr)) + "に凸ができます。")
             transport.close() #接続を切って通知
             await asyncio.sleep(60)
