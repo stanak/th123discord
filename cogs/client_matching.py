@@ -93,19 +93,20 @@ def get_packet_02(port_ip):
 class Th123HolePunchingProtocol:
     def __init__(self, bot):
         self.bot = bot
+        self.client_addr = None
+        self.watcher_addr = None
+        self.profile_name = None
+        self.ack_datetime = datetime.now()
+        self.punched_flag = None
 
     def connection_made(self, transport):
         self.transport = transport
-        self.client_addr = None
-        self.watcher_addr = None
-        self.ack_datetime = datetime.now()
-        self.ack_lifetime = timedelta(seconds=2)
+
+    def connection_lost(self, exc):
+        pass
 
     def datagram_received(self, data, addr):
         packet = Th123Packet(data)
-        if datetime.now() - self.ack_datetime > self.ack_lifetime:
-            self.client_addr = None
-            self.watcher_addr = None
         self.ack_datetime = datetime.now()
         if packet.is_(1):
             if self.watcher_addr is None:
@@ -114,14 +115,13 @@ class Th123HolePunchingProtocol:
                 wip, wport = self.watcher_addr
                 hexstr_wport_wip = binascii.hexlify(atob((wport, wip)))
                 self.transport.sendto(get_packet_02(hexstr_wport_wip), self.client_addr)
+                self.punched_flag = True
         elif packet.is_(5):
             if self.client_addr is None:
                 if not packet.matching_flag:
                     self.transport.sendto(packet_07, addr)
                 else:
-                    discord.compat.create_task(self.bot.send_message(
-                        get_client_ch(self.bot), packet.profile_name
-                    ))
+                    self.profile_name = packet.profile_name
                     self.transport.sendto(packet_06, addr)
                     self.ack = 1
             else:
@@ -146,10 +146,50 @@ class Th123HolePunchingProtocol:
             self.transport.sendto(data, addr)
 
 
-class ClientMatching(CogMixin):
-    def __init__(self, bot):
-        self.bot = bot
-        listen = self.bot.loop.create_datagram_endpoint(
+async def task_func(bot):
+    await asyncio.sleep(5)
+    transport, protocol = await bot.loop.create_datagram_endpoint(
             lambda: Th123HolePunchingProtocol(bot),
             local_addr=('0.0.0.0', 38100))
-        discord.compat.create_task(listen)
+
+    base_message = "上海は空いています。"
+    message = await bot.send_message(
+        get_client_ch(bot), base_message
+    )
+
+    while True:
+        await asyncio.sleep(3) #クロック
+        # 閉じていればサーバー再起動
+        if transport.is_closing():
+            transport, protocol = await bot.loop.create_datagram_endpoint(
+                    lambda: Th123HolePunchingProtocol(bot),
+                    local_addr=('0.0.0.0', 38100))
+
+        # 一定時間通信なければ初期化
+        ack_lifetime = timedelta(seconds=3)
+        if datetime.now() - protocol.ack_datetime > ack_lifetime:
+            protocol.client_addr = None
+            protocol.watcher_addr = None
+            protocol.profile_name = None
+            protocol.punched_flag = None
+
+        if protocol.profile_name is None:
+            await bot.edit_message(message, base_message)
+        else:
+            await bot.edit_message(
+                    message, f"{protocol.profile_name}さんが募集しています。")
+            # 一瞬メッセージを送信して通知を付ける
+            #notify = await bot.send_message(
+            #        get_client_ch(bot), ".")
+            #await bot.delete_message(notify)
+
+        if protocol.punched_flag:
+            await bot.edit_message(
+                    message, ":".join(map(str, protocol.client_addr)) + "に凸ができます。")
+            transport.close() #接続を切って通知
+            await asyncio.sleep(60)
+    
+
+class ClientMatching(CogMixin):
+    def __init__(self, bot):
+        discord.compat.create_task(task_func(bot))
