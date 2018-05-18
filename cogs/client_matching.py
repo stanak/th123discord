@@ -189,7 +189,7 @@ async def task_func(bot):
             message = await bot.edit_message(
                     message, ":".join(map(str, protocol.client_addr)) + "に凸ができます。")
             transport.close() #接続を切って通知
-            await asyncio.sleep(60)
+            await asyncio.sleep(180)
     
 
 class ClientMatching(CogMixin):
