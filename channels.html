@@ -92,14 +92,16 @@
 <li class="toctree-l1"><a class="reference internal" href="about.html">当ページについて</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">チャンネルリスト</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#id2">公開チャンネル</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#general">GENERALカテゴリ</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#th123">TH123カテゴリ</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#servermeta">SERVERMETAカテゴリ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#general">GENERALカテゴリ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#match">MATCHカテゴリ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#th123">TH123カテゴリ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#voice">VOICEカテゴリ</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#characters">CHARACTERSカテゴリ</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#event">EVENTカテゴリ</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#id3">隠れチャンネルリスト</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id4">隠れチャンネルリスト</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="commands.html">上海botで利用できる主要コマンド</a></li>
@@ -170,9 +172,25 @@
 <h1>チャンネルリスト<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="id2">
 <h2>公開チャンネル<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="servermeta">
+<h3>SERVERMETAカテゴリ<a class="headerlink" href="#servermeta" title="Permalink to this headline">¶</a></h3>
+<p>このサーバーの情報や、要望・意見の送り先。投票機能など。</p>
+<dl class="docutils">
+<dt>#information</dt>
+<dd>当ページへの窓口。簡易案内。</dd>
+<dt>#announcements</dt>
+<dd>更新情報などの通知。</dd>
+</dl>
+<dl class="docutils" id="id3">
+<dt>#servermeta</dt>
+<dd>サーバについての議論、意見、要望など。チャンネルの設立要請もこちらへ。</dd>
+<dt>#dev</dt>
+<dd>隠れチャンネルです。botの改善、協力など。特に技術的な話はこちらへ。</dd>
+</dl>
+</div>
 <div class="section" id="general">
 <h3>GENERALカテゴリ<a class="headerlink" href="#general" title="Permalink to this headline">¶</a></h3>
-<p>雑談や通話等。他ゲーの話に花が咲くこともあります。</p>
+<p>雑談等。他ゲーの話に花が咲くことも。</p>
 <dl class="docutils">
 <dt>#general</dt>
 <dd>汎用雑談チャット。サーバーの玄関口。</dd>
@@ -182,58 +200,60 @@
 <dd>絵・動画・音楽といった創作の展示場所です。</dd>
 <dt>#question</dt>
 <dd>質問・解答専用チャンネルです。どんな質問でもお気軽に。</dd>
-<dt>#voice-chat</dt>
-<dd>Voice-Generalでマイク無しで参加したい方向けのチャンネル。</dd>
-<dt>📢Voice-General</dt>
-<dd>汎用通話チャンネル。クリックで通話接続されるので注意。</dd>
 </dl>
 </div>
-<div class="section" id="th123">
-<h3>TH123カテゴリ<a class="headerlink" href="#th123" title="Permalink to this headline">¶</a></h3>
-<p>非想天則の話題や対戦募集はこちら。</p>
-<dl class="docutils">
-<dt>#th123</dt>
-<dd>天則全般の話題向け。ポート開放の相談など、天則に直接関係なくとも関連する話題はこちらにどうぞ。</dd>
-</dl>
+<div class="section" id="match">
+<h3>MATCHカテゴリ<a class="headerlink" href="#match" title="Permalink to this headline">¶</a></h3>
+<p>非想天則の対戦募集はこちら。</p>
 <dl class="docutils" id="hostlist">
 <dt>#hostlist</dt>
 <dd><p class="first">対戦募集チャンネル。直接書き込めないため、対戦募集は <a class="reference internal" href="commands.html#host"><span class="std std-ref">!hostコマンド</span></a> を用いてください。</p>
 <p class="last">このチャンネルの利用は必ずしも必須ではなく、どこでIPを貼ることがあっても問題ありません。</p>
 </dd>
 <dt>#match</dt>
-<dd>対戦チャット。挨拶、感想戦、対戦中リアクション、基本何でもありです。</dd>
-<dt>#beginner</dt>
-<dd>おおよそ2年未満の人向けチャンネルです。ランクスレが機能していない現状に対する避難所として設置されました。</dd>
-<dt>#advice</dt>
-<dd>天則に関する検証・考察ネタの提供や、リプレイを貼り付けてのアドバイス希望、はたまた大会運営等の相談など。助言が欲しいときにどうぞ。</dd>
+<dd>対戦チャット。主に対戦後の挨拶に使われます。</dd>
+<dt>#client</dt>
+<dd>クラ専同士が対戦できるようになる機能が置かれています。詳しくはサーバ内説明を。</dd>
+</dl>
+</div>
+<div class="section" id="th123">
+<h3>TH123カテゴリ<a class="headerlink" href="#th123" title="Permalink to this headline">¶</a></h3>
+<p>非想天則の話題はこちら。</p>
+<dl class="docutils">
+<dt>#soku-general</dt>
+<dd>天則全般の話題向け。ポート開放の相談など、天則に直接関係なくとも関連する話題はこちらにどうぞ。</dd>
+<dt>#soku-beginner</dt>
+<dd>おおよそ2年未満の人向けチャンネルです。避難所として設置されました。</dd>
+<dt>#soku-advice</dt>
+<dd>感想戦や、リプレイを貼り付けてのアドバイス希望、はたまた大会運営等の相談など。</dd>
 <dt>#live</dt>
-<dd>配信の宣伝にお使いください。</dd>
+<dd>配信の宣伝にどうぞ。</dd>
 <dt>#event</dt>
-<dd>規模やオン・オフ問わず大会の宣伝にお使いください。</dd>
-<dt>📢Match1～3</dt>
+<dd>規模やオン・オフ問わず大会の宣伝にどうぞ。</dd>
+<dt># shitaraba-twitter</dt>
+<dd>非想天則したらば掲示板、Twitter(&#64;th123bot)の投稿通知場所です。</dd>
+<dt>#wiki</dt>
+<dd>Wikiの編集に関する連絡所にどうぞ。</dd>
+</dl>
+</div>
+<div class="section" id="voice">
+<h3>VOICEカテゴリ<a class="headerlink" href="#voice" title="Permalink to this headline">¶</a></h3>
+<p>通話専用カテゴリです。</p>
+<dl class="docutils">
+<dt>#voice-chat</dt>
+<dd>Voice-Generalでマイク無しで参加したい方向けのチャンネル。</dd>
+<dt>📢Voice-General</dt>
+<dd>汎用通話チャンネル。クリックで通話接続されるので注意。</dd>
+<dt>📢Match</dt>
 <dd>対戦用通話チャンネル。</dd>
 <dt>📢Live</dt>
 <dd>勝ち抜き枠などの配信用通話チャンネルです。</dd>
-</dl>
-</div>
-<div class="section" id="servermeta">
-<h3>SERVERMETAカテゴリ<a class="headerlink" href="#servermeta" title="Permalink to this headline">¶</a></h3>
-<p>このサーバーの情報や、要望・意見の送り先。投票機能など。</p>
-<dl class="docutils">
-<dt>#information</dt>
-<dd>サーバーのスタンスの掲示。当ページへの窓口。</dd>
-<dt>#announcements</dt>
-<dd>更新情報などの通知。</dd>
-<dt>#vote</dt>
-<dd>discordのリアクション機能を利用した投票チャンネルです。</dd>
-</dl>
-<dl class="docutils" id="demand">
-<dt>#demand</dt>
-<dd>管理者への質問、要望など。チャンネルの設立要請もこちらへ。</dd>
-<dt>#issue</dt>
-<dd>サーバーやbotについての改善案、議論したい意見や提案などがあればこちらへ。</dd>
-<dt>#dev</dt>
-<dd>隠れチャンネルです。botの改善、協力など。特に技術的な話はこちらへ。</dd>
+<dt>📢Anything</dt>
+<dd>何にでも使ってください。</dd>
+<dt>📢麻雀</dt>
+<dd>隠れチャンネル#mah-jongg専用。</dd>
+<dt>📢Auto-afk</dt>
+<dd>一定時間反応がなければ自動でこちらに送られます。</dd>
 </dl>
 </div>
 <div class="section" id="characters">
@@ -245,8 +265,8 @@
 <p>主に大会会場に利用されます。</p>
 </div>
 </div>
-<div class="section" id="id3">
-<h2>隠れチャンネルリスト<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id4">
+<h2>隠れチャンネルリスト<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
 <p>天則勢による、非想天則以外の活動を行う場所です。メインではないため基本的には隠れていますが、 <a class="reference internal" href="commands.html#ch"><span class="std std-ref">!chコマンド</span></a> を使って誰でも入室することができます。</p>
 <p>チャンネルの場所はHIDDENカテゴリ下にあり、チャンネルリストは「!ch list」コマンドで見ることができます。</p>
 </div>
