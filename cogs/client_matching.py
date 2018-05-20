@@ -152,6 +152,7 @@ class Th123HolePunchingProtocol:
 
 
 async def task_func(bot):
+
     base_message = "***___上海は待っています。___***"
     message = await bot.send_message(
         get_client_ch(bot), base_message
@@ -159,39 +160,42 @@ async def task_func(bot):
     transport = None
 
     while True:
-        # クロック
-        await asyncio.sleep(3)
+        try:
+            # クロック
+            await asyncio.sleep(3)
 
-        # 閉じていればサーバー再起動
-        if transport is None or transport.is_closing():
-            transport, protocol = await bot.loop.create_datagram_endpoint(
-                    Th123HolePunchingProtocol,
-                    local_addr=('0.0.0.0', 38100))
+            # 閉じていればサーバー再起動
+            if transport is None or transport.is_closing():
+                transport, protocol = await bot.loop.create_datagram_endpoint(
+                        Th123HolePunchingProtocol,
+                        local_addr=('0.0.0.0', 38100))
 
-        # 一定時間通信なければ初期化
-        ack_lifetime = timedelta(seconds=3)
-        if datetime.now() - protocol.ack_datetime > ack_lifetime:
-            protocol.initialize()
+            # 一定時間通信なければ初期化
+            ack_lifetime = timedelta(seconds=3)
+            if datetime.now() - protocol.ack_datetime > ack_lifetime:
+                protocol.initialize()
 
-        if protocol.profile_name is None:
-            message = await bot.edit_message(message, base_message)
-        else:
-            # 一瞬メッセージを送信して通知を付ける
-            if message.content == base_message:
-                notify = await bot.send_message(
-                    get_client_ch(bot), ".")
-                await bot.delete_message(notify)
+            if protocol.profile_name is None:
+                message = await bot.edit_message(message, base_message)
+            else:
+                # 一瞬メッセージを送信して通知を付ける
+                if message.content == base_message:
+                    notify = await bot.send_message(
+                        get_client_ch(bot), ".")
+                    await bot.delete_message(notify)
 
-            message = await bot.edit_message(
-                    message, f"***___{protocol.profile_name}さんが募集しています。___***")
+                message = await bot.edit_message(
+                        message, f"***___{protocol.profile_name}さんが募集しています。___***")
 
 
-        if protocol.punched_flag:
-            message = await bot.edit_message(
-                    message, "***___" + ":".join(map(str, protocol.client_addr)) + "に凸ができます。___***")
-            # 接続を切って通知を180秒間表示し続ける
-            transport.close()
-            await asyncio.sleep(180)
+            if protocol.punched_flag:
+                message = await bot.edit_message(
+                        message, "***___" + ":".join(map(str, protocol.client_addr)) + "に凸ができます。___***")
+                # 接続を切って通知を180秒間表示し続ける
+                transport.close()
+                await asyncio.sleep(180)
+        except Exception as e:
+            logger.exception(type(e).__name__, exc_info=e)
 
 class ClientMatching(CogMixin):
     def __init__(self, bot):
