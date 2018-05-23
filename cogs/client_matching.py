@@ -5,6 +5,7 @@ import socket
 import binascii
 import asyncio
 from datetime import (datetime, timedelta)
+import os
 import logging
 
 logger = logging.getLogger(__name__)
@@ -151,9 +152,9 @@ class Th123HolePunchingProtocol:
             self.transport.sendto(data, addr)
 
 
-async def task_func(bot):
+async def task_func(bot, ip, port):
 
-    base_message = "***___上海は待っています。___***"
+    base_message = f"***___{ip}:{port}は空いています。___***"
     message = await bot.send_message(
         get_client_ch(bot), base_message
     )
@@ -168,7 +169,7 @@ async def task_func(bot):
             if transport is None or transport.is_closing():
                 transport, protocol = await bot.loop.create_datagram_endpoint(
                         Th123HolePunchingProtocol,
-                        local_addr=('0.0.0.0', 38100))
+                        local_addr=('0.0.0.0', port))
 
             # 一定時間通信なければ初期化
             ack_lifetime = timedelta(seconds=3)
@@ -185,12 +186,12 @@ async def task_func(bot):
                     await bot.delete_message(notify)
 
                 message = await bot.edit_message(
-                        message, f"***___{protocol.profile_name}さんが募集しています。___***")
+                    message, f"***___{protocol.profile_name}さんが{ip}:{port}に入っています。___***")
 
 
             if protocol.punched_flag:
                 message = await bot.edit_message(
-                        message, "***___" + ":".join(map(str, protocol.client_addr)) + "に凸ができます。___***")
+                        message, f"***___{protocol.profile_name}さんと" + ":".join(map(str, protocol.client_addr)) + "で対戦ができます。___***")
                 # 接続を切って通知を180秒間表示し続ける
                 transport.close()
                 await asyncio.sleep(180)
@@ -202,5 +203,11 @@ class ClientMatching(CogMixin):
         self.bot = bot
 
     async def on_ready(self):
-        discord.compat.create_task(task_func(self.bot))
+        myip = os.environ["myip"]
+        port1 = 38000
+        port2 = 38100
+        port3 = 38200
+        discord.compat.create_task(task_func(self.bot, myip, port1))
+        discord.compat.create_task(task_func(self.bot, myip, port2))
+        discord.compat.create_task(task_func(self.bot, myip, port3))
         await super().on_ready()
