@@ -204,9 +204,9 @@ class ClientMatching(CogMixin):
 
     async def on_ready(self):
         myip = os.environ["myip"]
-        port1 = 38000
-        port2 = 38100
-        port3 = 38200
+        port1 = 38100
+        port2 = 38101
+        port3 = 38102
         discord.compat.create_task(task_func(self.bot, myip, port1))
         discord.compat.create_task(task_func(self.bot, myip, port2))
         discord.compat.create_task(task_func(self.bot, myip, port3))
