@@ -1,5 +1,7 @@
 from .cogmixin import CogMixin
+from .common import networks
 import discord
+from discord.ext import commands
 
 import socket
 import binascii
@@ -26,14 +28,13 @@ def btoa(_bytes):
 class Th123Packet(object):
     def __init__(self, raw):
         self.raw = raw
-        self.ip = None
-        self.port = None
+        self.ipport = None
         self.matching_flag = None
         self.profile_length = None
         self.profile_name = None
         self.header = raw[0]
         if self.is_(1):
-            self.port, self.ip = btoa(raw[3:9])
+            self.ipport = networks.IpPort.create_with_bin(raw[3:9])
         elif self.is_(5):
             self.matching_flag = raw[25]
             self.profile_length = raw[26]
@@ -43,12 +44,11 @@ class Th123Packet(object):
         return self.header == b
 
     def __str__(self):
-        return (f"port:{self.port}\n"
-                f"ip:{self.ip}\n"
-                f"flag:{self.matching_flag}\n"
-                f"plength:{self.profile_length}\n"
-                f"profile_name:{self.profile_name}\n"
-                f"raw:{binascii.hexlify(self.raw)}\n"
+        return (f"ipport: {self.ipport}\n"
+                f"flag: {self.matching_flag}\n"
+                f"plength: {self.profile_length}\n"
+                f"profile_name: {self.profile_name}\n"
+                f"raw: {binascii.hexlify(self.raw)}\n"
                 )
 
 
@@ -152,9 +152,10 @@ class Th123HolePunchingProtocol:
             self.transport.sendto(data, addr)
 
 
-async def task_func(bot, ip, port):
+async def task_func(bot: commands.Bot, ipport: networks.IpPort) -> None:
+    local_addr = networks.IpPort.create('0.0.0.0', ipport.port())
 
-    base_message = f"***___{ip}:{port}は空いています。___***"
+    base_message = f"***___{ipport}は空いています。___***"
     message = await bot.send_message(
         get_client_ch(bot), base_message
     )
@@ -168,8 +169,8 @@ async def task_func(bot, ip, port):
             # 閉じていればサーバー再起動
             if transport is None or transport.is_closing():
                 transport, protocol = await bot.loop.create_datagram_endpoint(
-                        Th123HolePunchingProtocol,
-                        local_addr=('0.0.0.0', port))
+                    Th123HolePunchingProtocol,
+                    local_addr=tuple(local_addr))
 
             # 一定時間通信なければ初期化
             ack_lifetime = timedelta(seconds=3)
@@ -185,29 +186,33 @@ async def task_func(bot, ip, port):
                         get_client_ch(bot), ".")
                     await bot.delete_message(notify)
 
-                message = await bot.edit_message(
-                    message, f"***___{protocol.profile_name}さんが{ip}:{port}に入っています。___***")
-
+                notice_message = "***___{}さんが{}に入っています。___***".format(
+                    protocol.profile_name,
+                    ipport)
+                message = await bot.edit_message(message, notice_message)
 
             if protocol.punched_flag:
-                message = await bot.edit_message(
-                        message, f"***___{protocol.profile_name}さんと" + ":".join(map(str, protocol.client_addr)) + "で対戦ができます。___***")
+                notice_message = "***___{}さんと{}で対戦ができます。___***".format(
+                    protocol.profile_name,
+                    protocol.client_addr)
                 # 接続を切って通知を180秒間表示し続ける
                 transport.close()
                 await asyncio.sleep(180)
         except Exception as e:
             logger.exception(type(e).__name__, exc_info=e)
 
+
 class ClientMatching(CogMixin):
     def __init__(self, bot):
         self.bot = bot
 
     async def on_ready(self):
-        myip = os.environ["myip"]
-        port1 = 38100
-        port2 = 38101
-        port3 = 38102
-        discord.compat.create_task(task_func(self.bot, myip, port1))
-        discord.compat.create_task(task_func(self.bot, myip, port2))
-        discord.compat.create_task(task_func(self.bot, myip, port3))
+        # myip = os.environ["myip"]
+        myip = "127.0.0.1"
+        discord.compat.create_task(
+            task_func(self.bot, networks.IpPort.create(myip, 38100)))
+        discord.compat.create_task(
+            task_func(self.bot, networks.IpPort.create(myip, 38101)))
+        discord.compat.create_task(
+            task_func(self.bot, networks.IpPort.create(myip, 38102)))
         await super().on_ready()
