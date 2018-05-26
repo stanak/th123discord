@@ -207,8 +207,7 @@ class ClientMatching(CogMixin):
         self.bot = bot
 
     async def on_ready(self):
-        # myip = os.environ["myip"]
-        myip = "127.0.0.1"
+        myip = os.environ["myip"]
         discord.compat.create_task(
             task_func(self.bot, networks.IpPort.create(myip, 38100)))
         discord.compat.create_task(
