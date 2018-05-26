@@ -17,14 +17,6 @@ def get_client_ch(bot):
     return discord.utils.get(bot.get_all_channels(), name="client")
 
 
-def atob(address):
-    return (address[0]).to_bytes(2, byteorder='big')+socket.inet_aton(address[1])
-
-
-def btoa(_bytes):
-    return (int.from_bytes(_bytes[0:2], 'big'), socket.inet_ntoa(_bytes[2:]))
-
-
 class Th123Packet(object):
     def __init__(self, raw):
         self.raw = raw
@@ -79,18 +71,18 @@ def get_ack(data):
 
 
 # host to watcher
-def get_packet_08(port_ip):
-    return binascii.unhexlify((
+def get_packet_08(port_ip: bytes) -> bytes:
+    return bytes.fromhex(
         "08010000" "000200"
-        "%b" "00000000" "00000000"
+        f"{port_ip.hex()}" "00000000" "00000000"
         "70000000" "0000060c" "00000000" "00100000" "00000000" "00010e03"
         "97ce0010" "10101010" "10000000" "010d0905" "0e010000" "00100000"
-    ).encode("ascii") % port_ip)
+    )
 
 
-def get_packet_02(port_ip):
-    return binascii.unhexlify(
-        ("020200" "%b" "00000000" "00000000" "00000000").encode("ascii") % port_ip
+def get_packet_02(port_ip: bytes) -> bytes:
+    return bytes.fromhex(
+        "020200" f"{port_ip.hex()}" "00000000" "00000000" "00000000"
     )
 
 
@@ -118,9 +110,9 @@ class Th123HolePunchingProtocol:
             if self.watcher_addr is None:
                 self.transport.sendto(packet_03, addr)
             else:
-                wip, wport = self.watcher_addr
-                hexstr_wport_wip = binascii.hexlify(atob((wport, wip)))
-                self.transport.sendto(get_packet_02(hexstr_wport_wip), self.client_addr)
+                self.transport.sendto(
+                    get_packet_02(bytes(self.watcher_addr)),
+                    tuple(self.client_addr))
                 self.punched_flag = True
         elif packet.is_(5):
             if self.client_addr is None:
@@ -134,14 +126,14 @@ class Th123HolePunchingProtocol:
                 if packet.matching_flag:
                     self.transport.sendto(packet_07, addr)
                 else:
-                    cip, cport = self.client_addr
-                    hexstr_cport_cip = binascii.hexlify(atob((cport, cip)))
-                    self.transport.sendto(get_packet_08(hexstr_cport_cip), addr)
-                    self.watcher_addr = addr
+                    self.transport.sendto(
+                        get_packet_08(bytes(self.client_addr)),
+                        addr)
+                    self.watcher_addr = networks.IpPort.create(*addr)
         elif packet.is_(14):
             if len(packet.raw) == 3:
                 self.transport.sendto(packet_0d_sp, addr)
-                self.client_addr = addr
+                self.client_addr = networks.IpPort.create(*addr)
             else:
                 self.transport.sendto(get_packet_0d(self.ack), addr)
                 if packet.raw[2:6] == b"\xff\xff\xff\xff":
@@ -195,6 +187,8 @@ async def task_func(bot: commands.Bot, ipport: networks.IpPort) -> None:
                 notice_message = "***___{}さんと{}で対戦ができます。___***".format(
                     protocol.profile_name,
                     protocol.client_addr)
+                message = await bot.edit_message(message, notice_message)
+
                 # 接続を切って通知を180秒間表示し続ける
                 transport.close()
                 await asyncio.sleep(180)
