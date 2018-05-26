@@ -1,6 +1,62 @@
 import unittest
+from unittest.mock import (patch, MagicMock)
+
+from datetime import (datetime, timedelta)
+import time
 
 from cogs.common import networks
+
+
+class testLifetime(unittest.TestCase):
+    def test_dunder_init(self):
+        mock = MagicMock()
+        with patch('cogs.common.networks.Lifetime.reset', mock):
+            arg = timedelta(seconds=1)
+            lifetime = networks.Lifetime(arg)
+
+        self.assertEqual(lifetime.lifetime, arg)
+        mock.assert_called_once()
+
+    def test_reset(self):
+        arg = timedelta(seconds=1)
+        lifetime = networks.Lifetime(arg)
+
+        time.sleep(.1)
+        self.assertNotEqual(lifetime.ack_datetime, datetime.now())
+
+        ack_datetime = lifetime.ack_datetime
+        lifetime.reset()
+        self.assertNotEqual(lifetime.ack_datetime, ack_datetime)
+
+    def test_elapsed_datetime(self):
+        for arg in (timedelta(seconds=1), timedelta(seconds=2)):
+            with self.subTest(arg=arg):
+                lifetime = networks.Lifetime(arg)
+
+                time.sleep(.1)
+                self.assertAlmostEqual(
+                    .1,
+                    lifetime.elapsed_datetime().total_seconds(),
+                    places=1)
+
+                time.sleep(arg.total_seconds())
+                self.assertAlmostEqual(
+                    arg.total_seconds() + .1,
+                    lifetime.elapsed_datetime().total_seconds(),
+                    places=1)
+
+    def test_is_expired(self):
+        for arg in (timedelta(seconds=1), timedelta(seconds=2)):
+            with self.subTest(arg=arg):
+                lifetime = networks.Lifetime(arg)
+
+                self.assertFalse(lifetime.is_expired())
+
+                time.sleep(arg.total_seconds() - .1)
+                self.assertFalse(lifetime.is_expired())
+
+                time.sleep(.1)
+                self.assertTrue(lifetime.is_expired())
 
 
 class TestIpPort(unittest.TestCase):

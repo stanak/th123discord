@@ -33,21 +33,6 @@ def get_hostlist_ch(bot):
     return discord.utils.get(bot.get_all_channels(), name="hostlist")
 
 
-class Lifetime:
-    def __init__(self, lifetime):
-        self.lifetime = lifetime
-        self.reset()
-
-    def reset(self):
-        self.ack_datetime = datetime.now()
-
-    def elapsed_datetime(self):
-        return datetime.now() - self.ack_datetime
-
-    def is_expired(self):
-        return self.elapsed_datetime() >= self.lifetime
-
-
 class HostStatus:
     def __init__(self):
         self.reset()
@@ -89,7 +74,11 @@ class HostStatus:
 
 
 class Th123DatagramProtocol(asyncio.DatagramProtocol):
-    def __init__(self, lifetime, ack_lifetime):
+    def __init__(
+        self,
+        lifetime: networks.Lifetime,
+        ack_lifetime: networks.Lifetime
+    ) -> None:
         self.lifetime = lifetime
         self.ack_lifetime = ack_lifetime
 
@@ -101,10 +90,15 @@ class Th123DatagramProtocol(asyncio.DatagramProtocol):
 
 
 class Th123HostProtocol(Th123DatagramProtocol):
-    def __init__(self, echo_packet, *, lifetime=None, ack_lifetime=None):
+    def __init__(
+        self,
+        echo_packet: bytes, *,
+        lifetime: networks.Lifetime=None,
+        ack_lifetime: networks.Lifetime=None
+    ) -> None:
         super().__init__(
-            lifetime or Lifetime(timedelta(seconds=20)),
-            ack_lifetime or Lifetime(timedelta(seconds=6)))
+            lifetime or networks.Lifetime(timedelta(seconds=20)),
+            ack_lifetime or networks.Lifetime(timedelta(seconds=6)))
         self.echo_packet = echo_packet
 
         self.transport = None
@@ -143,10 +137,10 @@ class Th123HostProtocol(Th123DatagramProtocol):
 
 
 class Th123ClientProtocol(Th123DatagramProtocol):
-    def __init__(self, *, lifetime=None):
+    def __init__(self, *, lifetime: networks.Lifetime=None) -> None:
         super().__init__(
-            lifetime or Lifetime(timedelta(hours=1)),
-            Lifetime(timedelta()))
+            lifetime or networks.Lifetime(timedelta(hours=1)),
+            networks.Lifetime(timedelta()))
 
 
 class PostAsset:

@@ -1,6 +1,22 @@
+from datetime import (datetime, timedelta)
 from ipaddress import IPv4Address as ipv4
 from typing import Any, Iterable
 import unicodedata
+
+
+class Lifetime:
+    def __init__(self, lifetime: timedelta):
+        self.lifetime = lifetime
+        self.reset()
+
+    def reset(self):
+        self.ack_datetime = datetime.now()
+
+    def elapsed_datetime(self):
+        return datetime.now() - self.ack_datetime
+
+    def is_expired(self):
+        return self.elapsed_datetime() >= self.lifetime
 
 
 class IpPort:
