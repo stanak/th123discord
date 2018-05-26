@@ -54,7 +54,7 @@ packet_06 = binascii.unhexlify(
 )
 
 packet_07 = binascii.unhexlify(
-    "0701" "000000"
+    "0700" "000000"
 )
 
 # host to client
@@ -115,21 +115,17 @@ class Th123HolePunchingProtocol:
                     tuple(self.client_addr))
                 self.punched_flag = True
         elif packet.is_(5):
-            if self.client_addr is None:
-                if not packet.matching_flag:
-                    self.transport.sendto(packet_07, addr)
-                else:
-                    self.profile_name = packet.profile_name
-                    self.transport.sendto(packet_06, addr)
-                    self.ack = 1
+            if not packet.matching_flag:
+                self.transport.sendto(packet_07, addr)
+            elif self.client_addr is None:
+                self.profile_name = packet.profile_name
+                self.transport.sendto(packet_06, addr)
+                self.ack = 1
             else:
-                if packet.matching_flag:
-                    self.transport.sendto(packet_07, addr)
-                else:
-                    self.transport.sendto(
-                        get_packet_08(bytes(self.client_addr)),
-                        addr)
-                    self.watcher_addr = networks.IpPort.create(*addr)
+                self.transport.sendto(
+                    get_packet_08(bytes(self.client_addr)),
+                    addr)
+                self.watcher_addr = networks.IpPort.create(*addr)
         elif packet.is_(14):
             if len(packet.raw) == 3:
                 self.transport.sendto(packet_0d_sp, addr)
