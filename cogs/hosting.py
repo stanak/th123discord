@@ -13,21 +13,6 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-PACKET_TO_HOST = binascii.unhexlify(
-    "056e7365" "d9ffc46e" "488d7ca1" "92313472"
-    "95000000" "00280000" "00000000" "00000000"
-    "00000000" "00000000" "00000000" "00000000"
-    "00000000" "00000000" "00000000" "00000000" "00")
-PACKET_TO_SOKUROLL = binascii.unhexlify(
-    "05647365" "d9ffc46e" "488d7ca1" "92313472"
-    "95000000" "00280000" "00000000" "00000000"
-    "00000000" "00000000" "00000000" "00000000"
-    "00000000" "00000000" "00000000" "00000000" "00")
-
-
-def get_echo_packet(is_sokuroll=None):
-    return PACKET_TO_SOKUROLL if is_sokuroll else PACKET_TO_HOST
-
 
 def get_hostlist_ch(bot):
     return discord.utils.get(bot.get_all_channels(), name="hostlist")
@@ -320,7 +305,8 @@ class Hosting(CogMixin):
 
         await self.bot.whisper("ホストの検知を開始します。")
         connect = self.bot.loop.create_datagram_endpoint(
-            lambda: Th123HostProtocol(get_echo_packet(sokuroll_uses)),
+            lambda: Th123HostProtocol(
+                networks.Th123Packet.packet_05(sokuroll_uses=sokuroll_uses)),
             remote_addr=tuple(ipport))
         _, protocol = await connect
         host = HostPostAsset(user, message_body, protocol)
