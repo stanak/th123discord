@@ -1,5 +1,5 @@
 from .cogmixin import CogMixin
-from .common import networks
+from .common.networks import (Lifetime, IpPort)
 import discord
 from discord.ext import commands
 
@@ -26,7 +26,7 @@ class Th123Packet(object):
         self.profile_name = None
         self.header = raw[0]
         if self.is_(1):
-            self.ipport = networks.IpPort.create_with_bin(raw[3:9])
+            self.ipport = IpPort.create_with_bin(raw[3:9])
         elif self.is_(5):
             self.matching_flag = raw[25]
             self.profile_length = raw[26]
@@ -94,7 +94,7 @@ class Th123HolePunchingProtocol:
         self.client_addr = None
         self.watcher_addr = None
         self.profile_name = None
-        self.ack_datetime = datetime.now()
+        self.ack_datetime = Lifetime(timedelta(seconds=3))
         self.punched_flag = None
 
     def connection_made(self, transport):
@@ -105,7 +105,7 @@ class Th123HolePunchingProtocol:
 
     def datagram_received(self, data, addr):
         packet = Th123Packet(data)
-        self.ack_datetime = datetime.now()
+        self.ack_datetime.reset()
         if packet.is_(1):
             if self.watcher_addr is None:
                 self.transport.sendto(packet_03, addr)
@@ -125,11 +125,11 @@ class Th123HolePunchingProtocol:
                 self.transport.sendto(
                     get_packet_08(bytes(self.client_addr)),
                     addr)
-                self.watcher_addr = networks.IpPort.create(*addr)
+                self.watcher_addr = IpPort.create(*addr)
         elif packet.is_(14):
             if len(packet.raw) == 3:
                 self.transport.sendto(packet_0d_sp, addr)
-                self.client_addr = networks.IpPort.create(*addr)
+                self.client_addr = IpPort.create(*addr)
             else:
                 self.transport.sendto(get_packet_0d(self.ack), addr)
                 if packet.raw[2:6] == b"\xff\xff\xff\xff":
@@ -140,8 +140,8 @@ class Th123HolePunchingProtocol:
             self.transport.sendto(data, addr)
 
 
-async def task_func(bot: commands.Bot, ipport: networks.IpPort) -> None:
-    local_addr = networks.IpPort.create('0.0.0.0', ipport.port())
+async def task_func(bot: commands.Bot, ipport: IpPort) -> None:
+    local_addr = IpPort.create('0.0.0.0', ipport.port())
 
     base_message = f"***___{ipport}は空いています。___***"
     message = await bot.send_message(
@@ -161,8 +161,7 @@ async def task_func(bot: commands.Bot, ipport: networks.IpPort) -> None:
                     local_addr=tuple(local_addr))
 
             # 一定時間通信なければ初期化
-            ack_lifetime = timedelta(seconds=3)
-            if datetime.now() - protocol.ack_datetime > ack_lifetime:
+            if protocol.ack_datetime.is_expired():
                 protocol.initialize()
 
             if protocol.profile_name is None:
@@ -199,9 +198,9 @@ class ClientMatching(CogMixin):
     async def on_ready(self):
         myip = os.environ["myip"]
         discord.compat.create_task(
-            task_func(self.bot, networks.IpPort.create(myip, 38100)))
+            task_func(self.bot, IpPort.create(myip, 38100)))
         discord.compat.create_task(
-            task_func(self.bot, networks.IpPort.create(myip, 38101)))
+            task_func(self.bot, IpPort.create(myip, 38101)))
         discord.compat.create_task(
-            task_func(self.bot, networks.IpPort.create(myip, 38102)))
+            task_func(self.bot, IpPort.create(myip, 38102)))
         await super().on_ready()
