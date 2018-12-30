@@ -14,10 +14,10 @@ class Manager(CogMixin):
     )
     @checks.is_manager()
     async def _speak_as_shanghai(self, ctx,
-                                 channel: discord.Channel, *messages):
+                                 channel: discord.Channel, *, messages):
         """
         特定のチャンネルに上海botがメッセージを送ります。
         アナウンスの例「!shanghai #announcements botを更新しました。」
         """
-        joined_message = " ".join(messages)
+        joined_message = "".join(messages)
         await self.bot.send_message(channel, joined_message)
