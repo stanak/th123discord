@@ -60,3 +60,20 @@ class General(CogMixin):
             except Exception as e:
                 raise commands.BadArgument
             await self.bot.say(f"サーバーリージョンを{region}に変更しました。")
+
+    @commands.command()
+    async def omikuji(self):
+        """
+        おみくじを引きます。なんちゃって浅草寺仕様です。
+        大吉＞吉＞半吉＞小吉＞末小吉＞末吉＞凶
+        例「!omikuji」
+        """
+        omikuji_map = ["大吉(17%)"] * 17\
+                    + ["吉(35%)"] * 35\
+                    + ["半吉(5%)"] * 5\
+                    + ["小吉(4%)"] * 4\
+                    + ["末小吉(3%)"] * 3\
+                    + ["末吉(6%)"] * 6\
+                    + ["凶(30%)"] * 30
+        await self.bot.say(random.choice(omikuji_map))
+
