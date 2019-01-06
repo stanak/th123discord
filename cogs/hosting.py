@@ -208,9 +208,7 @@ class HostListObserver:
         cls._bot = bot
 
         base_message = "**{}人が対戦相手を募集しています:**\n"
-        message = await cls._bot.send_message(
-            get_hostlist_ch(cls._bot),
-            base_message.format(0))
+        message = await get_hostlist_ch(cls._bot).send(base_message.format(0))
 
         while True:
             try:
@@ -231,7 +229,7 @@ class HostListObserver:
                 post_message = (
                     base_message.format(len(message_body_list)) +
                     "\n".join(message_body_list))
-                await cls._bot.edit_message(message, post_message)
+                await message.edit(content=post_message)
             except Exception as e:
                 logger.exception(type(e).__name__, exc_info=e)
 
@@ -239,7 +237,7 @@ class HostListObserver:
     async def close(cls, host):
         close_message = host.get_close_message()
         if close_message:
-            await cls._bot.send_message(host.user, close_message)
+            await host.user.send(close_message)
 
         cls._remove(host)
         host.terminate()
@@ -247,9 +245,7 @@ class HostListObserver:
     @classmethod
     async def append(cls, host):
         cls._host_list.append(host)
-        message = await cls._bot.send_message(
-            get_hostlist_ch(cls._bot),
-            ".")
+        message = await get_hostlist_ch(cls._bot).send(".")
         await cls._bot.delete_message(message)
 
     @classmethod
@@ -268,7 +264,7 @@ class Hosting(CogMixin):
         self.bot = bot
 
     async def on_ready(self):
-        discord.compat.create_task(HostListObserver.task_func(self.bot))
+        asyncio.ensure_future(HostListObserver.task_func(self.bot))
         await super().on_ready()
 
     @checks.only_private()

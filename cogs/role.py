@@ -34,9 +34,7 @@ class Role(CogMixin):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.group(
-        pass_context=True
-    )
+    @commands.group()
     async def character(self, ctx):
         """
         使用キャラ表明の役職に関連するコマンドです。
@@ -55,11 +53,10 @@ class Role(CogMixin):
         使用キャラを霊夢と魔理沙に設定する例「!character set reimu marisa」
         DMから利用不可。
         """
-        user = ctx.message.author
         if not all([role.name in characters for role in roles]):
             raise commands.BadArgument
-        await self.bot.add_roles(user, *roles)
-        await self.bot.say("役職を追加しました。", delete_after=10)
+        await ctx.author.add_roles(*roles)
+        await ctx.send("役職を追加しました。", delete_after=10)
 
 
     @character.command(
@@ -72,8 +69,7 @@ class Role(CogMixin):
         使用キャラの霊夢を外す例「!character unset reimu」
         DMから利用不可。
         """
-        user = ctx.message.author
         if not all([role.name in characters for role in roles]):
             raise commands.BadArgument
-        await self.bot.remove_roles(user, *roles)
-        await self.bot.say("役職を解除しました。", delete_after=10)
+        await ctx.author.remove_roles(*roles)
+        await ctx.send("役職を解除しました。", delete_after=10)

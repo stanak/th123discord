@@ -16,10 +16,10 @@ class Shanghai(commands.Bot):
 
     async def send_command_help(self, ctx):
         if ctx.invoked_subcommand is None:
-            pages = self.formatter.format_help_for(ctx, ctx.command)
+            pages = await self.formatter.format_help_for(ctx, ctx.command)
         else:
-            pages = self.formatter.format_help_for(ctx, ctx.invoked_subcommand)
-        await self.send_message(ctx.message.channel, "\n".join(pages))
+            pages = await self.formatter.format_help_for(ctx, ctx.invoked_subcommand)
+        await ctx.send( "\n".join(pages))
 
     """
     events
@@ -27,45 +27,41 @@ class Shanghai(commands.Bot):
     async def on_ready(self):
         logger.info("on ready...")
 
-    async def on_command_error(self, exception, ctx):
-        channel = ctx.message.channel
-        user = ctx.message.author
+    async def on_command_error(self, ctx, exception):
         if isinstance(exception, commands.CommandNotFound):
-            await self.send_message(channel, "コマンドが存在しません。")
+            await ctx.channel.send("コマンドが存在しません。")
         elif isinstance(exception,
                         (commands.MissingRequiredArgument,
                          commands.TooManyArguments,
                          commands.CheckFailure)):
             await self.send_command_help(ctx)
         elif isinstance(exception, commands.BadArgument):
-            await self.send_message(channel, "不正な入力です。")
+            await ctx.channel.send("不正な入力です。")
         elif isinstance(exception, commands.NoPrivateMessage):
-            await self.send_message(channel, "このコマンドはDMでは利用できません。")
+            await ctx.channel.send("このコマンドはDMでは利用できません。")
         elif isinstance(exception, OnlyPrivateMessage):
-            await self.send_message(user, "このコマンドはDMからのみ利用できます。")
+            await ctx.author.send("このコマンドはDMからのみ利用できます。")
         elif isinstance(exception, commands.DisabledCommand):
-            await self.send_message(channel, "このコマンドは無効化されています。")
+            await ctx.channel.send("このコマンドは無効化されています。")
         elif isinstance(exception, commands.CommandOnCooldown):
-            await self.send_message(channel, "投稿間隔が短すぎます。")
+            await ctx.channel.send("投稿間隔が短すぎます。")
             logger.exception(type(exception).__name__, exc_info=exception)
         elif isinstance(exception, commands.CommandInvokeError):
-            await self.send_message(channel, "コマンド呼び出しに失敗しました。")
+            await ctx.channel.send("コマンド呼び出しに失敗しました。")
             logger.exception(type(exception.original).__name__, exc_info=exception.original)
         else:
             logger.exception(type(exception).__name__, exc_info=exception)
 
     async def on_member_join(self, member):
-        server = member.server
-        information_ch = discord.utils.get(server.channels,
-                                           name="information")
-        members_count = len(server.members)
+        guild = member.guild
+        default_ch = discord.utils.get(guild.channels, id=guild.id)
+        information_ch = discord.utils.get(guild.channels, name="information")
+        members_count = len(guild.members)
         fmt = ("{0.mention}さん、ようこそ{1.name}サーバーへ。\n"
                "あなたは{2}人目の参加者です。\n"
                "サーバー概要は{3.mention}を御覧ください。\n"
                "コマンドについて分からないことがあれば「!help」と入力してみてください。上海が伺います。")
-        await self.send_message(server,
-                                fmt.format(member, server,
-                                           members_count, information_ch))
+        await default_ch.send(fmt.format(member, guild, members_count, information_ch))
 
 
 """

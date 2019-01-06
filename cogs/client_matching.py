@@ -144,9 +144,7 @@ async def task_func(bot: commands.Bot, ipport: IpPort) -> None:
     local_addr = IpPort.create('0.0.0.0', ipport.port())
 
     base_message = f"***___{ipport}は空いています。___***"
-    message = await bot.send_message(
-        get_client_ch(bot), base_message
-    )
+    message = await get_client_ch(bot).send(base_message)
     transport = None
 
     while True:
@@ -165,24 +163,23 @@ async def task_func(bot: commands.Bot, ipport: IpPort) -> None:
                 protocol.initialize()
 
             if protocol.profile_name is None:
-                message = await bot.edit_message(message, base_message)
+                await message.edit(content=base_message)
             else:
                 # 一瞬メッセージを送信して通知を付ける
                 if message.content == base_message:
-                    notify = await bot.send_message(
-                        get_client_ch(bot), ".")
+                    notify = await get_client_ch(bot).send(".")
                     await bot.delete_message(notify)
 
                 notice_message = "***___{}さんが{}に入っています。___***".format(
                     protocol.profile_name,
                     ipport)
-                message = await bot.edit_message(message, notice_message)
+                await message.edit(content=notice_message)
 
             if protocol.punched_flag:
                 notice_message = "***___{}さんと{}で対戦ができます。___***".format(
                     protocol.profile_name,
                     protocol.client_addr)
-                message = await bot.edit_message(message, notice_message)
+                await message.edit(content=notice_message)
 
                 # 接続を切って通知を180秒間表示し続ける
                 transport.close()
@@ -197,10 +194,10 @@ class ClientMatching(CogMixin):
 
     async def on_ready(self):
         myip = os.environ["myip"]
-        discord.compat.create_task(
+        asyncio.ensure_future(
             task_func(self.bot, IpPort.create(myip, 38100)))
-        discord.compat.create_task(
+        asyncio.ensure_future(
             task_func(self.bot, IpPort.create(myip, 38101)))
-        discord.compat.create_task(
+        asyncio.ensure_future(
             task_func(self.bot, IpPort.create(myip, 38102)))
         await super().on_ready()
