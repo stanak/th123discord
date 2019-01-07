@@ -14,7 +14,7 @@ def is_manager():
 
 
 def _check_private(ctx):
-    if isinstance(ctx.channel, discord.DMChannel):
+    if not isinstance(ctx.channel, discord.DMChannel):
         raise errors.OnlyPrivateMessage
     return True
 

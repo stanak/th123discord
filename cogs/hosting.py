@@ -246,7 +246,7 @@ class HostListObserver:
     async def append(cls, host):
         cls._host_list.append(host)
         message = await get_hostlist_ch(cls._bot).send(".")
-        await cls._bot.delete_message(message)
+        await message.delete()
 
     @classmethod
     def terminate(cls, *, user):
@@ -276,10 +276,10 @@ class Hosting(CogMixin):
         募集例「!host 198.51.100.123:10800 霊夢　レート1500　どなたでもどうぞ！」
         """
         user = ctx.message.author
-        await self.invite_as_host(user, ip_port, comment, sokuroll_uses=False)
+        await self.invite_as_host(ctx, user, ip_port, comment, sokuroll_uses=False)
 
     @checks.only_private()
-    @commands.command(pass_context=True)
+    @commands.command()
     async def rhost(self, ctx, ip_port: str, *comment):
         """
         #holtlistにsokuroll有りの対戦募集を投稿します。
@@ -287,9 +287,9 @@ class Hosting(CogMixin):
         募集例「!rhost 198.51.100.123:10800 霊夢　レート1500　どなたでもどうぞ！」
         """
         user = ctx.message.author
-        await self.invite_as_host(user, ip_port, comment, sokuroll_uses=True)
+        await self.invite_as_host(ctx, user, ip_port, comment, sokuroll_uses=True)
 
-    async def invite_as_host(self, user, ip_port, comment, *, sokuroll_uses):
+    async def invite_as_host(self, ctx, user, ip_port, comment, *, sokuroll_uses):
         try:
             ipport = networks.IpPort.create_with_str(ip_port)
         except ValueError:
@@ -299,7 +299,7 @@ class Hosting(CogMixin):
             ":regional_indicator_r:" if sokuroll_uses else "",
             f"{user.mention}, {ipport} | {' '.join(comment)}"]).strip()
 
-        await self.bot.whisper("ホストの検知を開始します。")
+        await ctx.send("ホストの検知を開始します。")
         connect = self.bot.loop.create_datagram_endpoint(
             lambda: Th123HostProtocol(
                 networks.Th123Packet.packet_05(sokuroll_uses=sokuroll_uses)),
@@ -309,7 +309,7 @@ class Hosting(CogMixin):
         await HostListObserver.append(host)
 
     @checks.only_private()
-    @commands.command(pass_context=True)
+    @commands.command()
     async def client(self, ctx, *comment):
         """
         #holtlistにホスト検知を行わない対戦募集を投稿します。
@@ -319,17 +319,17 @@ class Hosting(CogMixin):
         user = ctx.message.author
         message_body = f"{user.mention}, {' '.join(comment)}"
 
-        await self.bot.whisper("対戦募集を投稿します。")
+        await ctx.send("対戦募集を投稿します。")
         protocol = Th123ClientProtocol()
         host = ClientPostAsset(user, message_body, protocol)
         await HostListObserver.append(host)
 
     @checks.only_private()
-    @commands.command(pass_context=True)
+    @commands.command()
     async def close(self, ctx):
         """
         #hostlistへの投稿を取り下げます。
         """
-        await self.bot.whisper("対戦相手の募集を取り下げます。")
+        await ctx.send("対戦相手の募集を取り下げます。")
         user = ctx.message.author
         HostListObserver.terminate(user=user)
