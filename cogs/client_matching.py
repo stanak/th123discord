@@ -168,7 +168,7 @@ async def task_func(bot: commands.Bot, ipport: IpPort) -> None:
                 # 一瞬メッセージを送信して通知を付ける
                 if message.content == base_message:
                     notify = await get_client_ch(bot).send(".")
-                    await bot.delete_message(notify)
+                    await notify.delete()
 
                 notice_message = "***___{}さんが{}に入っています。___***".format(
                     protocol.profile_name,
