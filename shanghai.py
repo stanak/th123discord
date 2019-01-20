@@ -90,15 +90,15 @@ main
 """
 
 
-def _get_cog_classes(cog_names):
+def _get_cog_classes():
     inspected_cogs_classes = inspect.getmembers(cogs, inspect.isclass)
     cog_classes = [c for name, c in inspected_cogs_classes
-                   if name in cog_names and "Mixin" not in name]
+                   if "Mixin" not in name]
     return cog_classes
 
 
-def load_cogs(bot, cog_names):
-    cog_classes = _get_cog_classes(cog_names)
+def load_cogs(bot):
+    cog_classes = _get_cog_classes()
     print(cog_classes)
     for cog_class in cog_classes:
         cog_class.setup(bot)
@@ -114,7 +114,6 @@ if __name__ == "__main__":
     logging.getLogger("__main__").setLevel(logging.DEBUG)
 
     token = os.environ["DISCORD_TOKEN"]
-    cog_names = ["General", "HiddenChannel", "Manager", "Hosting", "Role", "ClientMatching"]
     bot = Shanghai(formatter=Formatter())
-    bot = load_cogs(bot, cog_names)
+    bot = load_cogs(bot)
     bot.run(token)
