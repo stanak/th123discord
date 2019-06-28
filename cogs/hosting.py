@@ -262,10 +262,13 @@ class HostListObserver:
 class Hosting(CogMixin):
     def __init__(self, bot):
         self.bot = bot
+        self.first_ready = False
 
     async def on_ready(self):
-        asyncio.ensure_future(HostListObserver.task_func(self.bot))
-        await super().on_ready()
+        if not self.first_ready:
+            asyncio.ensure_future(HostListObserver.task_func(self.bot))
+            await super().on_ready()
+            self.first_ready = True
 
     @checks.only_private()
     @commands.command(pass_context=True)

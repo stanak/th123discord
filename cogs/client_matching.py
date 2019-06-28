@@ -191,13 +191,16 @@ async def task_func(bot: commands.Bot, ipport: IpPort) -> None:
 class ClientMatching(CogMixin):
     def __init__(self, bot):
         self.bot = bot
+        self.first_ready = False
 
     async def on_ready(self):
-        myip = os.environ["myip"]
-        asyncio.ensure_future(
-            task_func(self.bot, IpPort.create(myip, 38100)))
-        asyncio.ensure_future(
-            task_func(self.bot, IpPort.create(myip, 38101)))
-        asyncio.ensure_future(
-            task_func(self.bot, IpPort.create(myip, 38102)))
-        await super().on_ready()
+        if not self.first_ready:
+            myip = os.environ["myip"]
+            asyncio.ensure_future(
+                task_func(self.bot, IpPort.create(myip, 38100)))
+            asyncio.ensure_future(
+                task_func(self.bot, IpPort.create(myip, 38101)))
+            asyncio.ensure_future(
+                task_func(self.bot, IpPort.create(myip, 38102)))
+            await super().on_ready()
+            self.first_ready = True
