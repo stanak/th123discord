@@ -6,22 +6,28 @@ import discord.utils
 import inspect
 import logging
 
-from discord.ext.commands.bot import _default_help_command
 
 logger = logging.getLogger(__name__)
 
-async def _help_command(ctx, *commands: str):
-    """
-    このメッセージを表示します。
-    """
-    await _default_help_command(ctx, *commands)
+
+class UserHelpCommand(commands.HelpCommand):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.command_attrs.setdefault('help', 'このメッセージを表示します')
+
+    def get_ending_note(self):
+        command_name = self.context.invoked_with
+        description = ("helpコマンドでは主に当サーバー特有のコマンドについて説明します。\n"
+                       "各チャンネルやサーバーの説明については#informationチャンネルのURLを参照してください。\n"
+                       "「{0}{1} 各コマンド名」のように入力するとより詳しい情報が表示されます。"
+                       ).format(self.clean_prefix, command_name)
+        return description
+
 
 
 class Shanghai(commands.Bot):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, command_prefix="!", pm_help=True, **kwargs)
-        self.remove_command("help")
-        self.command(**self.help_attrs)(_help_command)
+        super().__init__(*args, command_prefix="!", pm_help=True, help_command=UserHelpCommand(), **kwargs)
 
     async def send_command_help(self, ctx):
         if ctx.invoked_subcommand is None:
@@ -72,18 +78,6 @@ class Shanghai(commands.Bot):
                "コマンドについて分からないことがあれば「!help」と入力してみてください。上海が伺います。")
         await default_ch.send(fmt.format(member, guild, members_count, information_ch))
 
-class Formatter(commands.HelpFormatter):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-    def get_ending_note(self):
-        command_name = self.context.invoked_with
-        description = ("helpコマンドでは主に当サーバー特有のコマンドについて説明します。\n"
-                       "各チャンネルやサーバーの説明については#informationチャンネルのURLを参照してください。\n"
-                       "「{0}{1} 各コマンド名」のように入力するとより詳しい情報が表示されます。"
-                       ).format(self.clean_prefix, command_name)
-        return description
-
 
 """
 main
@@ -114,6 +108,6 @@ if __name__ == "__main__":
     logging.getLogger("__main__").setLevel(logging.DEBUG)
 
     token = os.environ["DISCORD_TOKEN"]
-    bot = Shanghai(formatter=Formatter())
+    bot = Shanghai()
     bot = load_cogs(bot)
     bot.run(token)
