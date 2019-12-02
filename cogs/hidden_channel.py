@@ -45,7 +45,7 @@ def _is_hidden(channel: discord.TextChannel):
     return not visible
 
 
-class HiddenChannel(CogMixin):
+class HiddenChannel(CogMixin, commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 

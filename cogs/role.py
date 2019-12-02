@@ -30,7 +30,7 @@ characters = [
 ]
 
 
-class Role(CogMixin):
+class Role(CogMixin, commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 

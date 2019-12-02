@@ -259,11 +259,12 @@ class HostListObserver:
         cls._host_list.remove(host)
 
 
-class Hosting(CogMixin):
+class Hosting(CogMixin, commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.first_ready = False
 
+    @commands.Cog.listener()
     async def on_ready(self):
         if not self.first_ready:
             asyncio.ensure_future(HostListObserver.task_func(self.bot))

@@ -4,7 +4,7 @@ import discord
 from discord.ext import commands
 
 
-class Manager(CogMixin):
+class Manager(CogMixin, commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 

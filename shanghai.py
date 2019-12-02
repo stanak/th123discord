@@ -10,31 +10,24 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class UserHelpCommand(commands.HelpCommand):
+class UserHelpCommand(commands.DefaultHelpCommand):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.command_attrs.setdefault('help', 'このメッセージを表示します')
+        self.command_attrs['help'] =  'このメッセージを表示します。'
 
     def get_ending_note(self):
-        command_name = self.context.invoked_with
         description = ("helpコマンドでは主に当サーバー特有のコマンドについて説明します。\n"
                        "各チャンネルやサーバーの説明については#informationチャンネルのURLを参照してください。\n"
-                       "「{0}{1} 各コマンド名」のように入力するとより詳しい情報が表示されます。"
-                       ).format(self.clean_prefix, command_name)
+                       "「{0}help 各コマンド名」のように入力するとより詳しい情報が表示されます。"
+                       ).format(self.clean_prefix)
         return description
 
 
 
 class Shanghai(commands.Bot):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, command_prefix="!", pm_help=True, help_command=UserHelpCommand(), **kwargs)
+        super().__init__(*args, command_prefix="!", help_command=UserHelpCommand(dm_help=True, sort_commands=False), **kwargs)
 
-    async def send_command_help(self, ctx):
-        if ctx.invoked_subcommand is None:
-            pages = await self.formatter.format_help_for(ctx, ctx.command)
-        else:
-            pages = await self.formatter.format_help_for(ctx, ctx.invoked_subcommand)
-        await ctx.send( "\n".join(pages))
 
     """
     events
@@ -49,7 +42,7 @@ class Shanghai(commands.Bot):
                         (commands.MissingRequiredArgument,
                          commands.TooManyArguments,
                          commands.CheckFailure)):
-            await self.send_command_help(ctx)
+            await ctx.send_help()
         elif isinstance(exception, commands.BadArgument):
             await ctx.channel.send("不正な入力です。")
         elif isinstance(exception, commands.NoPrivateMessage):

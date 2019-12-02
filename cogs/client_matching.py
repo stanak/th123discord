@@ -188,11 +188,12 @@ async def task_func(bot: commands.Bot, ipport: IpPort) -> None:
             logger.exception(type(e).__name__, exc_info=e)
 
 
-class ClientMatching(CogMixin):
+class ClientMatching(CogMixin, commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.first_ready = False
 
+    @commands.Cog.listener()
     async def on_ready(self):
         if not self.first_ready:
             myip = os.environ["myip"]
