@@ -49,11 +49,12 @@ class Anonymous(CogMixin, commands.Cog):
         ch = get_anonymous_ch(self.bot)
         await ch.send(f'{self.author2id[author]}: {" ".join(comment)}')
 
-
-    @checks.only_private()
-    @checks.is_manager()
     @commands.command()
-    async def check_ids(self, ctx, aid):
+    @checks.is_manager()
+    async def check_ids(self, ctx, aid: str):
+        """
+        anonymousのIDを元にユーザーを特定します。
+        """
         self.update_aid()
         author = [key for key, value in self.author2id.items() if value == aid]
         if author:
