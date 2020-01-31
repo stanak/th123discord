@@ -36,7 +36,8 @@ class Anonymous(CogMixin, commands.Cog):
         #anonymousに匿名(毎日変わるID付き)でメッセージを送信します。どこからでも利用可。
         過激な発言はご遠慮ください。問題発生時のみ、管理者が特定の上警告します。
         """
-        await ctx.message.delete()
+        if not isinstance(ctx.channel, discord.DMChannel):
+            await ctx.message.delete()
         self.update_aid()
         author = ctx.message.author
         if author not in self.author2id:
