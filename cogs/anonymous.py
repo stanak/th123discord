@@ -12,7 +12,7 @@ def get_anonymous_ch(bot):
 
 
 def get_id():
-    randlst = [random.choice(string.ascii_letters + string.digits) for i in range(6)]
+    randlst = [random.choice(string.ascii_lowercase + string.digits) for i in range(6)]
     return ''.join(randlst)
 
 
