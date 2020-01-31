@@ -4,7 +4,7 @@ from discord.ext import commands
 import discord
 import random
 import string
-from datetime import datetime
+from datetime import date
 
 
 def get_anonymous_ch(bot):
@@ -20,23 +20,23 @@ class Anonymous(CogMixin, commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.author2id = {}
-        self.day = datetime.today()
+        self.day = date.today()
 
     def update_aid(self):
-        now = datetime.today()
+        now = date.today()
         if self.day < now:
             self.day = now
             self.author2id = {}
 
-    @checks.only_private()
     @commands.command(
         name="a"
     )
     async def anonymous(self, ctx, *comment):
         """
-        #anonymousに匿名(毎日変わるID付き)でメッセージを送信します。
+        #anonymousに匿名(毎日変わるID付き)でメッセージを送信します。どこからでも利用可。
         過激な発言はご遠慮ください。問題発生時のみ、管理者が特定の上警告します。
         """
+        await ctx.message.delete()
         self.update_aid()
         author = ctx.message.author
         if author not in self.author2id:
@@ -47,6 +47,7 @@ class Anonymous(CogMixin, commands.Cog):
 
         ch = get_anonymous_ch(self.bot)
         await ch.send(f'{self.author2id[author]}: {" ".join(comment)}')
+
 
     @checks.only_private()
     @checks.is_manager()
