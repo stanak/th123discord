@@ -5,3 +5,4 @@ from .hidden_channel import HiddenChannel
 from .hosting import Hosting
 from .role import Role
 from .client_matching import ClientMatching
+from .anonymous import Anonymous
