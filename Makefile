@@ -11,10 +11,10 @@ BUILDDIR      = ./
 # for i18n
 SPHINXINTL    = sphinx-intl
 LANGUAGE      = en
-LOCALEDIR     = $(SOURCEDIR)/locale/$(LANGUAGE)
+LOCALEDIR     = $(SOURCEDIR)/locale/$(LANGUAGE)/LC_MESSAGES/
 I18NDIR       = $(BUILDDIR)/$(LANGUAGE)/
 POTDIR        = $(BUILDDIR)/_gettext/
-SPHINXOPTS_   = -D language=$(LANGUAGE) $(SPHINXOPTS) $(O)
+SPHINXOPTS_   = -D language=$(LANGUAGE) -D html_copy_source=0 $(SPHINXOPTS) $(O)
 
 # Put it first so that "make" without argument is like "make help".
 help:
