@@ -1,0 +1,142 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2017, starnak
+# This file is distributed under the same license as the th123discord
+# package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: th123discord \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-03-28 20:28+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.3\n"
+
+msgid "上海botで利用できる主要コマンド"
+msgstr ""
+"Main Commands Supported by Shanghai-bot"
+
+msgid ""
+"「!help」と入力すると最新のコマンド情報一覧がDMに送られます。 「!help host」や「!help ch "
+"join」など、コマンドを対象に取るとより詳しい情報が得られます。"
+msgstr ""
+"Try the ``!help`` command first. "
+"Shanghai will send you a DM which includes a brief list of the latest commands available. "
+"``!help`` can also takes other commands as arguments to provide detailed information of them, "
+"for example, ``!help host``, ``!help ch join``, and more. "
+
+msgid "非想天則 対戦募集コマンド"
+msgstr ""
+"th123-related Commands"
+
+msgid "!host <ip_address>:<port_no> <message>"
+msgstr ""
+
+msgid ":ref:`#hostlist <hostlist>` に、対戦募集を投稿します。 コマンドが受け付けられると、上海BOTがメッセージを返します。"
+msgstr ""
+"Registers your host/client information for th123 matches "
+"to the :ref:`#hostlist <hostlist>` channel. "
+"Shanghai-bot will reply to you when she accepts your registration. "
+
+msgid "**上海BOTへのDMからのみ利用できます。**"
+msgstr ""
+"You can use this command **only via DMs to Shanghai-bot**."
+
+msgid "例「!host 198.51.100.123:10800 お手柔らかにお願いします！」"
+msgstr ""
+"Example. \"!host 198.51.100.123:10800 Let's enjoy games!\""
+
+msgid "募集後は自動でホストを検知します。"
+msgstr ""
+"After registration, Shanghai-bot automatically checks if your host is accessible or not."
+
+msgid "約20秒ホストが検知されなければ、メッセージと共に募集が取り下げられます。"
+msgstr ""
+"If Shanghai-bot cannot find any accessible host with the given information, "
+"she will reply to you and automatically cancel your registration. "
+
+msgid "!client <message>"
+msgstr ""
+
+msgid "例「!client DMでIPください！」"
+msgstr ""
+"Example. \"!client Please tell me your IP via DM!\""
+
+msgid "募集メッセージは1時間持続し、IP待ちやHamachi募集に用いることができます。"
+msgstr ""
+"The registered message will remain for 1 hour, during which you can wait for "
+"kinds of events where someone gives you an IP for games, where someone "
+"proposes you to try matches with Hamachi, and so on."
+
+msgid "!close"
+msgstr ""
+
+msgid "host_ 、client_ によって :ref:`#hostlist <hostlist>` に投稿した、自分の対戦募集を明示的に消去します。"
+msgstr ""
+"Removes explicitly your registration in the :ref:`#hostlist <hostlist>` channel "
+"created by the host_ comman or the client_ one. "
+
+msgid "例「!close」"
+msgstr ""
+"Example. \"!close\""
+
+msgid "Discord チャンネル関連コマンド"
+msgstr ""
+"Discord Channel Utility Commands"
+
+msgid "!ch"
+msgstr ""
+
+msgid "隠れチャンネルへの操作全般を行うコマンドです。 以下サブコマンドと併せて使います。"
+msgstr ""
+"Gives you many functions related to hidden channels. "
+"Combine one of the following subcommands depending on what you want. "
+
+msgid "devチャンネルに参加する例「!ch join dev」"
+msgstr ""
+"To join a hidden channel called \"dev\": \"!ch join dev\""
+
+msgid "!ch join <channel_name>"
+msgstr ""
+
+msgid "隠れチャンネルへ入室します。 DMから利用できません。"
+msgstr ""
+"Lets you join the hidden channel named ``<channel_name>``. "
+"You cannot use this command via DMs to Shanghai-bot."
+
+msgid "!ch leave <channel_name>"
+msgstr ""
+
+msgid "隠れチャンネルを退室します。 DMから利用できません。"
+msgstr ""
+"Lets you leave the hidden channel named ``<channel_name>``. "
+"You cannot use this command via DMs to Shanghai-bot."
+
+msgid "devチャンネルを退室する例「!ch leave dev」"
+msgstr ""
+"To leave the hidden channel named \"dev\": \"!ch leave dev\""
+
+msgid "!ch list"
+msgstr ""
+
+msgid "隠れチャンネルと参加者数の一覧を表示します。"
+msgstr ""
+"Shows a brief list of hidden channels with each number of attendees."
+
+msgid "例「!ch list」"
+msgstr ""
+"Example. \"!ch list\""
+
+msgid "その他コマンド"
+msgstr ""
+"Other Commands"
+
+msgid "「!help command名」をご利用ください。"
+msgstr ""
+"Use ``!help`` and ``!help <command name>`` for undocumented commands."

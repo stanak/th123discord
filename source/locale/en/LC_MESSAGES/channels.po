@@ -1,0 +1,302 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2017, starnak
+# This file is distributed under the same license as the th123discord
+# package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: th123discord \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-03-28 20:28+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.3\n"
+
+msgid "チャンネルリスト"
+msgstr ""
+"List of Channels"
+
+msgid "公開チャンネル"
+msgstr ""
+"Public Channels"
+
+msgid "SERVERMETAカテゴリ"
+msgstr ""
+"SERVERMETA Category"
+
+msgid "このサーバーの情報や、要望・意見の送り先。投票機能など。"
+msgstr ""
+"This category consists of channels for management of this server itself: "
+"brief information of the server, requirements to managers, questionnaires, and so."
+
+msgid "#information"
+msgstr ""
+
+msgid "当ページへの窓口。簡易案内。"
+msgstr ""
+"Guides to this HTML with a brief introduction."
+
+msgid "#announcements"
+msgstr ""
+
+msgid "更新情報などの通知。"
+msgstr ""
+"Lists recent announcements from the server manager, "
+"including the recent update history."
+
+msgid "#servermeta"
+msgstr ""
+
+msgid "サーバについての議論、意見、要望など。チャンネルの設立要請もこちらへ。"
+msgstr ""
+"Provides a place for arguments, opinions, requirements about the server. "
+"You can send a request for a new channel here as well. "
+
+msgid "#dev"
+msgstr ""
+
+msgid "隠れチャンネルです。botの改善、協力など。特に技術的な話はこちらへ。"
+msgstr ""
+"A hidden channel where developers and contributors conduct technical "
+"talks, for example, about improvements of Shanghai-bot. "
+
+msgid "GENERALカテゴリ"
+msgstr ""
+"GENERAL Category"
+
+msgid "雑談等。他ゲーの話に花が咲くことも。"
+msgstr ""
+"Channels for casual chat. "
+"People sometimes enjoy talking even about non-th123 games. "
+
+msgid "#general"
+msgstr ""
+
+msgid "汎用雑談チャット。サーバーの玄関口。"
+msgstr ""
+"General chat room. "
+"This channel also has a role of the entrance to this server. "
+
+msgid "#anything"
+msgstr ""
+
+msgid "なんでもありの雑談チャット。"
+msgstr ""
+"A chat room for any kind of topic."
+
+msgid "#gallery"
+msgstr ""
+
+msgid "絵・動画・音楽といった創作の展示場所です。"
+msgstr ""
+"A gallery where creators and viewers enjoy "
+"illustrations, movies, and music. "
+
+msgid "#question"
+msgstr ""
+
+msgid "質問・回答専用チャンネルです。どんな質問でもお気軽に。"
+msgstr ""
+"A channel for questions and answers. "
+"Feel free to ask any questions. "
+
+msgid "MATCHカテゴリ"
+msgstr ""
+"MATCH Category"
+
+msgid "非想天則の対戦募集はこちら。"
+msgstr ""
+"Channels for th123 especially focused on playing games."
+
+msgid "#hostlist"
+msgstr ""
+
+msgid "対戦募集チャンネル。直接書き込めないため、対戦募集は :ref:`\\!hostコマンド <host>` を用いてください。"
+msgstr ""
+"A channel for finding someone to play th123 with. "
+"Note that you cannot write messages to this channel directly. "
+"Use :ref:`\\!hostコマンド <host>` instead. "
+
+msgid "このチャンネルの利用は必ずしも必須ではなく、どこでIPを貼ることがあっても問題ありません。"
+msgstr ""
+"You are not forced to use this channel to play th123 games on this server. "
+"There is no problem writing your IP address to play th123 with someone, for example. "
+
+msgid "#match"
+msgstr ""
+
+msgid "対戦チャット。主に対戦後の挨拶に使われます。"
+msgstr ""
+"A chat room for topics related to th123 matches. "
+"People often use this channel after their matches via the #hostlist channel. "
+
+msgid "#client"
+msgstr ""
+
+msgid "クラ専同士が対戦できるようになる機能が置かれています。詳しくはサーバ内説明を。"
+msgstr ""
+"A special channel where two client-only players can play th123 games without any host. "
+"For details on the actual procedure, go to #client and check the message in the channel. "
+
+msgid "TH123カテゴリ"
+msgstr ""
+"TH123 Category"
+
+msgid "非想天則の話題はこちら。"
+msgstr ""
+"Channels for more general topics related to th123."
+
+msgid "#soku-general"
+msgstr ""
+
+msgid "天則全般の話題向け。ポート開放の相談など、天則に直接関係なくとも関連する話題はこちらにどうぞ。"
+msgstr ""
+"A channel for general topics related to th123. "
+"Even topics not directly related to th123 will be allowed "
+"as long as they are related to th123 to some extent. "
+
+msgid "#soku-beginner"
+msgstr ""
+
+msgid "おおよそ2年未満の人向けチャンネルです。避難所として設置されました。"
+msgstr ""
+"A channel placed for th123 beginners "
+"(up to 2 years from starting, as a rough indication). "
+
+msgid "#soku-advice"
+msgstr ""
+
+msgid "感想戦や、リプレイを貼り付けてのアドバイス希望、はたまた大会運営等の相談など。"
+msgstr ""
+"A channel where players talk after matches for improvement of their moves. "
+"Here some people upload their replays and wait for pieces of advice of skilled players "
+"and others plan to schedule a tournament and consult skilled planners."
+
+msgid "#live"
+msgstr ""
+
+msgid "配信の宣伝にどうぞ。"
+msgstr ""
+"You can advertise live-streaming URLs, mainly related to th123."
+
+msgid "#event"
+msgstr ""
+
+msgid "規模やオン・オフ問わず大会の宣伝にどうぞ。"
+msgstr ""
+"You can advertise any kind of th123 tournament here. "
+
+msgid "# shitaraba-twitter"
+msgstr ""
+
+msgid "非想天則したらば掲示板、Twitter(@th123bot)の投稿通知場所です。"
+msgstr ""
+"A channel connected to Shitaraba-BBS and Twitter(@th123bot) "
+"to find th123 games taken place somewhere else."
+
+msgid "#wiki"
+msgstr ""
+
+msgid "Wikiの編集に関する連絡所にどうぞ。"
+msgstr ""
+"A channel where editors of the th123 Wiki "
+"to share their editing activities and tips."
+
+msgid "VOICEカテゴリ"
+msgstr ""
+"VOICE Category"
+
+msgid "通話専用カテゴリです。"
+msgstr ""
+"Channels for voice chatting"
+
+msgid "#voice-chat"
+msgstr ""
+
+msgid "Voice-Generalでマイク無しで参加したい方向けのチャンネル。"
+msgstr ""
+"A text channel for listening-only attendees to Voice-General without microphones."
+
+msgid "📢Voice-General"
+msgstr ""
+
+msgid "汎用通話チャンネル。クリックで通話接続されるので注意。"
+msgstr ""
+"A voice channel for general purposes. "
+"Note that even a single click lets you attend the voice chat in Discord."
+
+msgid "📢Match"
+msgstr ""
+
+msgid "対戦用通話チャンネル。"
+msgstr ""
+"A voice channel for players on th123 matches to get real-time communication. "
+
+msgid "📢Live"
+msgstr ""
+
+msgid "勝ち抜き枠などの配信用通話チャンネルです。"
+msgstr ""
+"A voice channel which can be used for live streaming. "
+
+msgid "📢Anything"
+msgstr ""
+
+msgid "何にでも使ってください。"
+msgstr ""
+"A voice channel for any purpose. "
+
+msgid "📢麻雀"
+msgstr ""
+
+msgid "隠れチャンネル#mah-jongg専用。"
+msgstr ""
+"A voice channel for a hidden channel, #mah-jongg."
+
+msgid "📢Auto-afk"
+msgstr ""
+
+msgid "一定時間反応がなければ自動でこちらに送られます。"
+msgstr ""
+"A system channel where Discord automatically sends "
+"voice-chat members without any utterance for a long time."
+
+msgid "CHARACTERSカテゴリ"
+msgstr ""
+"CHARACTER Category"
+
+msgid "20キャラの個別チャンネルが設置されています。"
+msgstr ""
+"Channels for character-specific topics. "
+"Each of 20 characters in th123 has its channel."
+
+msgid "EVENTカテゴリ"
+msgstr ""
+"EVENT Category"
+
+msgid "主に大会会場に利用されます。"
+msgstr ""
+"Channels mainly used for th123 events."
+
+msgid "隠れチャンネル"
+msgstr ""
+"Hidden Channels"
+
+msgid ""
+"天則勢による、非想天則以外の活動を行う場所です。メインではないため基本的には隠れていますが、 :ref:`\\!chコマンド <ch>` "
+"を使って誰でも入室することができます。"
+msgstr ""
+"Channels where th123 players enjoy non-th123 activities. "
+"You cannot find these hidden channels by default but you can enter "
+"any of them with :ref:`\\!ch command<ch>` if you want. "
+
+msgid "チャンネルの場所はHIDDENカテゴリ下にあり、チャンネルリストは「!ch list」コマンドで見ることができます。"
+msgstr ""
+"These channels are listed under the HIDDEN category. "
+"You can check the comprehensive list of these channels by the ``!ch list`` command. "
