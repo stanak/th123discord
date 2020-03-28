@@ -77,14 +77,14 @@ msgstr ""
 #: ../source/commands.rst:33
 msgid "例「!client DMでIPください！」"
 msgstr ""
-"Example. \"!client Plese tell me your IP via DM!\""
+"Example. \"!client Please tell me your IP via DM!\""
 
 #: ../source/commands.rst:36
 msgid "募集メッセージは1時間持続し、IP待ちやHamachi募集に用いることができます。"
 msgstr ""
 "The registered message will remain for 1 hour, during which you can wait for "
 "kinds of events where someone gives you an IP for games, where someone "
-"propose you to try matches with Hamachi, and so on."
+"proposes you to try matches with Hamachi, and so on."
 
 #: ../source/commands.rst:46
 msgid "!close"
@@ -93,8 +93,8 @@ msgstr ""
 #: ../source/commands.rst:41
 msgid "host_ 、client_ によって :ref:`#hostlist <hostlist>` に投稿した、自分の対戦募集を明示的に消去します。"
 msgstr ""
-"Removes explicitly your registration in :ref:`#hostlist <hostlist>` "
-"created by host_, or client_ commands. "
+"Removes explicitly your registration in the :ref:`#hostlist <hostlist>` channel "
+"created by the host_ comman or the client_ one. "
 
 #: ../source/commands.rst:45
 msgid "例「!close」"
@@ -114,7 +114,7 @@ msgstr ""
 msgid "隠れチャンネルへの操作全般を行うコマンドです。 以下サブコマンドと併せて使います。"
 msgstr ""
 "Gives you many functions related to hidden channels. "
-"Combined with the following subcommands, determines what you actually want to do."
+"Combine one of the following subcommands depending on what you want. "
 
 #: ../source/commands.rst:57 ../source/commands.rst:63
 msgid "devチャンネルに参加する例「!ch join dev」"
