@@ -1,0 +1,302 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2017, starnak
+# This file is distributed under the same license as the th123discord
+# package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: th123discord \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-03-28 20:28+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.3\n"
+
+#: ../source/channels.rst:3
+msgid "チャンネルリスト"
+msgstr ""
+
+#: ../source/channels.rst:6
+msgid "公開チャンネル"
+msgstr ""
+
+#: ../source/channels.rst:9
+msgid "SERVERMETAカテゴリ"
+msgstr ""
+
+#: ../source/channels.rst:10
+msgid "このサーバーの情報や、要望・意見の送り先。投票機能など。"
+msgstr ""
+
+#: ../source/channels.rst:13
+msgid "#information"
+msgstr ""
+
+#: ../source/channels.rst:13
+msgid "当ページへの窓口。簡易案内。"
+msgstr ""
+
+#: ../source/channels.rst:16
+msgid "#announcements"
+msgstr ""
+
+#: ../source/channels.rst:16
+msgid "更新情報などの通知。"
+msgstr ""
+
+#: ../source/channels.rst:21
+msgid "#servermeta"
+msgstr ""
+
+#: ../source/channels.rst:21
+msgid "サーバについての議論、意見、要望など。チャンネルの設立要請もこちらへ。"
+msgstr ""
+
+#: ../source/channels.rst:25
+msgid "#dev"
+msgstr ""
+
+#: ../source/channels.rst:24
+msgid "隠れチャンネルです。botの改善、協力など。特に技術的な話はこちらへ。"
+msgstr ""
+
+#: ../source/channels.rst:28
+msgid "GENERALカテゴリ"
+msgstr ""
+
+#: ../source/channels.rst:29
+msgid "雑談等。他ゲーの話に花が咲くことも。"
+msgstr ""
+
+#: ../source/channels.rst:32
+msgid "#general"
+msgstr ""
+
+#: ../source/channels.rst:32
+msgid "汎用雑談チャット。サーバーの玄関口。"
+msgstr ""
+
+#: ../source/channels.rst:35
+msgid "#anything"
+msgstr ""
+
+#: ../source/channels.rst:35
+msgid "なんでもありの雑談チャット。"
+msgstr ""
+
+#: ../source/channels.rst:38
+msgid "#gallery"
+msgstr ""
+
+#: ../source/channels.rst:38
+msgid "絵・動画・音楽といった創作の展示場所です。"
+msgstr ""
+
+#: ../source/channels.rst:42
+msgid "#question"
+msgstr ""
+
+#: ../source/channels.rst:41
+msgid "質問・解答専用チャンネルです。どんな質問でもお気軽に。"
+msgstr ""
+
+#: ../source/channels.rst:45
+msgid "MATCHカテゴリ"
+msgstr ""
+
+#: ../source/channels.rst:46
+msgid "非想天則の対戦募集はこちら。"
+msgstr ""
+
+#: ../source/channels.rst:53
+msgid "#hostlist"
+msgstr ""
+
+#: ../source/channels.rst:51
+msgid "対戦募集チャンネル。直接書き込めないため、対戦募集は :ref:`\\!hostコマンド <host>` を用いてください。"
+msgstr ""
+
+#: ../source/channels.rst:53
+msgid "このチャンネルの利用は必ずしも必須ではなく、どこでIPを貼ることがあっても問題ありません。"
+msgstr ""
+
+#: ../source/channels.rst:56
+msgid "#match"
+msgstr ""
+
+#: ../source/channels.rst:56
+msgid "対戦チャット。主に対戦後の挨拶に使われます。"
+msgstr ""
+
+#: ../source/channels.rst:60
+msgid "#client"
+msgstr ""
+
+#: ../source/channels.rst:59
+msgid "クラ専同士が対戦できるようになる機能が置かれています。詳しくはサーバ内説明を。"
+msgstr ""
+
+#: ../source/channels.rst:63
+msgid "TH123カテゴリ"
+msgstr ""
+
+#: ../source/channels.rst:64
+msgid "非想天則の話題はこちら。"
+msgstr ""
+
+#: ../source/channels.rst:67
+msgid "#soku-general"
+msgstr ""
+
+#: ../source/channels.rst:67
+msgid "天則全般の話題向け。ポート開放の相談など、天則に直接関係なくとも関連する話題はこちらにどうぞ。"
+msgstr ""
+
+#: ../source/channels.rst:70
+msgid "#soku-beginner"
+msgstr ""
+
+#: ../source/channels.rst:70
+msgid "おおよそ2年未満の人向けチャンネルです。避難所として設置されました。"
+msgstr ""
+
+#: ../source/channels.rst:73
+msgid "#soku-advice"
+msgstr ""
+
+#: ../source/channels.rst:73
+msgid "感想戦や、リプレイを貼り付けてのアドバイス希望、はたまた大会運営等の相談など。"
+msgstr ""
+
+#: ../source/channels.rst:76
+msgid "#live"
+msgstr ""
+
+#: ../source/channels.rst:76
+msgid "配信の宣伝にどうぞ。"
+msgstr ""
+
+#: ../source/channels.rst:79
+msgid "#event"
+msgstr ""
+
+#: ../source/channels.rst:79
+msgid "規模やオン・オフ問わず大会の宣伝にどうぞ。"
+msgstr ""
+
+#: ../source/channels.rst:82
+msgid "# shitaraba-twitter"
+msgstr ""
+
+#: ../source/channels.rst:82
+msgid "非想天則したらば掲示板、Twitter(@th123bot)の投稿通知場所です。"
+msgstr ""
+
+#: ../source/channels.rst:87
+msgid "#wiki"
+msgstr ""
+
+#: ../source/channels.rst:85
+msgid "Wikiの編集に関する連絡所にどうぞ。"
+msgstr ""
+
+#: ../source/channels.rst:90
+msgid "VOICEカテゴリ"
+msgstr ""
+
+#: ../source/channels.rst:91
+msgid "通話専用カテゴリです。"
+msgstr ""
+
+#: ../source/channels.rst:94
+msgid "#voice-chat"
+msgstr ""
+
+#: ../source/channels.rst:94
+msgid "Voice-Generalでマイク無しで参加したい方向けのチャンネル。"
+msgstr ""
+
+#: ../source/channels.rst:97
+msgid "📢Voice-General"
+msgstr ""
+
+#: ../source/channels.rst:97
+msgid "汎用通話チャンネル。クリックで通話接続されるので注意。"
+msgstr ""
+
+#: ../source/channels.rst:100
+msgid "📢Match"
+msgstr ""
+
+#: ../source/channels.rst:100
+msgid "対戦用通話チャンネル。"
+msgstr ""
+
+#: ../source/channels.rst:103
+msgid "📢Live"
+msgstr ""
+
+#: ../source/channels.rst:103
+msgid "勝ち抜き枠などの配信用通話チャンネルです。"
+msgstr ""
+
+#: ../source/channels.rst:106
+msgid "📢Anything"
+msgstr ""
+
+#: ../source/channels.rst:106
+msgid "何にでも使ってください。"
+msgstr ""
+
+#: ../source/channels.rst:109
+msgid "📢麻雀"
+msgstr ""
+
+#: ../source/channels.rst:109
+msgid "隠れチャンネル#mah-jongg専用。"
+msgstr ""
+
+#: ../source/channels.rst:112
+msgid "📢Auto-afk"
+msgstr ""
+
+#: ../source/channels.rst:112
+msgid "一定時間反応がなければ自動でこちらに送られます。"
+msgstr ""
+
+#: ../source/channels.rst:115
+msgid "CHARACTERSカテゴリ"
+msgstr ""
+
+#: ../source/channels.rst:116
+msgid "20キャラの個別チャンネルが設置されています。"
+msgstr ""
+
+#: ../source/channels.rst:119
+msgid "EVENTカテゴリ"
+msgstr ""
+
+#: ../source/channels.rst:120
+msgid "主に大会会場に利用されます。"
+msgstr ""
+
+#: ../source/channels.rst:123
+msgid "隠れチャンネルリスト"
+msgstr ""
+
+#: ../source/channels.rst:124
+msgid ""
+"天則勢による、非想天則以外の活動を行う場所です。メインではないため基本的には隠れていますが、 :ref:`\\!chコマンド <ch>` "
+"を使って誰でも入室することができます。"
+msgstr ""
+
+#: ../source/channels.rst:126
+msgid "チャンネルの場所はHIDDENカテゴリ下にあり、チャンネルリストは「!ch list」コマンドで見ることができます。"
+msgstr ""
+

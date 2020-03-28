@@ -1,0 +1,119 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2017, starnak
+# This file is distributed under the same license as the th123discord
+# package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: th123discord \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-03-28 20:28+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.3\n"
+
+#: ../source/about.rst:3
+msgid "当ページについて"
+msgstr ""
+
+#: ../source/about.rst:6
+msgid "このサーバーは、どんなサーバー？"
+msgstr ""
+
+#: ../source/about.rst:7
+msgid ""
+"非相天則の対戦やイベントはもちろん、雑談や他ゲームの話題まで、非想天則のつながりをもとに幅広く活動しています。 "
+"天則を始めてみたい方から、昔やっていた方まで、誰でもお気軽にどうぞ。"
+msgstr ""
+
+#: ../source/about.rst:11
+msgid "サーバーへの入り口"
+msgstr ""
+
+#: ../source/about.rst:12
+msgid "`このサーバーに参加する <https://discord.gg/UUCpS3Z>`_ をクリックするとサーバー入口に移動します。"
+msgstr ""
+
+#: ../source/about.rst:16
+msgid "Discordとは？"
+msgstr ""
+
+#: ../source/about.rst:17
+msgid ""
+"手軽にテキスト・ボイスチャットを利用できる、主にゲーマー向けの、軽量で現代的なコミュニケーションツールです。各種OS・モバイル向けクライアントも揃っています。"
+" `Discordトップページ <https://discordapp.com/>`_ "
+"にはSkype,TeamSpeakを捨てろと挑戦的な言葉が書かれています。"
+msgstr ""
+
+#: ../source/about.rst:20
+msgid ""
+"より詳しくは `「Discord」非公式日本語ドキュメント <http://discordjp.eeharu.net>`_ "
+"(外部リンク)をご覧ください。"
+msgstr ""
+
+#: ../source/about.rst:24
+msgid "関連リンク"
+msgstr ""
+
+#: ../source/about.rst:25
+msgid "`東方非想天則 Wiki <http://th123.glasscore.net/>`_"
+msgstr ""
+
+#: ../source/about.rst:26
+msgid "`Tenco! 東方深秘録／東方非想天則プレイヤー情報共有サービス <https://tenco.info/>`_"
+msgstr ""
+
+#: ../source/about.rst:27
+msgid ""
+"`Misc tools - Touhou Hisoutensoku "
+"<https://hisouten.koumakan.jp/wiki/Misc_tools>`_"
+msgstr ""
+
+#: ../source/about.rst:28
+msgid "`Twitter非想天則対戦募集bot <https://twitter.com/th123bot>`_"
+msgstr ""
+
+#: ../source/about.rst:29
+msgid "`東方非想天則リプレイアップローダー <https://ux.getuploader.com/discord_th123/>`_"
+msgstr ""
+
+#: ../source/about.rst:32
+msgid "注意事項"
+msgstr ""
+
+#: ../source/about.rst:33
+msgid "皆さんが快適に過ごせるように、以下の項目については注意・警告・BAN対象となる場合があります。お気をつけ下さい。またそれらについて困っている場合も運営にご相談下さい。"
+msgstr ""
+
+#: ../source/about.rst:35
+msgid "公序良俗に反するもの"
+msgstr ""
+
+#: ../source/about.rst:36
+msgid "ハラスメント行為"
+msgstr ""
+
+#: ../source/about.rst:37
+msgid "クラッキング行為"
+msgstr ""
+
+#: ../source/about.rst:38
+msgid "その他公共の利益に反するもの"
+msgstr ""
+
+#: ../source/about.rst:41
+msgid "お問い合わせ"
+msgstr ""
+
+#: ../source/about.rst:42
+msgid ""
+":ref:`#servermeta <servermeta>` "
+"以外で管理者に連絡を取る必要がある場合、MANAGER役職の誰かへメッセージ(DM)を送信してください。"
+msgstr ""
+

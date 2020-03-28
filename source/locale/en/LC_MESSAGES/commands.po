@@ -1,0 +1,142 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2017, starnak
+# This file is distributed under the same license as the th123discord
+# package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: th123discord \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-03-28 20:28+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.3\n"
+
+#: ../source/commands.rst:3
+msgid "上海botで利用できる主要コマンド"
+msgstr ""
+
+#: ../source/commands.rst:4
+msgid ""
+"「!help」と入力すると最新のコマンド情報一覧がDMに送られます。 「!help host」や「!help ch "
+"join」など、コマンドを対象に取るとより詳しい情報が得られます。"
+msgstr ""
+
+#: ../source/commands.rst:9
+msgid "非想天則 対戦募集コマンド"
+msgstr ""
+
+#: ../source/commands.rst:19
+msgid "!host <ip_address>:<port_no> <message>"
+msgstr ""
+
+#: ../source/commands.rst:14 ../source/commands.rst:28
+msgid ":ref:`#hostlist <hostlist>` に、対戦募集を投稿します。 コマンドが受け付けられると、上海BOTがメッセージを返します。"
+msgstr ""
+
+#: ../source/commands.rst:17
+msgid "**上海BOTへのDMからのみ利用できます。**"
+msgstr ""
+
+#: ../source/commands.rst:19
+msgid "例「!host 198.51.100.123:10800 お手柔らかにお願いします！」"
+msgstr ""
+
+#: ../source/commands.rst
+msgid "募集後は自動でホストを検知します。"
+msgstr ""
+
+#: ../source/commands.rst
+msgid "約20秒ホストが検知されなければ、メッセージと共に募集が取り下げられます。"
+msgstr ""
+
+#: ../source/commands.rst:33
+msgid "!client <message>"
+msgstr ""
+
+#: ../source/commands.rst:31 ../source/commands.rst:43
+msgid "**上海へのDMからのみ利用できます。**"
+msgstr ""
+
+#: ../source/commands.rst:33
+msgid "例「!client DMでIPください！」"
+msgstr ""
+
+#: ../source/commands.rst:36
+msgid "募集メッセージは1時間持続し、IP待ちやHamachi募集に用いることができます。"
+msgstr ""
+
+#: ../source/commands.rst:46
+msgid "!close"
+msgstr ""
+
+#: ../source/commands.rst:41
+msgid "host_ 、client_ によって :ref:`#hostlist <hostlist>` に投稿した、自分の対戦募集を明示的に消去します。"
+msgstr ""
+
+#: ../source/commands.rst:45
+msgid "例「!close」"
+msgstr ""
+
+#: ../source/commands.rst:49
+msgid "Discord チャンネル関連コマンド"
+msgstr ""
+
+#: ../source/commands.rst:57
+msgid "!ch"
+msgstr ""
+
+#: ../source/commands.rst:54
+msgid "隠れチャンネルへの操作全般を行うコマンドです。 以下サブコマンドと併せて使います。"
+msgstr ""
+
+#: ../source/commands.rst:57 ../source/commands.rst:63
+msgid "devチャンネルに参加する例「!ch join dev」"
+msgstr ""
+
+#: ../source/commands.rst:63
+msgid "!ch join <channel_name>"
+msgstr ""
+
+#: ../source/commands.rst:60
+msgid "隠れチャンネルへ入室します。 DMから利用できません。"
+msgstr ""
+
+#: ../source/commands.rst:69
+msgid "!ch leave <channel_name>"
+msgstr ""
+
+#: ../source/commands.rst:66
+msgid "隠れチャンネルを退室します。 DMから利用できません。"
+msgstr ""
+
+#: ../source/commands.rst:69
+msgid "devチャンネルに参加する例「!ch leave dev」"
+msgstr ""
+
+#: ../source/commands.rst:74
+msgid "!ch list"
+msgstr ""
+
+#: ../source/commands.rst:72
+msgid "隠れチャンネルと参加者数の一覧を表示します。"
+msgstr ""
+
+#: ../source/commands.rst:74
+msgid "例「!ch list」"
+msgstr ""
+
+#: ../source/commands.rst:77
+msgid "その他コマンド"
+msgstr ""
+
+#: ../source/commands.rst:78
+msgid "「!help command名」をご利用ください。"
+msgstr ""
+
