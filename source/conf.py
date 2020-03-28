@@ -173,3 +173,5 @@ texinfo_documents = [
 locale_dirs = ["locale/"]
 
 gettext_compact = False
+
+gettext_location = False
