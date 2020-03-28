@@ -21,28 +21,39 @@ msgstr ""
 #: ../source/about.rst:3
 msgid "当ページについて"
 msgstr ""
+"About This Page"
 
 #: ../source/about.rst:6
 msgid "このサーバーは、どんなサーバー？"
 msgstr ""
+"What Type of Server This is?"
 
 #: ../source/about.rst:7
 msgid ""
 "非相天則の対戦やイベントはもちろん、雑談や他ゲームの話題まで、非想天則のつながりをもとに幅広く活動しています。 "
 "天則を始めてみたい方から、昔やっていた方まで、誰でもお気軽にどうぞ。"
 msgstr ""
+"In this server, we enjoy a wide range of activities via th123 games, "
+"th123-related events, casual chats, even non-th123 games, and so on. "
+"The main goal of this server is to provide a stable environment "
+"for communication between th123 players available for a long time."
+"We welcome any type of th123 player: active players, beginners, "
+"past players, and newcomers who do not start yet but consider to start th123."
 
 #: ../source/about.rst:11
 msgid "サーバーへの入り口"
 msgstr ""
+"Server Entrance"
 
 #: ../source/about.rst:12
 msgid "`このサーバーに参加する <https://discord.gg/UUCpS3Z>`_ をクリックするとサーバー入口に移動します。"
 msgstr ""
+"Click `Enter this server <https://discord.gg/UUCpS3Z>`_ and find the entrance of the server."
 
 #: ../source/about.rst:16
 msgid "Discordとは？"
 msgstr ""
+"What is Discord?"
 
 #: ../source/about.rst:17
 msgid ""
@@ -50,24 +61,32 @@ msgid ""
 " `Discordトップページ <https://discordapp.com/>`_ "
 "にはSkype,TeamSpeakを捨てろと挑戦的な言葉が書かれています。"
 msgstr ""
+"Discord is a light-weight, modern, and gaming-use focused communication tool. "
+"It supports a wide range of operating systems and mobile devices. "
+"Japanese `Discord official <https://discordapp.com/>`_ says \"The time for "
+"Skype and TeamSpeak is over!\" with a provocative mood."
 
 #: ../source/about.rst:20
 msgid ""
 "より詳しくは `「Discord」非公式日本語ドキュメント <http://discordjp.eeharu.net>`_ "
 "(外部リンク)をご覧ください。"
 msgstr ""
+"For details, search google about Discord yourself."
 
 #: ../source/about.rst:24
 msgid "関連リンク"
 msgstr ""
+"Related Links"
 
 #: ../source/about.rst:25
 msgid "`東方非想天則 Wiki <http://th123.glasscore.net/>`_"
 msgstr ""
+"`Japanese Touhou Hisoutensoku Wiki <http://th123.glasscore.net/>`_"
 
 #: ../source/about.rst:26
-msgid "`Tenco! 東方深秘録／東方非想天則プレイヤー情報共有サービス <https://tenco.info/>`_"
+msgid "`Tenco! 東方憑依華／東方非想天則プレイヤー情報共有サービス <https://tenco.info/>`_"
 msgstr ""
+"`Tenco! (Japanese Rating System for th123, th155) <http://th123.glasscore.net/>`_"
 
 #: ../source/about.rst:27
 msgid ""
@@ -78,42 +97,55 @@ msgstr ""
 #: ../source/about.rst:28
 msgid "`Twitter非想天則対戦募集bot <https://twitter.com/th123bot>`_"
 msgstr ""
+"`Twitter th123 Bot <https://twitter.com/th123bot>`_"
 
 #: ../source/about.rst:29
 msgid "`東方非想天則リプレイアップローダー <https://ux.getuploader.com/discord_th123/>`_"
 msgstr ""
+"`Replay Uploader for th123 <https://ux.getuploader.com/discord_th123/>`_"
 
 #: ../source/about.rst:32
 msgid "注意事項"
 msgstr ""
+"Notes"
 
 #: ../source/about.rst:33
 msgid "皆さんが快適に過ごせるように、以下の項目については注意・警告・BAN対象となる場合があります。お気をつけ下さい。またそれらについて困っている場合も運営にご相談下さい。"
 msgstr ""
+"For comfortable time for everyone in the server, the server manager may give warnings, cautions, or "
+"even BANs from the server to the inappropriate behaviors. "
+"In case you are troubled with such an attendee, please feel free to contact the manager about it. "
+"We consider the following items as inappropriate in the server:"
 
 #: ../source/about.rst:35
 msgid "公序良俗に反するもの"
 msgstr ""
+"Activities contrary to public order or morality"
 
 #: ../source/about.rst:36
 msgid "ハラスメント行為"
 msgstr ""
+"Any kinds of harassments"
 
 #: ../source/about.rst:37
 msgid "クラッキング行為"
 msgstr ""
+"Any kinds of cracking trials"
 
 #: ../source/about.rst:38
 msgid "その他公共の利益に反するもの"
 msgstr ""
+"Other activities contrary to public interest"
 
 #: ../source/about.rst:41
 msgid "お問い合わせ"
 msgstr ""
+"Getting Contact"
 
 #: ../source/about.rst:42
 msgid ""
 ":ref:`#servermeta <servermeta>` "
 "以外で管理者に連絡を取る必要がある場合、MANAGER役職の誰かへメッセージ(DM)を送信してください。"
 msgstr ""
-
+"When you need to contact with the manager outside of :ref:`#servermeta <servermeta>`, "
+"send a DM to anyone assigned a MANAGER role. "

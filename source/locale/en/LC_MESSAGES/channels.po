@@ -21,18 +21,23 @@ msgstr ""
 #: ../source/channels.rst:3
 msgid "チャンネルリスト"
 msgstr ""
+"List of Channels"
 
 #: ../source/channels.rst:6
 msgid "公開チャンネル"
 msgstr ""
+"Public Channels"
 
 #: ../source/channels.rst:9
 msgid "SERVERMETAカテゴリ"
 msgstr ""
+"SERVERMETA Category"
 
 #: ../source/channels.rst:10
 msgid "このサーバーの情報や、要望・意見の送り先。投票機能など。"
 msgstr ""
+"This category consists of channels for management of this server itself: "
+"brief information of the server, requests to managers, questionnaires, and so."
 
 #: ../source/channels.rst:13
 msgid "#information"
@@ -41,6 +46,7 @@ msgstr ""
 #: ../source/channels.rst:13
 msgid "当ページへの窓口。簡易案内。"
 msgstr ""
+"Guides to this HTML with a brief introduction."
 
 #: ../source/channels.rst:16
 msgid "#announcements"
@@ -49,6 +55,8 @@ msgstr ""
 #: ../source/channels.rst:16
 msgid "更新情報などの通知。"
 msgstr ""
+"Lists recent announcements from the server manager, "
+"including content of recent updates."
 
 #: ../source/channels.rst:21
 msgid "#servermeta"
@@ -57,6 +65,8 @@ msgstr ""
 #: ../source/channels.rst:21
 msgid "サーバについての議論、意見、要望など。チャンネルの設立要請もこちらへ。"
 msgstr ""
+"Provides a place for arguements, opnions, requirements about the server. "
+"You can send a request for a new channel here as well. "
 
 #: ../source/channels.rst:25
 msgid "#dev"
@@ -65,14 +75,19 @@ msgstr ""
 #: ../source/channels.rst:24
 msgid "隠れチャンネルです。botの改善、協力など。特に技術的な話はこちらへ。"
 msgstr ""
+"A hidden channel where developers and contributors conduct technical "
+"talks, for example, about improvements of Shanghai-bot. "
 
 #: ../source/channels.rst:28
 msgid "GENERALカテゴリ"
 msgstr ""
+"GENERAL Category"
 
 #: ../source/channels.rst:29
 msgid "雑談等。他ゲーの話に花が咲くことも。"
 msgstr ""
+"Channels for casual chat. "
+"People sometimes enjoy talking even about non-th123 games. "
 
 #: ../source/channels.rst:32
 msgid "#general"
@@ -81,6 +96,8 @@ msgstr ""
 #: ../source/channels.rst:32
 msgid "汎用雑談チャット。サーバーの玄関口。"
 msgstr ""
+"General chat room. "
+"This channel also have a role of the entrance to this server. "
 
 #: ../source/channels.rst:35
 msgid "#anything"
@@ -89,6 +106,7 @@ msgstr ""
 #: ../source/channels.rst:35
 msgid "なんでもありの雑談チャット。"
 msgstr ""
+"A chat room for any kind of topics."
 
 #: ../source/channels.rst:38
 msgid "#gallery"
@@ -97,22 +115,28 @@ msgstr ""
 #: ../source/channels.rst:38
 msgid "絵・動画・音楽といった創作の展示場所です。"
 msgstr ""
+"A gallery where creators and viewers enjoy "
+"illustrations, movies, and music. "
 
 #: ../source/channels.rst:42
 msgid "#question"
 msgstr ""
 
 #: ../source/channels.rst:41
-msgid "質問・解答専用チャンネルです。どんな質問でもお気軽に。"
+msgid "質問・回答専用チャンネルです。どんな質問でもお気軽に。"
 msgstr ""
+"A channel for questions and answers. "
+"Feel free to ask any questions. "
 
 #: ../source/channels.rst:45
 msgid "MATCHカテゴリ"
 msgstr ""
+"MATCH Category"
 
 #: ../source/channels.rst:46
 msgid "非想天則の対戦募集はこちら。"
 msgstr ""
+"Channels for th123, especially focused on playing games."
 
 #: ../source/channels.rst:53
 msgid "#hostlist"
@@ -121,10 +145,15 @@ msgstr ""
 #: ../source/channels.rst:51
 msgid "対戦募集チャンネル。直接書き込めないため、対戦募集は :ref:`\\!hostコマンド <host>` を用いてください。"
 msgstr ""
+"A channel for finding someone to play th123 with. "
+"Note that you cannot write messages to this channel directly. "
+"Use :ref:`\\!hostコマンド <host>` instead. "
 
 #: ../source/channels.rst:53
 msgid "このチャンネルの利用は必ずしも必須ではなく、どこでIPを貼ることがあっても問題ありません。"
 msgstr ""
+"You are not forced to use this channel to play th123 games in this server. "
+"There is no problem you write IP address to play th123 with someone, for example. "
 
 #: ../source/channels.rst:56
 msgid "#match"
@@ -133,6 +162,8 @@ msgstr ""
 #: ../source/channels.rst:56
 msgid "対戦チャット。主に対戦後の挨拶に使われます。"
 msgstr ""
+"A chat room for topics related to th123 matches. "
+"People often use this channel after their matches via hostlist. "
 
 #: ../source/channels.rst:60
 msgid "#client"
@@ -141,14 +172,18 @@ msgstr ""
 #: ../source/channels.rst:59
 msgid "クラ専同士が対戦できるようになる機能が置かれています。詳しくはサーバ内説明を。"
 msgstr ""
+"A special chennel where two client-only players can play th123 games without any host. "
+"For details on the actual procedure, go to #client and check the message in the channel. "
 
 #: ../source/channels.rst:63
 msgid "TH123カテゴリ"
 msgstr ""
+"TH123 Category"
 
 #: ../source/channels.rst:64
 msgid "非想天則の話題はこちら。"
 msgstr ""
+"Channels for more general topics related to th123."
 
 #: ../source/channels.rst:67
 msgid "#soku-general"
@@ -157,6 +192,9 @@ msgstr ""
 #: ../source/channels.rst:67
 msgid "天則全般の話題向け。ポート開放の相談など、天則に直接関係なくとも関連する話題はこちらにどうぞ。"
 msgstr ""
+"A channel for general topics related to th123. "
+"Even topics not directly related to th123 will be allowed "
+"as long as they are related to th123 to some extent. "
 
 #: ../source/channels.rst:70
 msgid "#soku-beginner"
@@ -165,6 +203,8 @@ msgstr ""
 #: ../source/channels.rst:70
 msgid "おおよそ2年未満の人向けチャンネルです。避難所として設置されました。"
 msgstr ""
+"A channel placed for th123 beginners "
+"(up to 2 years from starting, as a rough indication). "
 
 #: ../source/channels.rst:73
 msgid "#soku-advice"
@@ -173,6 +213,9 @@ msgstr ""
 #: ../source/channels.rst:73
 msgid "感想戦や、リプレイを貼り付けてのアドバイス希望、はたまた大会運営等の相談など。"
 msgstr ""
+"A channel where players talk after matches for improvement of their moves. "
+"Here some people upload their replays and wait for advice of skilled players "
+"and others plan to schedule a tournament and consult skilled planners."
 
 #: ../source/channels.rst:76
 msgid "#live"
@@ -181,6 +224,7 @@ msgstr ""
 #: ../source/channels.rst:76
 msgid "配信の宣伝にどうぞ。"
 msgstr ""
+"You can advertise live-streaming URLs, mainly related to th123."
 
 #: ../source/channels.rst:79
 msgid "#event"
@@ -189,6 +233,7 @@ msgstr ""
 #: ../source/channels.rst:79
 msgid "規模やオン・オフ問わず大会の宣伝にどうぞ。"
 msgstr ""
+"You can advertise any kind of th123 tournament here. "
 
 #: ../source/channels.rst:82
 msgid "# shitaraba-twitter"
@@ -197,6 +242,8 @@ msgstr ""
 #: ../source/channels.rst:82
 msgid "非想天則したらば掲示板、Twitter(@th123bot)の投稿通知場所です。"
 msgstr ""
+"A channel connected to Shitaraba-BBS and Twitter(@th123bot) "
+"to find th123 games taken place somewhere else."
 
 #: ../source/channels.rst:87
 msgid "#wiki"
@@ -205,14 +252,18 @@ msgstr ""
 #: ../source/channels.rst:85
 msgid "Wikiの編集に関する連絡所にどうぞ。"
 msgstr ""
+"A channel where editors of the th123 Wiki "
+"to share their editting activities and tips."
 
 #: ../source/channels.rst:90
 msgid "VOICEカテゴリ"
 msgstr ""
+"VOICE Category"
 
 #: ../source/channels.rst:91
 msgid "通話専用カテゴリです。"
 msgstr ""
+"Channels for voice chatting"
 
 #: ../source/channels.rst:94
 msgid "#voice-chat"
@@ -221,6 +272,7 @@ msgstr ""
 #: ../source/channels.rst:94
 msgid "Voice-Generalでマイク無しで参加したい方向けのチャンネル。"
 msgstr ""
+"A text channel for listening-only attendees to Voice-General without microphones."
 
 #: ../source/channels.rst:97
 msgid "📢Voice-General"
@@ -229,6 +281,8 @@ msgstr ""
 #: ../source/channels.rst:97
 msgid "汎用通話チャンネル。クリックで通話接続されるので注意。"
 msgstr ""
+"A voice channel for general purposes. "
+"Note that even a single click lets you attend the voice chat in Discord."
 
 #: ../source/channels.rst:100
 msgid "📢Match"
@@ -237,6 +291,7 @@ msgstr ""
 #: ../source/channels.rst:100
 msgid "対戦用通話チャンネル。"
 msgstr ""
+"A voice channel for players on th123 matches to get a real-time communication. "
 
 #: ../source/channels.rst:103
 msgid "📢Live"
@@ -245,6 +300,7 @@ msgstr ""
 #: ../source/channels.rst:103
 msgid "勝ち抜き枠などの配信用通話チャンネルです。"
 msgstr ""
+"A voice channel which can be used for live streaming. "
 
 #: ../source/channels.rst:106
 msgid "📢Anything"
@@ -253,6 +309,7 @@ msgstr ""
 #: ../source/channels.rst:106
 msgid "何にでも使ってください。"
 msgstr ""
+"A voice channel for any purposes. "
 
 #: ../source/channels.rst:109
 msgid "📢麻雀"
@@ -261,6 +318,7 @@ msgstr ""
 #: ../source/channels.rst:109
 msgid "隠れチャンネル#mah-jongg専用。"
 msgstr ""
+"A voice channel for a hidden channel, #mah-jongg."
 
 #: ../source/channels.rst:112
 msgid "📢Auto-afk"
@@ -269,34 +327,46 @@ msgstr ""
 #: ../source/channels.rst:112
 msgid "一定時間反応がなければ自動でこちらに送られます。"
 msgstr ""
+"A system channel where Discord automatically send "
+"voice-chat members without any utterance for a long time."
 
 #: ../source/channels.rst:115
 msgid "CHARACTERSカテゴリ"
 msgstr ""
+"CHARACTER Category"
 
 #: ../source/channels.rst:116
 msgid "20キャラの個別チャンネルが設置されています。"
 msgstr ""
+"Channels for character-specific topics. "
+"Each of 20 characters in th123 has its own channel."
 
 #: ../source/channels.rst:119
 msgid "EVENTカテゴリ"
 msgstr ""
+"EVENT Category"
 
 #: ../source/channels.rst:120
 msgid "主に大会会場に利用されます。"
 msgstr ""
+"Channels mainly used for th123 events."
 
 #: ../source/channels.rst:123
-msgid "隠れチャンネルリスト"
+msgid "隠れチャンネル"
 msgstr ""
+"Hidden Channels"
 
 #: ../source/channels.rst:124
 msgid ""
 "天則勢による、非想天則以外の活動を行う場所です。メインではないため基本的には隠れていますが、 :ref:`\\!chコマンド <ch>` "
 "を使って誰でも入室することができます。"
 msgstr ""
+"Channels where th123 players enjoy non-th123 activities. "
+"You cannot find these hidden channels by default but you can enter "
+"any of them with :ref:`\\!ch command<ch>` if you want. "
 
 #: ../source/channels.rst:126
 msgid "チャンネルの場所はHIDDENカテゴリ下にあり、チャンネルリストは「!ch list」コマンドで見ることができます。"
 msgstr ""
-
+"These channels are listed under the HIDDEN category. "
+"You can check the comprehensive list of these channels by the ``!ch list`` command. "

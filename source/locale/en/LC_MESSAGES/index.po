@@ -21,10 +21,14 @@ msgstr ""
 #: ../source/index.rst:3
 msgid "非想天則DiscordサーバーInformation"
 msgstr ""
+"Touhou Hisoutensoku Discord Server"
 
 #: ../source/index.rst:4
 msgid ""
 "ここは黄昏フロンティア制作「`東方非想天則 <http://www.tasofro.net/touhou123/index.html>`_」の "
 "`Discord <https://discordapp.com/>`_ サーバー概要ページです。"
 msgstr ""
-
+"This page provides a collection of information about the Japanese "
+"`Discord <https://discordapp.com/>`_ server, where many players enjoy "
+"a computer game, `Touhou Hisoutensoku <http://www.tasofro.net/touhou123/index.html>`_, "
+"produced by Twilight Frontier. "

@@ -23,7 +23,7 @@ Discordとは？
 関連リンク
 ==========================
 * `東方非想天則 Wiki <http://th123.glasscore.net/>`_
-* `Tenco! 東方深秘録／東方非想天則プレイヤー情報共有サービス <https://tenco.info/>`_
+* `Tenco! 東方憑依華／東方非想天則プレイヤー情報共有サービス <https://tenco.info/>`_
 * `Misc tools - Touhou Hisoutensoku <https://hisouten.koumakan.jp/wiki/Misc_tools>`_
 * `Twitter非想天則対戦募集bot <https://twitter.com/th123bot>`_
 * `東方非想天則リプレイアップローダー <https://ux.getuploader.com/discord_th123/>`_
