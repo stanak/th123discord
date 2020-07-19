@@ -183,6 +183,10 @@ class Th123Packet(bytes):
             return IpPort.create_with_bin(self[7:13])
         return None
 
+    def get_2p_ipport(self) -> IpPort:
+        if self.get_header() == 0x01:
+            return IpPort.create_with_bin(self[19:25])
+
     def get_matching_flag(self) -> bool:
         if self.get_header() == 0x05:
             return bool(self[25])
@@ -198,9 +202,24 @@ class Th123Packet(bytes):
             return self[13:37].decode('shift-jis').strip('\x00')
         return None
 
+    def get_2p_profile_name(self) -> str:
+        if self.get_header() == 0x08:
+            return self[45:69].decode('shift-jis').strip('\x00')
+
     def get_ack_count(self) -> int:
         if self.get_header() == 0x0e and len(self) >= 6:
             return int.from_bytes(self[2:6], 'little')
         if self.get_header() == 0x0d and len(self) >= 6:
             return int.from_bytes(self[2:6], 'little')
         return None
+
+
+if __name__ == '__main__':
+    import argparse
+    import binascii
+    parser = argparse.ArgumentParser()
+    parser.add_argument('byte')
+    args = parser.parse_args()
+    packet = Th123Packet(binascii.unhexlify(args.byte))
+    print(packet.get_ipport())
+    print(packet.get_2p_ipport())
