@@ -169,6 +169,10 @@ class Th123Packet(bytes):
     def packet_0e_sp() -> 'Th123Packet':
         return Th123Packet(bytes.fromhex('0e' '0103'))
 
+    @staticmethod
+    def packet_0e_watch() -> 'Th123Packet':
+        return Th123Packet(bytes.fromhex('0e0bffffffff00'))
+
     def get_header(self) -> int:
         if len(self) > 0:
             return self[0]
