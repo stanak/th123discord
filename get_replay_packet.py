@@ -67,6 +67,7 @@ class Th123Watcher2HostProtocol(asyncio.DatagramProtocol):
         packet = Th123Packet(data)
         header = packet.get_header()
         self.host_status(data)
+        addr = IpPort.create(*addr)
         print('>---' + str(packet))
         if header == 0x07:
             pass
@@ -74,33 +75,9 @@ class Th123Watcher2HostProtocol(asyncio.DatagramProtocol):
             self.p1 = packet.get_profile_name
             self.p2 = packet.get_2p_profile_name
             self.client_ipport = packet.get_ipport()
-            addr = IpPort.create(*addr)
-
-
-class Th123Watcher2ClientProtocol(asyncio.DatagramProtocol):
-    def __init__(self):
-        self.initialize()
-
-    def initialize(self):
-        self.ack_datetime = Lifetime(timedelta(seconds=3))
-        self.host_status = None
-
-#    def try_echo(self, client_ipport):
-#        for _ in range(3):
-#            self.transport.sendto(Th123Packet.packet_01(client_ipport, client_ipport))
-
-    def connection_made(self, transport):
-        self.transport = transport
-
-    def connection_lost(self, exc):
-        pass
-
-    def datagram_received(self, data, addr):
-        self.ack_datetime.reset()
-        packet = Th123Packet(data)
-        header = packet.get_header()
-        print('---<' + str(packet))
-        if header == 0x03:
+            for _ in range(2):
+                self.transport.sendto(Th123Packet.packet_01(self.client_ipport, self.client_ipport), addr=tuple(self.client_ipport))
+        elif header == 0x03:
             self.transport.sendto(Th123Packet.packet_05(), addr=addr)
         elif header == 0x06:
             self.transport.sendto(Th123Packet.packet_04(4), addr=addr)
@@ -108,20 +85,16 @@ class Th123Watcher2ClientProtocol(asyncio.DatagramProtocol):
             self.transport.sendto(Th123Packet.packet_04(4), addr=addr)
         elif header == 0x0d:
             print('--------0d-------')
-            print(packet)
         else:
             print('--------unknown-------')
-            print(packet)
 
 
 async def main(loop, ipport):
-    host_connect = loop.create_datagram_endpoint(Th123Watcher2HostProtocol, remote_addr=tuple(ipport))
+    host_connect = loop.create_datagram_endpoint(Th123Watcher2HostProtocol, local_addr=('0.0.0.0', 10801))
     host_transport, host_protocol = await host_connect
-    client_connect = None
-    client_protocol = None
     while True:
-        await asyncio.sleep(0.15)
-        host_protocol.try_echo()
+        await asyncio.sleep(0.1)
+        host_transport.sendto(Th123Packet.packet_05(), addr=tuple(ipport))
         status = host_protocol.host_status
         if status is None:
             continue
@@ -134,13 +107,6 @@ async def main(loop, ipport):
         elif status.hosting and not status.matching:
             print('not matching')
             continue
-        if client_connect is None and host_protocol.client_ipport is not None:
-            client_connect = loop.create_datagram_endpoint(Th123Watcher2ClientProtocol, remote_addr=tuple(host_protocol.client_ipport))
-            client_transport, client_protocol = await client_connect
-        if client_protocol is not None:
-            for _ in range(3):
-                host_transport.sendto(Th123Packet.packet_01(ipport, host_protocol.client_ipport))
-                client_transport.sendto(Th123Packet.packet_01(host_protocol.client_ipport, host_protocol.client_ipport))
 
 
 if __name__ == '__main__':
