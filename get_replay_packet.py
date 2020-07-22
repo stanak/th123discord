@@ -52,6 +52,7 @@ class Th123Watcher2HostProtocol(asyncio.DatagramProtocol):
         self.ack_datetime = Lifetime(timedelta(seconds=20))
         self.host_status = HostStatus()
         self.client_ipport = None
+        self.first_08 = True
 
     def try_echo(self):
         self.transport.sendto(Th123Packet.packet_05())
@@ -75,17 +76,27 @@ class Th123Watcher2HostProtocol(asyncio.DatagramProtocol):
             self.p1 = packet.get_profile_name
             self.p2 = packet.get_2p_profile_name
             self.client_ipport = packet.get_ipport()
-            for _ in range(2):
-                self.transport.sendto(Th123Packet.packet_01(self.client_ipport, self.client_ipport), addr=tuple(self.client_ipport))
+            print(self.client_ipport)
+            if self.first_08:
+                for _ in range(2):
+                    self.transport.sendto(Th123Packet.packet_01(addr, self.client_ipport), addr=tuple(addr))
+                    self.transport.sendto(Th123Packet.packet_01(self.client_ipport, self.client_ipport), addr=tuple(self.client_ipport))
+            self.first_08 = False
         elif header == 0x03:
-            self.transport.sendto(Th123Packet.packet_05(), addr=addr)
+            print(addr)
+            self.transport.sendto(Th123Packet.packet_05(), addr=tuple(addr))
+        
         elif header == 0x06:
-            self.transport.sendto(Th123Packet.packet_04(4), addr=addr)
+            print(addr)
+            self.transport.sendto(Th123Packet.packet_04(4), addr=tuple(addr))
         elif header == 0x04:
-            self.transport.sendto(Th123Packet.packet_04(4), addr=addr)
+            print(addr)
+            self.transport.sendto(Th123Packet.packet_04(4), addr=tuple(addr))
         elif header == 0x0d:
+            print(addr)
             print('--------0d-------')
         else:
+            print(addr)
             print('--------unknown-------')
 
 
