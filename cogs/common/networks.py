@@ -1,7 +1,8 @@
 from datetime import (datetime, timedelta)
 from ipaddress import IPv4Address as ipv4
-from typing import Any, Iterable
+from typing import Any, Iterable, Tuple, List
 import unicodedata
+from enum import Enum
 
 
 class Lifetime:
@@ -64,7 +65,27 @@ class IpPort:
         yield self._port
 
 
+class Th123ReplayPacket(bytes):
+    def get_frame_id(self) -> int:
+        return int.from_bytes(self[0:4], 'little')
+
+    def get_end_frame_id(self) -> int:
+        return int.from_bytes(self[4:8], 'little')
+
+    def get_match_id(self) -> int:
+        return self[8]
+
+    def get_inputs_count(self) -> int:
+        return self[9]
+
+    def get_game_inputs(self) -> List[int]:
+        offset = 10
+        return reversed([x for i in range(offset, len(self), 2) for x in self[i:i+2]])
+
+
 class Th123Packet(bytes):
+    deck = Tuple[int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int]
+
     @staticmethod
     def packet_01(
         first_ipport: IpPort,
@@ -173,9 +194,18 @@ class Th123Packet(bytes):
     def packet_0e_watch() -> 'Th123Packet':
         return Th123Packet(bytes.fromhex('0e0bffffffff00'))
 
+    @staticmethod
+    def packet_0e_replay_request(frame: int, count: int) -> 'Th123Packet':
+        return Th123Packet(bytes.fromhex(f'0e0b{frame.to_bytes(4, "little").hex()}{count.to_bytes(1, "little").hex()}'))
+
     def get_header(self) -> int:
         if len(self) > 0:
             return self[0]
+        return None
+
+    def get_detail_header(self) -> int:
+        if len(self) > 0:
+            return int.from_bytes(self[0:2], 'big')
         return None
 
     def get_ipport(self) -> IpPort:
@@ -201,20 +231,79 @@ class Th123Packet(bytes):
             profile_length = self[26]
             return self[27:27 + profile_length].decode('shift-jis')
         if self.get_header() == 0x06:
-            return self[13:37].decode('shift-jis').strip('\x00')
-        if self.get_header() == 0x08:
-            return self[13:37].decode('shift-jis').strip('\x00')
+            raws = []
+            for raw in self[13:]:
+                if raw == 0x00:
+                    break
+                raws.append(raw)
+            profile = bytearray(raws).decode('shift-jis')
+            return profile
         return None
 
     def get_2p_profile_name(self) -> str:
-        if self.get_header() == 0x08:
-            return self[45:69].decode('shift-jis').strip('\x00')
+        if self.get_header() == 0x06:
+            raws = []
+            for raw in self[45:]:
+                if raw == 0x00:
+                    break
+                raws.append(raw)
+            profile = bytearray(raws).decode('shift-jis')
+            return profile
+        return None
 
     def get_ack_count(self) -> int:
         if self.get_header() == 0x0e and len(self) >= 6:
             return int.from_bytes(self[2:6], 'little')
         if self.get_header() == 0x0d and len(self) >= 6:
             return int.from_bytes(self[2:6], 'little')
+        return None
+
+    def get_characters(self) -> Tuple[int, int]:
+        if self.get_detail_header() == 0x0d04:
+            return (self[2], self[47])
+        return None
+
+    def get_colors(self) -> Tuple[int, int]:
+        if self.get_detail_header() == 0x0d04:
+            return (self[3], self[48])
+
+    def get_stage(self) -> int:
+        if self.get_detail_header() == 0x0d04:
+            return self[92]
+
+    def get_bgm(self) -> int:
+        if self.get_detail_header() == 0x0d04:
+            return self[93]
+
+    def get_simultaneous_buttons(self) -> Tuple[int, int]:
+        if self.get_detail_header() == 0x0d04:
+            return (self[46], self[91])
+
+    def get_deck_sizes(self) -> Tuple[int, int]:
+        if self.get_detail_header() == 0x0d04:
+            return (self[5], self[50])
+
+    def get_1p_decks(self) -> deck:
+        if self.get_detail_header() == 0x0d04:
+            offset = 6
+            end = 2 * 20 + offset
+            return [self[i:i+2] for i in range(offset, end, 2)]
+        return None
+
+    def get_2p_decks(self) -> deck:
+        if self.get_detail_header() == 0x0d04:
+            offset = 51
+            end = 2 * 20 + offset
+            return [self[i:i+2] for i in range(offset, end, 2)]
+        return None
+
+    def get_seed(self) -> int:
+        if self.get_detail_header() == 0x0d04:
+            return int.from_bytes(self[94:98], 'little')
+
+    def get_matching_count(self) -> int:
+        if self.get_detail_header() == 0x0d04:
+            return self[98]
         return None
 
 
