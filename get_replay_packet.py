@@ -104,6 +104,7 @@ class Th123Watcher2HostProtocol(asyncio.DatagramProtocol):
             if detail_header == 0x0d04:
                 self.watch_flag = True
                 self.match_id = packet.get_matching_count()
+                self.meta.match_id = self.match_id
                 self.meta.characters = packet.get_characters()
                 self.meta.colors = packet.get_colors()
                 self.meta.deck_sizes = packet.get_deck_sizes()

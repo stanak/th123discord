@@ -45,10 +45,13 @@ class Th123ReplayBuilder:
     def set_date(self, date):
         month = date.month
         day = date.day
-        self.replay[0x06:0x07] = [month, day]
+        self.replay[0x06:0x08] = [month, day]
 
     def _set_mode(self):
         self.replay[0x08] = 0x06
+
+    def set_match_id(self, match_id):
+        self.replay[0x0b] = match_id
 
     def _set_player_flag(self):
         self.replay[0x0c] = 0x03
@@ -100,6 +103,7 @@ class Th123ReplayBuilder:
 
     def build_replay(self, replay_meta):
         self.set_date(replay_meta.date)
+        self.set_match_id(replay_meta.match_id)
         self.set_characters(*replay_meta.characters)
         self.set_colors(*replay_meta.colors)
         self.set_deck_sizes(*replay_meta.deck_sizes)
@@ -117,6 +121,7 @@ class Th123ReplayBuilder:
 class Th123ReplayMeta():
     deck_type = Tuple[int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int]
     date: datetime = dataclasses.field(default=datetime(2000, 1, 1, 0, 0, 0), init=False)
+    match_id: int = dataclasses.field(default=1, init=False)
     characters: Tuple[int, int] = dataclasses.field(default=(0, 0), init=False)
     colors: Tuple[int, int] = dataclasses.field(default=(0, 0), init=False)
     deck_sizes: Tuple[int, int] = dataclasses.field(default=(0, 0), init=False)

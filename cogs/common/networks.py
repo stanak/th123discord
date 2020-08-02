@@ -80,7 +80,9 @@ class Th123ReplayPacket(bytes):
 
     def get_game_inputs(self) -> List[int]:
         offset = 10
-        return reversed([x for i in range(offset, len(self), 2) for x in self[i:i+2]])
+        reversed_inputs = [(self[i+1], self[i]) for i in range(offset, len(self), 2)]
+        right_inputs = reversed([elem for tpl in reversed_inputs for elem in tpl])
+        return right_inputs
 
 
 class Th123Packet(bytes):
