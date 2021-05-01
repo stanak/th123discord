@@ -91,6 +91,7 @@ def load_cogs(bot):
         cog_class.setup(bot)
     return bot
 
+
 if __name__ == "__main__":
     import os
 
@@ -101,6 +102,6 @@ if __name__ == "__main__":
     logging.getLogger("__main__").setLevel(logging.DEBUG)
 
     token = os.environ["DISCORD_TOKEN"]
-    bot = Shanghai()
+    bot = Shanghai(intents=discord.Intents.all())
     bot = load_cogs(bot)
     bot.run(token)
