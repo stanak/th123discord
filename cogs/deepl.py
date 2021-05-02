@@ -60,7 +60,8 @@ class Deepl(CogMixin, commands.Cog):
                 return
             file_urls = [at.url for at in after.attachments]
             translated_text = json_response["translations"][0]["text"]
-            translated_text = 'file:' + ' '.join(file_urls) + '\n' + translated_text
+            if file_urls:
+                translated_text = 'file:' + ' '.join(file_urls) + '\n' + translated_text
             if len(translated_text) > 2000:
                 self.jp_en_ch.send('翻訳後の文字数が2000を超えました。分割して投稿してください。')
             await self.en_jp_hook.edit_message(self.send_ids[after.id],
@@ -75,7 +76,8 @@ class Deepl(CogMixin, commands.Cog):
                 return
             file_urls = [at.url for at in after.attachments]
             translated_text = json_response["translations"][0]["text"]
-            translated_text = 'file:' + ' '.join(file_urls) + '\n' + translated_text
+            if file_urls:
+                translated_text = 'file:' + ' '.join(file_urls) + '\n' + translated_text
             if len(translated_text) > 2000:
                 self.en_jp_ch.send('The number of characters after translation has exceeded 2000. Please split it up and post it.')
             await self.jp_en_hook.edit_message(self.send_ids[after.id],
@@ -96,7 +98,8 @@ class Deepl(CogMixin, commands.Cog):
                 return
             file_urls = [at.url for at in message.attachments]
             translated_text = json_response["translations"][0]["text"]
-            translated_text = 'file:' + ' '.join(file_urls) + '\n'  + translated_text
+            if file_urls:
+                translated_text = 'file:' + ' '.join(file_urls) + '\n' + translated_text
             if len(translated_text) > 2000:
                 self.en_jp_ch.send('The number of characters after translation has exceeded 2000. Please split it up and post it.')
             sended = await self.en_jp_hook.send(content=translated_text,
@@ -115,7 +118,8 @@ class Deepl(CogMixin, commands.Cog):
                 return
             file_urls = [at.url for at in message.attachments]
             translated_text = json_response["translations"][0]["text"]
-            translated_text = 'file:' + ' '.join(file_urls) + '\n'  + translated_text
+            if file_urls:
+                translated_text = 'file:' + ' '.join(file_urls) + '\n' + translated_text
             if len(translated_text) > 2000:
                 self.en_jp_ch.send('The number of characters after translation has exceeded 2000. Please split it up and post it.')
             sended = await self.jp_en_hook.send(content=translated_text,
