@@ -36,19 +36,21 @@ class Deepl(CogMixin, commands.Cog):
         self.en_jp_ch = None
         self.send_ids = {}
 
-    @commands.Cog.listener(name='on_message_edit')
-    async def re_translate(self, before, after):
-        if after.author.bot:
-            return
-        if after.id not in self.send_ids:
-            return
-
+    @commands.Cog.listener(name='on_ready')
+    async def get_channel(self):
         if self.jp_en_ch is None:
             self.jp_en_ch = discord.utils.get(self.bot.get_all_channels(), name="jp-en")
             self.jp_en_hook = (await self.jp_en_ch.webhooks())[0]
         if self.en_jp_ch is None:
             self.en_jp_ch = discord.utils.get(self.bot.get_all_channels(), name="en-jp")
             self.en_jp_hook = (await self.en_jp_ch.webhooks())[0]
+
+    @commands.Cog.listener(name='on_message_edit')
+    async def re_translate(self, before, after):
+        if after.author.bot:
+            return
+        if after.id not in self.send_ids:
+            return
 
         if after.channel == self.jp_en_ch:
             try:
@@ -79,12 +81,6 @@ class Deepl(CogMixin, commands.Cog):
     async def translate(self, message):
         if message.author.bot:
             return
-        if self.jp_en_ch is None:
-            self.jp_en_ch = discord.utils.get(self.bot.get_all_channels(), name="jp-en")
-            self.jp_en_hook = (await self.jp_en_ch.webhooks())[0]
-        if self.en_jp_ch is None:
-            self.en_jp_ch = discord.utils.get(self.bot.get_all_channels(), name="en-jp")
-            self.en_jp_hook = (await self.en_jp_ch.webhooks())[0]
 
         if message.channel == self.jp_en_ch:
             try:
