@@ -66,7 +66,7 @@ class Deepl(CogMixin, commands.Cog):
                 self.jp_en_ch.send('翻訳後の文字数が2000を超えました。分割して投稿してください。')
             await self.en_jp_hook.edit_message(self.send_ids[after.id],
                                                content=translated_text,
-                                               username=after.author.name,
+                                               username=after.author.nick,
                                                avatar_url=after.author.avatar_url)
         elif after.channel == self.en_jp_ch:
             try:
@@ -82,7 +82,7 @@ class Deepl(CogMixin, commands.Cog):
                 self.en_jp_ch.send('The number of characters after translation has exceeded 2000. Please split it up and post it.')
             await self.jp_en_hook.edit_message(self.send_ids[after.id],
                                                content=translated_text,
-                                               username=after.author.name,
+                                               username=after.author.nick,
                                                avatar_url=after.author.avatar_url)
 
     @commands.Cog.listener(name='on_message')
@@ -104,7 +104,7 @@ class Deepl(CogMixin, commands.Cog):
                 self.en_jp_ch.send('The number of characters after translation has exceeded 2000. Please split it up and post it.')
             sended = await self.en_jp_hook.send(content=translated_text,
                                                 wait=True,
-                                                username=message.author.name,
+                                                username=message.author.nick,
                                                 avatar_url=message.author.avatar_url)
             self.send_ids[message.id] = sended.id
             if len(self.send_ids) > 100:
@@ -124,7 +124,7 @@ class Deepl(CogMixin, commands.Cog):
                 self.en_jp_ch.send('The number of characters after translation has exceeded 2000. Please split it up and post it.')
             sended = await self.jp_en_hook.send(content=translated_text,
                                                 wait=True,
-                                                username=message.author.name,
+                                                username=message.author.nick,
                                                 avatar_url=message.author.avatar_url)
             self.send_ids[message.id] = sended.id
             if len(self.send_ids) > 100:
