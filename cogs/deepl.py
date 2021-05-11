@@ -45,6 +45,20 @@ class Deepl(CogMixin, commands.Cog):
             self.en_jp_ch = discord.utils.get(self.bot.get_all_channels(), name="en-jp")
             self.en_jp_hook = (await self.en_jp_ch.webhooks())[0]
 
+    @commands.Cog.listener(name='on_message_delete')
+    async def double_delete(self, message):
+        if message.author.bot:
+            return
+        origin_message_id = message.id
+        origin_message_channel = message.channel.name
+        webhook_message_id = self.send_ids[origin_message_id]
+        del self.send_ids[origin_message_id]
+        if origin_message_channel == "jp-en":
+            webhook_message = await self.en_jp_ch.fetch_message(webhook_message_id)
+        else:
+            webhook_message = await self.jp_en_ch.fetch_message(webhook_message_id)
+        await webhook_message.delete()
+
     @commands.Cog.listener(name='on_message_edit')
     async def re_translate(self, before, after):
         if after.author.bot:
@@ -64,9 +78,10 @@ class Deepl(CogMixin, commands.Cog):
                 translated_text = 'file:' + ' '.join(file_urls) + '\n' + translated_text
             if len(translated_text) > 2000:
                 self.jp_en_ch.send('翻訳後の文字数が2000を超えました。分割して投稿してください。')
+            user_name = message.author.name if message.author.nick is None else message.author.nick
             await self.en_jp_hook.edit_message(self.send_ids[after.id],
                                                content=translated_text,
-                                               username=after.author.nick,
+                                               username=user_name,
                                                avatar_url=after.author.avatar_url)
         elif after.channel == self.en_jp_ch:
             try:
@@ -80,9 +95,10 @@ class Deepl(CogMixin, commands.Cog):
                 translated_text = 'file:' + ' '.join(file_urls) + '\n' + translated_text
             if len(translated_text) > 2000:
                 self.en_jp_ch.send('The number of characters after translation has exceeded 2000. Please split it up and post it.')
+            user_name = message.author.name if message.author.nick is None else message.author.nick
             await self.jp_en_hook.edit_message(self.send_ids[after.id],
                                                content=translated_text,
-                                               username=after.author.nick,
+                                               username=user_name,
                                                avatar_url=after.author.avatar_url)
 
     @commands.Cog.listener(name='on_message')
@@ -102,9 +118,10 @@ class Deepl(CogMixin, commands.Cog):
                 translated_text = 'file:' + ' '.join(file_urls) + '\n' + translated_text
             if len(translated_text) > 2000:
                 self.en_jp_ch.send('The number of characters after translation has exceeded 2000. Please split it up and post it.')
+            user_name = message.author.name if message.author.nick is None else message.author.nick
             sended = await self.en_jp_hook.send(content=translated_text,
                                                 wait=True,
-                                                username=message.author.nick,
+                                                username=user_name,
                                                 avatar_url=message.author.avatar_url)
             self.send_ids[message.id] = sended.id
             if len(self.send_ids) > 100:
@@ -122,9 +139,10 @@ class Deepl(CogMixin, commands.Cog):
                 translated_text = 'file:' + ' '.join(file_urls) + '\n' + translated_text
             if len(translated_text) > 2000:
                 self.en_jp_ch.send('The number of characters after translation has exceeded 2000. Please split it up and post it.')
+            user_name = message.author.name if message.author.nick is None else message.author.nick
             sended = await self.jp_en_hook.send(content=translated_text,
                                                 wait=True,
-                                                username=message.author.nick,
+                                                username=user_name,
                                                 avatar_url=message.author.avatar_url)
             self.send_ids[message.id] = sended.id
             if len(self.send_ids) > 100:
