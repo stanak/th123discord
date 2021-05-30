@@ -78,7 +78,7 @@ class Deepl(CogMixin, commands.Cog):
                 translated_text = 'file:' + ' '.join(file_urls) + '\n' + translated_text
             if len(translated_text) > 2000:
                 self.jp_en_ch.send('翻訳後の文字数が2000を超えました。分割して投稿してください。')
-            user_name = message.author.name if message.author.nick is None else message.author.nick
+            user_name = after.author.name if after.author.nick is None else after.author.nick
             await self.en_jp_hook.edit_message(self.send_ids[after.id],
                                                content=translated_text,
                                                username=user_name,
@@ -95,7 +95,7 @@ class Deepl(CogMixin, commands.Cog):
                 translated_text = 'file:' + ' '.join(file_urls) + '\n' + translated_text
             if len(translated_text) > 2000:
                 self.en_jp_ch.send('The number of characters after translation has exceeded 2000. Please split it up and post it.')
-            user_name = message.author.name if message.author.nick is None else message.author.nick
+            user_name = after.author.name if after.author.nick is None else after.author.nick
             await self.jp_en_hook.edit_message(self.send_ids[after.id],
                                                content=translated_text,
                                                username=user_name,
