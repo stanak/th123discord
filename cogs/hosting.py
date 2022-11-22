@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_hostlist_ch(bot):
-    return discord.utils.get(bot.get_all_channels(), name="hostlist")
+    return discord.utils.get(bot.get_all_channels(), name="募集リスト-hostlist")
 
 
 class HostStatus:
@@ -207,8 +207,12 @@ class HostListObserver:
     async def task_func(cls, bot, interval=timedelta(seconds=2)):
         cls._bot = bot
 
-        base_message = "**{}人が対戦相手を募集しています:**\n"
-        message = await get_hostlist_ch(cls._bot).send(base_message.format(0))
+        # init channel clean
+        hoslist_ch = get_hostlist_ch(cls._bot)
+        await hostlistch.delete_messages(*(await hostlist_ch.history(limit=5)))
+            
+        base_message = "**{date}現在{num}人が対戦相手を募集しています:**\n"
+        message = await hostlist_ch.send(base_message.format(date=datetime.now().strftime("%Y%m%dT%H%M%z"), num=0))
 
         while True:
             try:
@@ -227,7 +231,7 @@ class HostListObserver:
                     message_body_list.append(host.get_message_body())
 
                 post_message = (
-                    base_message.format(len(message_body_list)) +
+                    base_message.format(date=datetime.now().strftime("%Y%m%dT%H%M%z") ,num=len(message_body_list)) +
                     "\n".join(message_body_list))
                 await message.edit(content=post_message)
             except Exception as e:
@@ -275,7 +279,7 @@ class Hosting(CogMixin, commands.Cog):
     @commands.command(pass_context=True)
     async def host(self, ctx, ip_port: str, *comment):
         """
-        #holtlistに対戦募集を投稿します。
+        #募集リスト-hostlistに対戦募集を投稿します。
         約20秒間ホストが検知されなければ、自動で投稿を取り下げます。
         募集例「!host 198.51.100.123:10800 霊夢　レート1500　どなたでもどうぞ！」
         """
@@ -286,7 +290,7 @@ class Hosting(CogMixin, commands.Cog):
     @commands.command()
     async def rhost(self, ctx, ip_port: str, *comment):
         """
-        #holtlistにsokuroll有りの対戦募集を投稿します。
+        #募集リスト-hostlistにsokuroll有りの対戦募集を投稿します。
         約20秒間ホストが検知されなければ、自動で投稿を取り下げます。
         募集例「!rhost 198.51.100.123:10800 霊夢　レート1500　どなたでもどうぞ！」
         """
@@ -316,7 +320,7 @@ class Hosting(CogMixin, commands.Cog):
     @commands.command()
     async def client(self, ctx, *comment):
         """
-        #holtlistにホスト検知を行わない対戦募集を投稿します。
+        #募集リスト-hostlistにホスト検知を行わない対戦募集を投稿します。
         投稿から60分経過するか、closeコマンドで、投稿を取り下げます。
         募集例「!client 霊夢　レート1500　どなたでもどうぞ！」
         """
@@ -332,7 +336,7 @@ class Hosting(CogMixin, commands.Cog):
     @commands.command()
     async def close(self, ctx):
         """
-        #hostlistへの投稿を取り下げます。
+        #募集リスト-hostlistへの投稿を取り下げます。
         """
         await ctx.send("対戦相手の募集を取り下げます。")
         user = ctx.message.author
