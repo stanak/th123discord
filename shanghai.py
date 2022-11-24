@@ -34,7 +34,7 @@ class Shanghai(commands.Bot):
         guild = self.guilds[0]
         channels = guild.channels
         logger.info(guild.name)
-        logger.info(channnels)
+        logger.info(channels)
         logger.info("-----channels\n" + str([c.name for c in channels].join("\n")))
         logger.info('test')
         ch_list = [('info', 'ご利用案内・ルール'), ('hostlist', '募集リスト-hostlist'), ('say-gg', '挨拶・感想-say-gg'), ('beginner', '初心者・初級者交流'), ('th123', '天則雑談'), ('advice', 'アドバイス募集'), ('servermeta', '質問・要望')]
@@ -66,7 +66,7 @@ class Shanghai(commands.Bot):
         await information_ch.send(info_str.format(**ch_mention_dict, manager=manager_role_mention))
 
     async def on_command_error(self, ctx, exception):
-        logger.exception(f"name:{ctx.message.author.name}, nick:{ctx.message.author.nick}, id:{ctx.message.author.id}, {ctx.command.qualified_name}")
+        logger.exception(f"display_name:{ctx.message.author.display_name}, id:{ctx.message.author.id}, {ctx.command.qualified_name}")
         if isinstance(exception, commands.CommandNotFound):
             await ctx.channel.send("コマンドが存在しません。")
         elif isinstance(exception,

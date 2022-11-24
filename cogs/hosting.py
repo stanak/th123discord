@@ -110,11 +110,7 @@ class Th123HostProtocol(Th123DatagramProtocol):
         pass
 
     def try_echo(self):
-        try:
-            self.transport.sendto(self.echo_packet)
-        except Exception as e:
-            logger.exception(type(e).__name__, exc_info=e)
-            self.transport.sendto(self.echo_packet)
+        self.transport.sendto(self.echo_packet)
 
     def discard(self):
         if self.transport and not self.transport.is_closing():
