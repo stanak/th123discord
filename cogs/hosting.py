@@ -208,34 +208,42 @@ class HostListObserver:
         cls._bot = bot
 
         # init channel clean
-        hoslist_ch = get_hostlist_ch(cls._bot)
-        await hostlistch.delete_messages(*(await hostlist_ch.history(limit=5)))
-            
-        base_message = "**{date}現在{num}人が対戦相手を募集しています:**\n"
-        message = await hostlist_ch.send(base_message.format(date=datetime.now().strftime("%Y%m%dT%H%M%z"), num=0))
+        hostlist_ch = get_hostlist_ch(cls._bot)
+        async for message in hostlist_ch.history(limit=10):
+            await message.delete()
+
+        hostlist_info_message = ("←のこのメッセージの発信者である上海Botアイコンを押して、メッセージ欄に「!host IP:Port 募集文」と入力して送信することで募集が可能です。\n"
+"(!hostの後とIP:Portの後は必ずスペースで区切ってください)\n"
+"sokuroll募集の場合は「!rhost」になります。\n"           
+"例：\n"
+"```!host 198.51.100.123:10800 霊夢 相互自由 どなたでもどうぞ```\n"
+"取り下げるにはサーバーを立てずに約20秒待つか、!closeコマンドを用います。\n"
+"「!client」コマンドはIP待ちやAutoPunch(いつか対応させます)を使った募集にご利用ください。\n"
+":o: 対戦可, :x: 不可, :crossed_swords: 対戦中, :eye: 観戦可, :see_no_evil:  観戦不可, :regional_indicator_r: sokuroll,  :loudspeaker: client")
+
+        await hostlist_ch.send(hostlist_info_message)
+        base_message = "**{date}現在\n{num}人が対戦相手を募集しています:**\n"
+        message = await hostlist_ch.send(base_message.format(date=datetime.now().strftime("%Y年%m月%d日T%H時%M分"), num=0))
 
         while True:
-            try:
-                host_list = cls._host_list[:]
-                for host in host_list:
-                    host.protocol.try_echo()
+            host_list = cls._host_list[:]
+            for host in host_list:
+                host.protocol.try_echo()
 
-                await asyncio.sleep(interval.seconds)
+            await asyncio.sleep(interval.seconds)
 
-                message_body_list = list()
-                for host in host_list:
-                    if host.should_close():
-                        await cls.close(host)
-                        continue
+            message_body_list = list()
+            for host in host_list:
+                if host.should_close():
+                    await cls.close(host)
+                    continue
 
-                    message_body_list.append(host.get_message_body())
+                message_body_list.append(host.get_message_body())
 
-                post_message = (
-                    base_message.format(date=datetime.now().strftime("%Y%m%dT%H%M%z") ,num=len(message_body_list)) +
-                    "\n".join(message_body_list))
-                await message.edit(content=post_message)
-            except Exception as e:
-                logger.exception(type(e).__name__, exc_info=e)
+            post_message = (
+                base_message.format(date=datetime.now().strftime("%Y年%m月%d日%H時%M分") ,num=len(message_body_list)) +
+                "\n".join(message_body_list))
+            await message.edit(content=post_message)
 
     @classmethod
     async def close(cls, host):
